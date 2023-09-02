@@ -1,5 +1,9 @@
 package main
 
+import fiber_handler "github.com/team-inu/inu-backyard/infrastructure/fiber"
+
 func main() {
-	println("Hello, world!")
+	fiberServer := fiber_handler.NewFiberServer()
+
+	fiberServer.Run()
 }
