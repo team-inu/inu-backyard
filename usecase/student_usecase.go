@@ -17,7 +17,7 @@ func (s studentUsecase) GetAll() ([]entity.Student, error) {
 	return s.studentRepo.GetAll()
 }
 
-func (s studentUsecase) GetByID(id ulid.ULID) (*entity.Student, error) {
+func (s studentUsecase) GetByID(id string) (*entity.Student, error) {
 	return s.studentRepo.GetByID(id)
 }
 
@@ -39,10 +39,10 @@ func (s studentUsecase) Create(kmuttId string, name string, firstName string, la
 	return &student, nil
 }
 
-func (s studentUsecase) EnrollCourse(courseID ulid.ULID, studentID ulid.ULID) error {
+func (s studentUsecase) EnrollCourse(courseID string, studentID string) error {
 	return nil
 }
 
-func (s studentUsecase) WithdrawCourse(courseID ulid.ULID, studentID ulid.ULID) error {
+func (s studentUsecase) WithdrawCourse(courseIDstring, studentID string) error {
 	return nil
 }

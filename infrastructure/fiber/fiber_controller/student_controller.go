@@ -2,7 +2,6 @@ package fiber_controller
 
 import (
 	"github.com/gofiber/fiber/v2"
-	"github.com/oklog/ulid/v2"
 	"github.com/team-inu/inu-backyard/entity"
 	"github.com/team-inu/inu-backyard/infrastructure/fiber/request"
 	"github.com/team-inu/inu-backyard/infrastructure/validator"
@@ -32,8 +31,7 @@ func (c studentController) GetAll(ctx *fiber.Ctx) error {
 func (c studentController) GetByID(ctx *fiber.Ctx) error {
 	studentID := ctx.Params("studentID")
 
-	studentUUID, _ := ulid.Parse(studentID)
-	student, _ := c.StudentUsecase.GetByID(studentUUID)
+	student, _ := c.StudentUsecase.GetByID(studentID)
 
 	return ctx.JSON(student)
 }

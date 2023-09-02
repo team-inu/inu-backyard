@@ -1,7 +1,6 @@
 package repository_gorm
 
 import (
-	"github.com/oklog/ulid/v2"
 	"github.com/team-inu/inu-backyard/entity"
 	"gorm.io/gorm"
 )
@@ -24,7 +23,7 @@ func (r studentRepositoryGorm) GetAll() ([]entity.Student, error) {
 	return students, nil
 }
 
-func (r studentRepositoryGorm) GetByID(id ulid.ULID) (*entity.Student, error) {
+func (r studentRepositoryGorm) GetByID(id string) (*entity.Student, error) {
 	var student entity.Student
 	err := r.gorm.Where("id = ?", id).First(&student).Error
 	if err != nil {
@@ -42,6 +41,6 @@ func (r studentRepositoryGorm) Update(student *entity.Student) error {
 	return r.gorm.Model(&student).Updates(&student).Error
 }
 
-func (r studentRepositoryGorm) Delete(id ulid.ULID) error {
+func (r studentRepositoryGorm) Delete(id string) error {
 	return r.gorm.Where("id = ?", id).Delete(&entity.Student{}).Error
 }
