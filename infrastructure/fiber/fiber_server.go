@@ -2,11 +2,13 @@ package fiber_handler
 
 import (
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/gofiber/contrib/fiberzap/v2"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/monitor"
 	"github.com/team-inu/inu-backyard/entity"
 	"github.com/team-inu/inu-backyard/infrastructure/db_connector"
-	"github.com/team-inu/inu-backyard/infrastructure/fiber/controller"
+	"github.com/team-inu/inu-backyard/infrastructure/fiber/fiber_controller"
+	"github.com/team-inu/inu-backyard/infrastructure/logger"
 	"github.com/team-inu/inu-backyard/repository/repository_gorm"
 	"github.com/team-inu/inu-backyard/usecase"
 	"gorm.io/gorm"
@@ -54,12 +56,18 @@ func (f *fiberServer) initUsecase() {
 }
 
 func (f *fiberServer) initController() {
-	app := fiber.New(fiber.Config{
+	fiberConfig := fiber.Config{
 		AppName:           "inu-backyard",
 		EnablePrintRoutes: true,
-	})
+	}
 
-	studentController := controller.NewStudentController(f.studentUsecase)
+	app := fiber.New(fiberConfig)
+
+	studentController := fiber_controller.NewStudentController(f.studentUsecase)
+
+	app.Use(fiberzap.New(fiberzap.Config{
+		Logger: logger.NewZapLogger(),
+	}))
 
 	app.Get("/students", studentController.GetAll)
 	app.Get("/students/:studentId", studentController.GetByID)

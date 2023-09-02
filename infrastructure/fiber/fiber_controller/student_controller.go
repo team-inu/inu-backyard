@@ -1,4 +1,4 @@
-package controller
+package fiber_controller
 
 import (
 	"fmt"
