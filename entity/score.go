@@ -11,13 +11,3 @@ type Score struct {
 	Student    Student
 	Assessment Assessment
 }
-
-type ScoreRepository interface {
-	FindAll() ([]Score, error)
-	FindByID(id ulid.ULID) (*Score, error)
-	FindByLearnerID(learnerID ulid.ULID) ([]Score, error)
-	FindByAssessmentID(assessmentID ulid.ULID) ([]Score, error)
-	Create(score *Score) error
-	Update(score *Score) error
-	Delete(id ulid.ULID) error
-}

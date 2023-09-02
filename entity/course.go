@@ -1,13 +1,7 @@
 package entity
 
 import (
-	"errors"
-
 	"github.com/oklog/ulid/v2"
-)
-
-var (
-	ErrInvalidCourse = errors.New("a customer has to have an valid person")
 )
 
 type Course struct {

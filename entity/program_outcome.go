@@ -7,11 +7,3 @@ type ProgramOutcome struct {
 	Name        string    `json:"name"`
 	Description string    `json:"description"`
 }
-
-type ProgramOutcomeRepository interface {
-	FindAll() ([]ProgramOutcome, error)
-	FindByID(id ulid.ULID) (*ProgramOutcome, error)
-	Create(programOutcome *ProgramOutcome) error
-	Update(programOutcome *ProgramOutcome) error
-	Delete(id ulid.ULID) error
-}

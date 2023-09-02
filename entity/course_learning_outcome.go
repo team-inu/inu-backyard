@@ -13,11 +13,3 @@ type CourseLearningOutcome struct {
 	ProgramLearningOutcome ProgramLearningOutcome
 	ProgramOutcome         ProgramOutcome
 }
-
-type CourseLearningOutcomeRepository interface {
-	GetAll() ([]CourseLearningOutcome, error)
-	GetByID(id ulid.ULID) (*CourseLearningOutcome, error)
-	Create(courseLearningOutcome *CourseLearningOutcome) error
-	Update(courseLearningOutcome *CourseLearningOutcome) error
-	Delete(id ulid.ULID) error
-}

@@ -1,23 +1,27 @@
 package fiber_controller
 
 import (
-	"fmt"
-
 	"github.com/gofiber/fiber/v2"
 	"github.com/oklog/ulid/v2"
 	"github.com/team-inu/inu-backyard/entity"
+	"github.com/team-inu/inu-backyard/infrastructure/fiber/request"
+	"github.com/team-inu/inu-backyard/infrastructure/validator"
 )
 
 type studentController struct {
 	StudentUsecase entity.StudentUsecase
+	Validator      validator.Validator
 }
 
 func NewStudentController(studentUsecase entity.StudentUsecase) *studentController {
-	return &studentController{StudentUsecase: studentUsecase}
+	return &studentController{
+		StudentUsecase: studentUsecase,
+		Validator:      validator.NewPayloadValidator(),
+	}
 }
 
-func (s studentController) GetAll(ctx *fiber.Ctx) error {
-	students, err := s.StudentUsecase.GetAll()
+func (c studentController) GetAll(ctx *fiber.Ctx) error {
+	students, err := c.StudentUsecase.GetAll()
 	if err != nil {
 		return err
 	}
@@ -25,27 +29,31 @@ func (s studentController) GetAll(ctx *fiber.Ctx) error {
 	return ctx.JSON(students)
 }
 
-func (s studentController) GetByID(ctx *fiber.Ctx) error {
+func (c studentController) GetByID(ctx *fiber.Ctx) error {
 	studentID := ctx.Params("studentID")
 
 	studentUUID, _ := ulid.Parse(studentID)
-	student, _ := s.StudentUsecase.GetByID(studentUUID)
+	student, _ := c.StudentUsecase.GetByID(studentUUID)
 
 	return ctx.JSON(student)
 }
 
-// read body and create student
-func (s studentController) Create(ctx *fiber.Ctx) error {
-	student := new(entity.Student)
-
-	if err := ctx.BodyParser(student); err != nil {
-		fmt.Println(err)
-		// return err
-	}
-
-	if err := s.StudentUsecase.Create(student); err != nil {
+func (c studentController) Create(ctx *fiber.Ctx) error {
+	var student request.CreateStudentRequestBody
+	err := ctx.BodyParser(&student)
+	if err != nil {
 		return err
 	}
 
-	return ctx.JSON(student)
+	validationErrors := c.Validator.Struct(student)
+	if len(validationErrors) > 0 {
+		return ctx.JSON(validationErrors)
+	}
+
+	createdStudent, err := c.StudentUsecase.Create(student.KmuttID, student.Name, student.FirstName, student.LastName)
+	if err != nil {
+		return err
+	}
+
+	return ctx.JSON(createdStudent)
 }

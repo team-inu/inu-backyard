@@ -30,6 +30,7 @@ func (f *fiberServer) Run() {
 	f.initRepository()
 	f.initUsecase()
 	f.initController()
+
 }
 
 func (f *fiberServer) initRepository() (err error) {
@@ -57,8 +58,8 @@ func (f *fiberServer) initUsecase() {
 
 func (f *fiberServer) initController() {
 	fiberConfig := fiber.Config{
-		AppName:           "inu-backyard",
-		EnablePrintRoutes: true,
+		AppName: "inu-backyard",
+		// EnablePrintRoutes: true,
 	}
 
 	app := fiber.New(fiberConfig)
