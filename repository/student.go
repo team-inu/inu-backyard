@@ -1,4 +1,4 @@
-package repository_gorm
+package repository
 
 import (
 	"github.com/team-inu/inu-backyard/entity"
@@ -9,7 +9,7 @@ type studentRepositoryGorm struct {
 	gorm *gorm.DB
 }
 
-func NewStudentRepository(gorm *gorm.DB) entity.StudentRepository {
+func NewStudentRepositoryGorm(gorm *gorm.DB) entity.StudentRepository {
 	return &studentRepositoryGorm{gorm: gorm}
 }
 

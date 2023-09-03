@@ -8,7 +8,7 @@ import (
 	"github.com/team-inu/inu-backyard/infrastructure/database"
 	"github.com/team-inu/inu-backyard/infrastructure/fiber/controller"
 	"github.com/team-inu/inu-backyard/infrastructure/logger"
-	"github.com/team-inu/inu-backyard/repository/repository_gorm"
+	"github.com/team-inu/inu-backyard/repository"
 	"github.com/team-inu/inu-backyard/usecase"
 	"gorm.io/gorm"
 )
@@ -45,7 +45,7 @@ func (f *fiberServer) initRepository() (err error) {
 
 	f.gorm = gormDB
 
-	f.studentRepository = repository_gorm.NewStudentRepository(f.gorm)
+	f.studentRepository = repository.NewStudentRepositoryGorm(f.gorm)
 
 	return nil
 }
