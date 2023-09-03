@@ -19,7 +19,7 @@ type fiberServer struct {
 
 	studentRepository entity.StudentRepository
 
-	studentUsecase entity.StudentUsecase
+	studentUseCase entity.StudentUseCase
 }
 
 func NewFiberServer() *fiberServer {
@@ -28,13 +28,12 @@ func NewFiberServer() *fiberServer {
 
 func (f *fiberServer) Run() {
 	f.initRepository()
-	f.initUsecase()
+	f.initUseCase()
 	f.initController()
-
 }
 
 func (f *fiberServer) initRepository() (err error) {
-	gorm, err := db_connector.NewGorm(&db_connector.GormConfig{
+	gormDB, err := db_connector.NewGorm(&db_connector.GormConfig{
 		User:     "root",
 		Password: "root",
 		Host:     "mysql",
@@ -45,15 +44,15 @@ func (f *fiberServer) initRepository() (err error) {
 		panic(err)
 	}
 
-	f.gorm = gorm
+	f.gorm = gormDB
 
 	f.studentRepository = repository_gorm.NewStudentRepository(f.gorm)
 
 	return nil
 }
 
-func (f *fiberServer) initUsecase() {
-	f.studentUsecase = usecase.NewStudentUsecase(f.studentRepository)
+func (f *fiberServer) initUseCase() {
+	f.studentUseCase = usecase.NewStudentUseCase(f.studentRepository)
 }
 
 func (f *fiberServer) initController() {
@@ -64,7 +63,7 @@ func (f *fiberServer) initController() {
 
 	app := fiber.New(fiberConfig)
 
-	studentController := fiber_controller.NewStudentController(f.studentUsecase)
+	studentController := fiber_controller.NewStudentController(f.studentUseCase)
 
 	app.Use(fiberzap.New(fiberzap.Config{
 		Logger: logger.NewZapLogger(),

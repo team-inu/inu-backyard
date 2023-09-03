@@ -1,7 +1,7 @@
 package validator
 
 import (
-	go_validator "github.com/go-playground/validator/v10"
+	goValidator "github.com/go-playground/validator/v10"
 )
 
 type Validator interface {
@@ -9,12 +9,12 @@ type Validator interface {
 }
 
 type validator struct {
-	goValidator go_validator.Validate
+	goValidator goValidator.Validate
 }
 
 func NewPayloadValidator() Validator {
 	return &validator{
-		goValidator: *go_validator.New(),
+		goValidator: *goValidator.New(),
 	}
 }
 
@@ -26,11 +26,11 @@ type ErrorResponse struct {
 }
 
 func (v validator) Struct(data interface{}) []ErrorResponse {
-	validationErrors := []ErrorResponse{}
+	var validationErrors []ErrorResponse
 
 	errs := v.goValidator.Struct(data)
 	if errs != nil {
-		for _, err := range errs.(go_validator.ValidationErrors) {
+		for _, err := range errs.(goValidator.ValidationErrors) {
 			var elem ErrorResponse
 
 			elem.FailedField = err.Field()

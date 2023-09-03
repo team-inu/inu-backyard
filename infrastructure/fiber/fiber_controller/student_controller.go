@@ -8,19 +8,19 @@ import (
 )
 
 type studentController struct {
-	StudentUsecase entity.StudentUsecase
+	StudentUseCase entity.StudentUseCase
 	Validator      validator.Validator
 }
 
-func NewStudentController(studentUsecase entity.StudentUsecase) *studentController {
+func NewStudentController(studentUseCase entity.StudentUseCase) *studentController {
 	return &studentController{
-		StudentUsecase: studentUsecase,
+		StudentUseCase: studentUseCase,
 		Validator:      validator.NewPayloadValidator(),
 	}
 }
 
 func (c studentController) GetAll(ctx *fiber.Ctx) error {
-	students, err := c.StudentUsecase.GetAll()
+	students, err := c.StudentUseCase.GetAll()
 	if err != nil {
 		return err
 	}
@@ -31,7 +31,7 @@ func (c studentController) GetAll(ctx *fiber.Ctx) error {
 func (c studentController) GetByID(ctx *fiber.Ctx) error {
 	studentID := ctx.Params("studentID")
 
-	student, _ := c.StudentUsecase.GetByID(studentID)
+	student, _ := c.StudentUseCase.GetByID(studentID)
 
 	return ctx.JSON(student)
 }
@@ -48,7 +48,7 @@ func (c studentController) Create(ctx *fiber.Ctx) error {
 		return ctx.JSON(validationErrors)
 	}
 
-	createdStudent, err := c.StudentUsecase.Create(student.KmuttID, student.Name, student.FirstName, student.LastName)
+	createdStudent, err := c.StudentUseCase.Create(student.KmuttID, student.Name, student.FirstName, student.LastName)
 	if err != nil {
 		return err
 	}

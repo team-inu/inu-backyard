@@ -16,7 +16,7 @@ type StudentRepository interface {
 	Delete(id string) error
 }
 
-type StudentUsecase interface {
+type StudentUseCase interface {
 	GetAll() ([]Student, error)
 	GetByID(id string) (*Student, error)
 	Create(kmuttId string, name string, firstName string, lastName string) (*Student, error)
