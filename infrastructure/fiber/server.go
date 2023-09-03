@@ -1,13 +1,12 @@
-package fiber_handler
+package fiber
 
 import (
-	_ "github.com/go-sql-driver/mysql"
 	"github.com/gofiber/contrib/fiberzap/v2"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/monitor"
 	"github.com/team-inu/inu-backyard/entity"
-	"github.com/team-inu/inu-backyard/infrastructure/db_connector"
-	"github.com/team-inu/inu-backyard/infrastructure/fiber/fiber_controller"
+	"github.com/team-inu/inu-backyard/infrastructure/database"
+	"github.com/team-inu/inu-backyard/infrastructure/fiber/controller"
 	"github.com/team-inu/inu-backyard/infrastructure/logger"
 	"github.com/team-inu/inu-backyard/repository/repository_gorm"
 	"github.com/team-inu/inu-backyard/usecase"
@@ -33,7 +32,7 @@ func (f *fiberServer) Run() {
 }
 
 func (f *fiberServer) initRepository() (err error) {
-	gormDB, err := db_connector.NewGorm(&db_connector.GormConfig{
+	gormDB, err := database.NewGorm(&database.GormConfig{
 		User:     "root",
 		Password: "root",
 		Host:     "mysql",
@@ -63,7 +62,7 @@ func (f *fiberServer) initController() {
 
 	app := fiber.New(fiberConfig)
 
-	studentController := fiber_controller.NewStudentController(f.studentUseCase)
+	studentController := controller.NewStudentController(f.studentUseCase)
 
 	app.Use(fiberzap.New(fiberzap.Config{
 		Logger: logger.NewZapLogger(),
