@@ -10,7 +10,7 @@ type studentRepositoryGorm struct {
 }
 
 func NewStudentRepository(gorm *gorm.DB) entity.StudentRepository {
-	return studentRepositoryGorm{gorm: gorm}
+	return &studentRepositoryGorm{gorm: gorm}
 }
 
 func (r studentRepositoryGorm) GetAll() ([]entity.Student, error) {

@@ -10,7 +10,7 @@ type studentUseCase struct {
 }
 
 func NewStudentUseCase(studentRepo entity.StudentRepository) entity.StudentUseCase {
-	return studentUseCase{studentRepo: studentRepo}
+	return &studentUseCase{studentRepo: studentRepo}
 }
 
 func (s studentUseCase) GetAll() ([]entity.Student, error) {
