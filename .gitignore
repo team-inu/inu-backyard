@@ -21,3 +21,8 @@
 go.work
 
 .volume
+
+dist
+tmp
+
+config.yml

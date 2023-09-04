@@ -2,4 +2,13 @@
   "cSpell.ignoreRegExpList": [
     "/[\\u0E00-\\u0E7F]+/"
   ],
+  "cSpell.words": [
+    "foreignkey",
+    "gofiber",
+    "Gorm",
+    "sqlx",
+    "usecase",
+    "varchar",
+    "vyper"
+  ],
 }
