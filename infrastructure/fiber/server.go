@@ -7,7 +7,7 @@ import (
 	"github.com/team-inu/inu-backyard/entity"
 	"github.com/team-inu/inu-backyard/infrastructure/database"
 	"github.com/team-inu/inu-backyard/infrastructure/fiber/controller"
-	"github.com/team-inu/inu-backyard/infrastructure/logger"
+	"github.com/team-inu/inu-backyard/internal/logger"
 	"github.com/team-inu/inu-backyard/repository"
 	"github.com/team-inu/inu-backyard/usecase"
 	"gorm.io/gorm"

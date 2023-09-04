@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/team-inu/inu-backyard/infrastructure/config"
 	"github.com/team-inu/inu-backyard/infrastructure/fiber"
+	"github.com/team-inu/inu-backyard/internal/config"
 )
 
 func main() {

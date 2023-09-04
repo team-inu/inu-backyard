@@ -4,7 +4,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/team-inu/inu-backyard/entity"
 	"github.com/team-inu/inu-backyard/infrastructure/fiber/request"
-	"github.com/team-inu/inu-backyard/infrastructure/validator"
+	"github.com/team-inu/inu-backyard/internal/validator"
 )
 
 type studentController struct {
