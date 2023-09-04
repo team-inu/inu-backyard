@@ -7,11 +7,11 @@ import (
 )
 
 type GormConfig struct {
-	User     string
-	Password string
-	Host     string
-	Port     string
-	Database string
+	User         string
+	Password     string
+	Host         string
+	Port         string
+	DatabaseName string
 }
 
 func NewGorm(config *GormConfig) (gormDB *gorm.DB, err error) {
@@ -21,7 +21,7 @@ func NewGorm(config *GormConfig) (gormDB *gorm.DB, err error) {
 		},
 	}
 
-	dsn := config.User + ":" + config.Password + "@tcp(" + config.Host + ":" + config.Port + ")/" + config.Database
+	dsn := config.User + ":" + config.Password + "@tcp(" + config.Host + ":" + config.Port + ")/" + config.DatabaseName
 	gormDB, err = gorm.Open(mysql.Open(dsn), gormConfig)
 	if err != nil {
 		return nil, err

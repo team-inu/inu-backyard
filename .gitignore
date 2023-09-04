@@ -24,3 +24,5 @@ go.work
 
 dist
 tmp
+
+config.yml

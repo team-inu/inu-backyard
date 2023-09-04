@@ -13,7 +13,13 @@ import (
 	"gorm.io/gorm"
 )
 
+type FiberServerConfig struct {
+	Database database.GormConfig
+}
+
 type fiberServer struct {
+	config FiberServerConfig
+
 	gorm *gorm.DB
 
 	studentRepository entity.StudentRepository
@@ -25,20 +31,16 @@ func NewFiberServer() *fiberServer {
 	return &fiberServer{}
 }
 
-func (f *fiberServer) Run() {
+func (f *fiberServer) Run(config FiberServerConfig) {
+	f.config = config
+
 	f.initRepository()
 	f.initUseCase()
 	f.initController()
 }
 
 func (f *fiberServer) initRepository() (err error) {
-	gormDB, err := database.NewGorm(&database.GormConfig{
-		User:     "root",
-		Password: "root",
-		Host:     "mysql",
-		Port:     "3306",
-		Database: "inu_backyard",
-	})
+	gormDB, err := database.NewGorm(&f.config.Database)
 	if err != nil {
 		panic(err)
 	}
