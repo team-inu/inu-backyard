@@ -25,6 +25,10 @@ type fiberServer struct {
 	studentRepository entity.StudentRepository
 
 	studentUseCase entity.StudentUseCase
+
+	courseRepository entity.CourseRepository
+
+	courseUseCase entity.CourseUsecase
 }
 
 func NewFiberServer() *fiberServer {
@@ -48,12 +52,14 @@ func (f *fiberServer) initRepository() (err error) {
 	f.gorm = gormDB
 
 	f.studentRepository = repository.NewStudentRepositoryGorm(f.gorm)
+	f.courseRepository = repository.NewCourseRepositoryGorm(f.gorm)
 
 	return nil
 }
 
 func (f *fiberServer) initUseCase() {
 	f.studentUseCase = usecase.NewStudentUseCase(f.studentRepository)
+	f.courseUseCase = usecase.NewCourseUsecase(f.courseRepository)
 }
 
 func (f *fiberServer) initController() {
@@ -65,6 +71,7 @@ func (f *fiberServer) initController() {
 	app := fiber.New(fiberConfig)
 
 	studentController := controller.NewStudentController(f.studentUseCase)
+	courseController := controller.NewCourseController(f.courseUseCase)
 
 	app.Use(fiberzap.New(fiberzap.Config{
 		Logger: logger.NewZapLogger(),
@@ -73,6 +80,11 @@ func (f *fiberServer) initController() {
 	app.Get("/students", studentController.GetAll)
 	app.Get("/students/:studentId", studentController.GetByID)
 	app.Post("/students", studentController.Create)
+
+	app.Get("/courses", courseController.GetAll)
+	app.Get("/courses/:courseId", courseController.GetByID)
+	app.Post("/courses", courseController.Create)
+	app.Delete("/courses/:courseId", courseController.Delete)
 
 	app.Get("/metrics", monitor.New())
 
