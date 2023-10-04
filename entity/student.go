@@ -1,11 +1,16 @@
 package entity
 
 type Student struct {
-	ID        string `gorm:"primaryKey;type:char(255)"`
-	KmuttID   string
-	Name      string
-	FirstName string
-	LastName  string
+	ID             string `gorm:"primaryKey;type:char(255)"`
+	KmuttID        string
+	Name           string
+	FirstName      string
+	LastName       string
+	ProgrammeID    string
+	DepartmentName string
+
+	Programme  Programme
+	Department Department
 }
 
 type StudentRepository interface {
