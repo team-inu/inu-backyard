@@ -26,7 +26,6 @@ func (c courseUsecase) Create(name string, code string, year int, lecturerId str
 		ID:         ulid.Make().String(),
 		Name:       name,
 		Code:       code,
-		Year:       year,
 		LecturerID: lecturerId,
 	}
 
