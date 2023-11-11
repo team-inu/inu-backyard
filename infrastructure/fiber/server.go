@@ -29,6 +29,23 @@ type fiberServer struct {
 	courseRepository entity.CourseRepository
 
 	courseUseCase entity.CourseUsecase
+
+	courseLearningOutcomeRepository entity.CourseLearningOutcomeRepository
+
+	courseLearningOutcomeUsecase entity.CourseLearningOutcomeUsecase
+
+	programLearningOutcomeRepository entity.ProgramLearningOutcomeRepository
+
+	programLearningOutcomeUsecase entity.ProgramLearningOutcomeUsecase
+
+	subProgramLearningOutcomeRepository entity.SubProgramLearningOutcomeRepository
+
+	subProgramLearningOutcomeUsecase entity.SubProgramLearningOutcomeUsecase
+
+	programOutcomeRepository entity.ProgramOutcomeRepository
+
+	programOutcomeUsecase entity.ProgramOutcomeUsecase
+
 }
 
 func NewFiberServer() *fiberServer {
@@ -52,7 +69,16 @@ func (f *fiberServer) initRepository() (err error) {
 	f.gorm = gormDB
 
 	f.studentRepository = repository.NewStudentRepositoryGorm(f.gorm)
+  
 	f.courseRepository = repository.NewCourseRepositoryGorm(f.gorm)
+
+	f.courseLearningOutcomeRepository = repository.NewCourseLearningOutcomeRepositoryGorm(f.gorm)
+
+	f.programLearningOutcomeRepository = repository.NewProgramLearningOutcomeRepositoryGorm(f.gorm)
+
+	f.subProgramLearningOutcomeRepository = repository.NewSubProgramLearningOutcomeRepositoryGorm(f.gorm)
+
+	f.programOutcomeRepository = repository.NewProgramOutcomeRepositoryGorm(f.gorm)
 
 	return nil
 }
@@ -60,6 +86,11 @@ func (f *fiberServer) initRepository() (err error) {
 func (f *fiberServer) initUseCase() {
 	f.studentUseCase = usecase.NewStudentUseCase(f.studentRepository)
 	f.courseUseCase = usecase.NewCourseUsecase(f.courseRepository)
+	f.courseLearningOutcomeUsecase = usecase.NewCourseLearningOutcomeUsecase(f.courseLearningOutcomeRepository)
+	f.programLearningOutcomeUsecase = usecase.NewProgramLearningOutcomeUsecase(f.programLearningOutcomeRepository)
+	f.subProgramLearningOutcomeUsecase = usecase.NewSubProgramLearningOutcomeUsecase(f.subProgramLearningOutcomeRepository)
+	f.programOutcomeUsecase = usecase.NewProgramOutcomeUsecase(f.programOutcomeRepository)
+
 }
 
 func (f *fiberServer) initController() {
@@ -73,6 +104,14 @@ func (f *fiberServer) initController() {
 	studentController := controller.NewStudentController(f.studentUseCase)
 	courseController := controller.NewCourseController(f.courseUseCase)
 
+	courseLearningOutcomeController := controller.NewCourseLearningOutcomeController(f.courseLearningOutcomeUsecase)
+
+	programLearningOutcomeController := controller.NewProgramLearningOutcomeController(f.programLearningOutcomeUsecase)
+
+	subProgramLearningOutcomeController := controller.NewSubProgramLearningOutcomeController(f.subProgramLearningOutcomeUsecase)
+
+	programOutcomeController := controller.NewProgramOutcomeController(f.programOutcomeUsecase)
+
 	app.Use(fiberzap.New(fiberzap.Config{
 		Logger: logger.NewZapLogger(),
 	}))
@@ -85,6 +124,23 @@ func (f *fiberServer) initController() {
 	app.Get("/courses/:courseId", courseController.GetByID)
 	app.Post("/courses", courseController.Create)
 	app.Delete("/courses/:courseId", courseController.Delete)
+
+	app.Get("/clos", courseLearningOutcomeController.GetAll)
+	app.Get("/clos/:cloId", courseLearningOutcomeController.GetByID)
+	app.Get("/courses/:courseId/clos", courseLearningOutcomeController.GetByCourseID)
+	app.Post("/clos", courseLearningOutcomeController.Create)
+
+	app.Get("/plos", programLearningOutcomeController.GetAll)
+	app.Get("/plos/:ploId", programLearningOutcomeController.GetByID)
+	app.Post("/plos", programLearningOutcomeController.Create)
+
+	app.Get("/splos", subProgramLearningOutcomeController.GetAll)
+	app.Get("/splos/:sploId", subProgramLearningOutcomeController.GetByID)
+	app.Post("/splos", subProgramLearningOutcomeController.Create)
+
+	app.Get("/pos", programOutcomeController.GetAll)
+	app.Get("/pos/:poId", programOutcomeController.GetByID)
+	app.Post("/pos", programOutcomeController.Create)
 
 	app.Get("/metrics", monitor.New())
 
