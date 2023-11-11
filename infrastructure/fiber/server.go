@@ -26,6 +26,10 @@ type fiberServer struct {
 
 	studentUseCase entity.StudentUseCase
 
+	courseRepository entity.CourseRepository
+
+	courseUseCase entity.CourseUsecase
+
 	courseLearningOutcomeRepository entity.CourseLearningOutcomeRepository
 
 	courseLearningOutcomeUsecase entity.CourseLearningOutcomeUsecase
@@ -41,6 +45,7 @@ type fiberServer struct {
 	programOutcomeRepository entity.ProgramOutcomeRepository
 
 	programOutcomeUsecase entity.ProgramOutcomeUsecase
+
 }
 
 func NewFiberServer() *fiberServer {
@@ -64,6 +69,8 @@ func (f *fiberServer) initRepository() (err error) {
 	f.gorm = gormDB
 
 	f.studentRepository = repository.NewStudentRepositoryGorm(f.gorm)
+  
+	f.courseRepository = repository.NewCourseRepositoryGorm(f.gorm)
 
 	f.courseLearningOutcomeRepository = repository.NewCourseLearningOutcomeRepositoryGorm(f.gorm)
 
@@ -78,10 +85,12 @@ func (f *fiberServer) initRepository() (err error) {
 
 func (f *fiberServer) initUseCase() {
 	f.studentUseCase = usecase.NewStudentUseCase(f.studentRepository)
+	f.courseUseCase = usecase.NewCourseUsecase(f.courseRepository)
 	f.courseLearningOutcomeUsecase = usecase.NewCourseLearningOutcomeUsecase(f.courseLearningOutcomeRepository)
 	f.programLearningOutcomeUsecase = usecase.NewProgramLearningOutcomeUsecase(f.programLearningOutcomeRepository)
 	f.subProgramLearningOutcomeUsecase = usecase.NewSubProgramLearningOutcomeUsecase(f.subProgramLearningOutcomeRepository)
 	f.programOutcomeUsecase = usecase.NewProgramOutcomeUsecase(f.programOutcomeRepository)
+
 }
 
 func (f *fiberServer) initController() {
@@ -93,6 +102,7 @@ func (f *fiberServer) initController() {
 	app := fiber.New(fiberConfig)
 
 	studentController := controller.NewStudentController(f.studentUseCase)
+	courseController := controller.NewCourseController(f.courseUseCase)
 
 	courseLearningOutcomeController := controller.NewCourseLearningOutcomeController(f.courseLearningOutcomeUsecase)
 
@@ -109,6 +119,11 @@ func (f *fiberServer) initController() {
 	app.Get("/students", studentController.GetAll)
 	app.Get("/students/:studentId", studentController.GetByID)
 	app.Post("/students", studentController.Create)
+
+	app.Get("/courses", courseController.GetAll)
+	app.Get("/courses/:courseId", courseController.GetByID)
+	app.Post("/courses", courseController.Create)
+	app.Delete("/courses/:courseId", courseController.Delete)
 
 	app.Get("/clos", courseLearningOutcomeController.GetAll)
 	app.Get("/clos/:cloId", courseLearningOutcomeController.GetByID)

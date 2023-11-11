@@ -10,3 +10,18 @@ type Course struct {
 	Semester Semester
 	Lecturer Lecturer
 }
+
+type CourseRepository interface {
+	GetAll() ([]Course, error)
+	GetByID(id string) (*Course, error)
+	Create(course *Course) error
+	Update(course *Course) error
+	Delete(id string) error
+}
+
+type CourseUsecase interface {
+	GetAll() ([]Course, error)
+	GetByID(id string) (*Course, error)
+	Create(name string, code string, year int, lecturerId string) (*Course, error)
+	Delete(id string) error
+}
