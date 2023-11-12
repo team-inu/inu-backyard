@@ -1,7 +1,6 @@
 package usecase
 
 import (
-	"github.com/oklog/ulid/v2"
 	"github.com/team-inu/inu-backyard/entity"
 )
 
@@ -21,22 +20,24 @@ func (s studentUseCase) GetByID(id string) (*entity.Student, error) {
 	return s.studentRepo.GetByID(id)
 }
 
-func (s studentUseCase) Create(kmuttId string, name string, firstName string, lastName string) (*entity.Student, error) {
-	student := entity.Student{
-		ID:        ulid.Make().String(),
-		KmuttID:   kmuttId,
-		Name:      name,
-		FirstName: firstName,
-		LastName:  lastName,
-	}
-
-	err := s.studentRepo.Create(&student)
+func (s studentUseCase) Create(student *entity.Student) error {
+	err := s.studentRepo.Create(student)
 
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	return &student, nil
+	return nil
+}
+
+func (s studentUseCase) CreateMany(students []entity.Student) error {
+	err := s.studentRepo.CreateMany(students)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (s studentUseCase) EnrollCourse(courseID string, studentID string) error {
