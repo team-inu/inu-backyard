@@ -3,6 +3,7 @@ package fiber
 import (
 	"github.com/gofiber/contrib/fiberzap/v2"
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/monitor"
 	"github.com/team-inu/inu-backyard/entity"
 	"github.com/team-inu/inu-backyard/infrastructure/database"
@@ -45,7 +46,6 @@ type fiberServer struct {
 	programOutcomeRepository entity.ProgramOutcomeRepository
 
 	programOutcomeUsecase entity.ProgramOutcomeUsecase
-
 }
 
 func NewFiberServer() *fiberServer {
@@ -54,9 +54,20 @@ func NewFiberServer() *fiberServer {
 
 func (f *fiberServer) Run(config FiberServerConfig) {
 	f.config = config
+	err := f.initRepository()
+	if err != nil {
+		panic(err)
+	}
+	err = f.gorm.AutoMigrate(
+		&entity.Student{},
+	)
 
-	f.initRepository()
+	if err != nil {
+		panic(err)
+	}
+
 	f.initUseCase()
+
 	f.initController()
 }
 
@@ -69,7 +80,7 @@ func (f *fiberServer) initRepository() (err error) {
 	f.gorm = gormDB
 
 	f.studentRepository = repository.NewStudentRepositoryGorm(f.gorm)
-  
+
 	f.courseRepository = repository.NewCourseRepositoryGorm(f.gorm)
 
 	f.courseLearningOutcomeRepository = repository.NewCourseLearningOutcomeRepositoryGorm(f.gorm)
@@ -101,6 +112,13 @@ func (f *fiberServer) initController() {
 
 	app := fiber.New(fiberConfig)
 
+	app.Use(cors.New(cors.Config{
+		AllowHeaders:     "Origin,Content-Type,Accept,Content-Length,Accept-Language,Accept-Encoding,Connection,Access-Control-Allow-Origin",
+		AllowOrigins:     "*",
+		AllowCredentials: true,
+		AllowMethods:     "GET,POST,HEAD,PUT,DELETE,PATCH,OPTIONS",
+	}))
+
 	studentController := controller.NewStudentController(f.studentUseCase)
 	courseController := controller.NewCourseController(f.courseUseCase)
 
@@ -119,6 +137,7 @@ func (f *fiberServer) initController() {
 	app.Get("/students", studentController.GetAll)
 	app.Get("/students/:studentId", studentController.GetByID)
 	app.Post("/students", studentController.Create)
+	app.Post("/students/bulk", studentController.CreateMany)
 
 	app.Get("/courses", courseController.GetAll)
 	app.Get("/courses/:courseId", courseController.GetByID)
@@ -148,5 +167,5 @@ func (f *fiberServer) initController() {
 		return c.SendStatus(404)
 	})
 
-	app.Listen(":3000")
+	app.Listen(":3001")
 }
