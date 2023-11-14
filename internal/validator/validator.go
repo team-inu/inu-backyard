@@ -9,12 +9,12 @@ type Validator interface {
 }
 
 type validator struct {
-	goValidator goValidator.Validate
+	goValidator *goValidator.Validate
 }
 
 func NewPayloadValidator() Validator {
 	return &validator{
-		goValidator: *goValidator.New(),
+		goValidator: goValidator.New(),
 	}
 }
 
@@ -25,9 +25,8 @@ type ErrorResponse struct {
 	Value       interface{}
 }
 
-func (v validator) Struct(data interface{}) []ErrorResponse {
+func (v *validator) Struct(data interface{}) []ErrorResponse {
 	var validationErrors []ErrorResponse
-
 	errs := v.goValidator.Struct(data)
 	if errs != nil {
 		for _, err := range errs.(goValidator.ValidationErrors) {

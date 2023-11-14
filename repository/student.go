@@ -37,6 +37,10 @@ func (r studentRepositoryGorm) Create(student *entity.Student) error {
 	return r.gorm.Create(&student).Error
 }
 
+func (r studentRepositoryGorm) CreateMany(students []entity.Student) error {
+	return r.gorm.Create(&students).Error
+}
+
 func (r studentRepositoryGorm) Update(student *entity.Student) error {
 	return r.gorm.Model(&student).Updates(&student).Error
 }
