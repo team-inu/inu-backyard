@@ -13,6 +13,17 @@ func NewStudentRepositoryGorm(gorm *gorm.DB) entity.StudentRepository {
 	return &studentRepositoryGorm{gorm: gorm}
 }
 
+func (r studentRepositoryGorm) GetByID(id string) (*entity.Student, error) {
+	var student *entity.Student
+
+	err := r.gorm.Where("id = ?", id).First(&student).Error
+	if err != nil {
+		return nil, err
+	}
+
+	return student, nil
+}
+
 func (r studentRepositoryGorm) GetAll() ([]entity.Student, error) {
 	var students []entity.Student
 	err := r.gorm.Find(&students).Error
@@ -23,14 +34,15 @@ func (r studentRepositoryGorm) GetAll() ([]entity.Student, error) {
 	return students, nil
 }
 
-func (r studentRepositoryGorm) GetByID(id string) (*entity.Student, error) {
-	var student entity.Student
-	err := r.gorm.Where("id = ?", id).First(&student).Error
+func (r studentRepositoryGorm) GetByParams(params *entity.Student, limit int, offset int) ([]entity.Student, error) {
+	var students []entity.Student
+
+	err := r.gorm.Where(params).Limit(limit).Offset(offset).Find(&students).Error
 	if err != nil {
 		return nil, err
 	}
 
-	return &student, nil
+	return students, nil
 }
 
 func (r studentRepositoryGorm) Create(student *entity.Student) error {

@@ -21,8 +21,9 @@ type Student struct {
 }
 
 type StudentRepository interface {
-	GetAll() ([]Student, error)
 	GetByID(id string) (*Student, error)
+	GetAll() ([]Student, error)
+	GetByParams(params *Student, limit int, offset int) ([]Student, error)
 	Create(student *Student) error
 	CreateMany(student []Student) error
 	Update(student *Student) error
@@ -30,15 +31,10 @@ type StudentRepository interface {
 }
 
 type StudentUseCase interface {
-	GetAll() ([]Student, error)
 	GetByID(id string) (*Student, error)
-	GetStudentByProgramme(programmeID string) ([]Student, error)
-	GetStudentByDepartment(departmentName string) ([]Student, error)
-	GetStudentByYear(year string) ([]Student, error)
-	GetStudentByCourse(courseID string) ([]Student, error)
+	GetAll() ([]Student, error)
+	GetByParams(params *Student, limit int, offset int) ([]Student, error)
 	Create(student *Student) error
 	CreateMany(student []Student) error
-	EnrollCourse(courseID string, studentID string) error
 	Update(student *Student) error
-	WithdrawCourse(courseID string, studentID string) error
 }
