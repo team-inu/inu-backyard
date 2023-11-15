@@ -9,7 +9,7 @@ import (
 
 type courseLearningOutcomeController struct {
 	CourseLearningOutcomeUsecase entity.CourseLearningOutcomeUsecase
-	Validator                    validator.Validator
+	Validator                    validator.PayloadValidator
 }
 
 func NewCourseLearningOutcomeController(courseLearningOutcomeUsecase entity.CourseLearningOutcomeUsecase) *courseLearningOutcomeController {
@@ -57,9 +57,9 @@ func (c courseLearningOutcomeController) Create(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	validationErrors := c.Validator.Struct(clo)
-	if len(validationErrors) > 0 {
-		return ctx.JSON(validationErrors)
+	err, validationErrors := c.Validator.Validate(clo, ctx)
+	if err != nil {
+		return ctx.Status(400).JSON(validationErrors)
 	}
 
 	createdClo, err := c.CourseLearningOutcomeUsecase.Create(clo.Code, clo.Description, clo.Weight, clo.SubProgramLearningOutcomeID, clo.ProgramOutcomeID, clo.CourseId, clo.Status)
