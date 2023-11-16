@@ -10,3 +10,21 @@ type Assessment struct {
 
 	CourseLearningOutcome CourseLearningOutcome
 }
+
+type AssessmentRepository interface {
+	GetAll() ([]Assessment, error)
+	GetByID(id string) (*Assessment, error)
+	Create(assessment *Assessment) error
+	Update(assessment *Assessment) error
+	Delete(id string) error
+}
+
+type AssessmentUseCase interface {
+	GetAll() ([]Assessment, error)
+	GetByID(id string) (*Assessment, error)
+	GetByCourseLearningOutcomeID(courseLearningOutcomeID string) ([]Assessment, error)
+	GetByCourseID(courseID string) ([]Assessment, error)
+	Create(assessment *Assessment) error
+	Update(assessment *Assessment) error
+	Delete(id string) error
+}

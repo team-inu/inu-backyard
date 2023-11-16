@@ -9,7 +9,7 @@ import (
 
 type programOutcomeController struct {
 	ProgramOutcomeUsecase entity.ProgramOutcomeUsecase
-	Validator             validator.Validator
+	Validator             validator.PayloadValidator
 }
 
 func NewProgramOutcomeController(programOutcomeUsecase entity.ProgramOutcomeUsecase) *programOutcomeController {
@@ -46,9 +46,9 @@ func (c programOutcomeController) Create(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	validationErrors := c.Validator.Struct(po)
-	if len(validationErrors) > 0 {
-		return ctx.JSON(validationErrors)
+	err, validationErrors := c.Validator.Validate(po, ctx)
+	if err != nil {
+		return ctx.Status(400).JSON(validationErrors)
 	}
 
 	createdClo, err := c.ProgramOutcomeUsecase.Create(po.Code, po.Name, po.Description)

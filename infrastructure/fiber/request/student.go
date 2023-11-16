@@ -1,6 +1,6 @@
 package request
 
-type CreateStudentRequestBody struct {
+type CreateStudentPayload struct {
 	Name      string  `json:"name" validate:"required"`
 	KmuttID   string  `json:"kmuttId" validate:"required"`
 	FirstName string  `json:"firstName" validate:"required"`
@@ -18,6 +18,12 @@ type CreateStudentRequestBody struct {
 	DepartmentName string `json:"departmentName" validate:"required"`
 }
 
-type CreateBulkStudentsRequestBody struct {
-	Students []CreateStudentRequestBody
+type GetStudentsByParamsPayload struct {
+	Year           string `json:"year"`
+	ProgrammeID    string `json:"programmeId"`
+	DepartmentName string `json:"departmentId"`
+}
+
+type CreateBulkStudentsPayload struct {
+	Students []CreateStudentPayload
 }

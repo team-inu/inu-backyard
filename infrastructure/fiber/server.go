@@ -134,8 +134,8 @@ func (f *fiberServer) initController() {
 		Logger: logger.NewZapLogger(),
 	}))
 
-	app.Get("/students", studentController.GetAll)
 	app.Get("/students/:studentId", studentController.GetByID)
+	app.Get("/students", studentController.GetStudents)
 	app.Post("/students", studentController.Create)
 	app.Post("/students/bulk", studentController.CreateMany)
 

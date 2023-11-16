@@ -12,12 +12,16 @@ func NewStudentUseCase(studentRepo entity.StudentRepository) entity.StudentUseCa
 	return &studentUseCase{studentRepo: studentRepo}
 }
 
+func (s studentUseCase) GetByID(id string) (*entity.Student, error) {
+	return s.studentRepo.GetByID(id)
+}
+
 func (s studentUseCase) GetAll() ([]entity.Student, error) {
 	return s.studentRepo.GetAll()
 }
 
-func (s studentUseCase) GetByID(id string) (*entity.Student, error) {
-	return s.studentRepo.GetByID(id)
+func (s studentUseCase) GetByParams(params *entity.Student, limit int, offset int) ([]entity.Student, error) {
+	return s.studentRepo.GetByParams(params, limit, offset)
 }
 
 func (s studentUseCase) Create(student *entity.Student) error {
@@ -40,10 +44,12 @@ func (s studentUseCase) CreateMany(students []entity.Student) error {
 	return nil
 }
 
-func (s studentUseCase) EnrollCourse(courseID string, studentID string) error {
-	return nil
-}
+func (s studentUseCase) Update(student *entity.Student) error {
+	err := s.studentRepo.Update(student)
 
-func (s studentUseCase) WithdrawCourse(courseID string, studentID string) error {
+	if err != nil {
+		return err
+	}
+
 	return nil
 }

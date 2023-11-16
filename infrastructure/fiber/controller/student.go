@@ -9,7 +9,7 @@ import (
 
 type studentController struct {
 	StudentUseCase entity.StudentUseCase
-	Validator      validator.Validator
+	Validator      validator.PayloadValidator
 }
 
 func NewStudentController(studentUseCase entity.StudentUseCase) *studentController {
@@ -36,16 +36,37 @@ func (c studentController) GetByID(ctx *fiber.Ctx) error {
 	return ctx.JSON(student)
 }
 
+func (c studentController) GetStudents(ctx *fiber.Ctx) error {
+	var payload request.GetStudentsByParamsPayload
+
+	err, validationErrors := c.Validator.Validate(&payload, ctx)
+	if err != nil {
+		return ctx.Status(400).JSON(validationErrors)
+	}
+
+	student, err := c.StudentUseCase.GetByParams(&entity.Student{
+		ProgrammeID:    payload.ProgrammeID,
+		DepartmentName: payload.DepartmentName,
+		Year:           payload.Year,
+	}, -1, -1)
+
+	if err != nil {
+		return err
+	}
+
+	return ctx.JSON(student)
+}
+
 func (c studentController) Create(ctx *fiber.Ctx) error {
-	var student request.CreateStudentRequestBody
+	var student request.CreateStudentPayload
 	err := ctx.BodyParser(&student)
 	if err != nil {
 		return err
 	}
 
-	validationErrors := c.Validator.Struct(student)
-	if len(validationErrors) > 0 {
-		return ctx.JSON(validationErrors)
+	err, validationErrors := c.Validator.Validate(student, ctx)
+	if err != nil {
+		return ctx.Status(400).JSON(validationErrors)
 	}
 
 	err = c.StudentUseCase.Create(&entity.Student{
@@ -72,15 +93,15 @@ func (c studentController) Create(ctx *fiber.Ctx) error {
 }
 
 func (c studentController) CreateMany(ctx *fiber.Ctx) error {
-	var body request.CreateBulkStudentsRequestBody
+	var body request.CreateBulkStudentsPayload
 	err := ctx.BodyParser(&body)
 	if err != nil {
 		return err
 	}
 
-	validationErrors := c.Validator.Struct(body)
-	if len(validationErrors) > 0 {
-		return ctx.JSON(validationErrors)
+	err, validationErrors := c.Validator.Validate(body, ctx)
+	if err != nil {
+		return ctx.Status(400).JSON(validationErrors)
 	}
 
 	newStudent := []entity.Student{}

@@ -11,7 +11,7 @@ import (
 
 type courseController struct {
 	CourseUsecase entity.CourseUsecase
-	Validator     validator.Validator
+	Validator     validator.PayloadValidator
 }
 
 func NewCourseController(courseUsecase entity.CourseUsecase) *courseController {
@@ -48,10 +48,11 @@ func (c courseController) Create(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	validationErrors := c.Validator.Struct(course)
-	if len(validationErrors) > 0 {
-		return ctx.JSON(validationErrors)
+	err, validationErrors := c.Validator.Validate(course, ctx)
+	if err != nil {
+		return ctx.Status(400).JSON(validationErrors)
 	}
+
 	fmt.Println(course)
 	createdCourse, err := c.CourseUsecase.Create(course.Name, course.Code, course.Year, course.LecturerID)
 	if err != nil {
