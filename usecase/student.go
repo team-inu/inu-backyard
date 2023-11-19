@@ -12,20 +12,20 @@ func NewStudentUseCase(studentRepo entity.StudentRepository) entity.StudentUseCa
 	return &studentUseCase{studentRepo: studentRepo}
 }
 
-func (s studentUseCase) GetByID(id string) (*entity.Student, error) {
-	return s.studentRepo.GetByID(id)
+func (u studentUseCase) GetByID(id string) (*entity.Student, error) {
+	return u.studentRepo.GetByID(id)
 }
 
-func (s studentUseCase) GetAll() ([]entity.Student, error) {
-	return s.studentRepo.GetAll()
+func (u studentUseCase) GetAll() ([]entity.Student, error) {
+	return u.studentRepo.GetAll()
 }
 
-func (s studentUseCase) GetByParams(params *entity.Student, limit int, offset int) ([]entity.Student, error) {
-	return s.studentRepo.GetByParams(params, limit, offset)
+func (u studentUseCase) GetByParams(params *entity.Student, limit int, offset int) ([]entity.Student, error) {
+	return u.studentRepo.GetByParams(params, limit, offset)
 }
 
-func (s studentUseCase) Create(student *entity.Student) error {
-	err := s.studentRepo.Create(student)
+func (u studentUseCase) Create(student *entity.Student) error {
+	err := u.studentRepo.Create(student)
 
 	if err != nil {
 		return err
@@ -34,8 +34,8 @@ func (s studentUseCase) Create(student *entity.Student) error {
 	return nil
 }
 
-func (s studentUseCase) CreateMany(students []entity.Student) error {
-	err := s.studentRepo.CreateMany(students)
+func (u studentUseCase) CreateMany(students []entity.Student) error {
+	err := u.studentRepo.CreateMany(students)
 
 	if err != nil {
 		return err
@@ -44,8 +44,8 @@ func (s studentUseCase) CreateMany(students []entity.Student) error {
 	return nil
 }
 
-func (s studentUseCase) Update(student *entity.Student) error {
-	err := s.studentRepo.Update(student)
+func (u studentUseCase) Update(student *entity.Student) error {
+	err := u.studentRepo.Update(student)
 
 	if err != nil {
 		return err
