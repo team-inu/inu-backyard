@@ -46,6 +46,10 @@ type fiberServer struct {
 	programOutcomeRepository entity.ProgramOutcomeRepository
 
 	programOutcomeUsecase entity.ProgramOutcomeUsecase
+
+	facultyRepository entity.FacultyRepository
+
+	facultyUsecase entity.FacultyUseCase
 }
 
 func NewFiberServer() *fiberServer {
@@ -91,6 +95,8 @@ func (f *fiberServer) initRepository() (err error) {
 
 	f.programOutcomeRepository = repository.NewProgramOutcomeRepositoryGorm(f.gorm)
 
+	f.facultyRepository = repository.NewFacultyRepositoryGorm(f.gorm)
+
 	return nil
 }
 
@@ -101,6 +107,7 @@ func (f *fiberServer) initUseCase() {
 	f.programLearningOutcomeUsecase = usecase.NewProgramLearningOutcomeUsecase(f.programLearningOutcomeRepository)
 	f.subProgramLearningOutcomeUsecase = usecase.NewSubProgramLearningOutcomeUsecase(f.subProgramLearningOutcomeRepository)
 	f.programOutcomeUsecase = usecase.NewProgramOutcomeUsecase(f.programOutcomeRepository)
+	f.facultyUsecase = usecase.NewFacultyUseCase(f.facultyRepository)
 
 }
 
@@ -120,6 +127,7 @@ func (f *fiberServer) initController() {
 	}))
 
 	studentController := controller.NewStudentController(f.studentUseCase)
+
 	courseController := controller.NewCourseController(f.courseUseCase)
 
 	courseLearningOutcomeController := controller.NewCourseLearningOutcomeController(f.courseLearningOutcomeUsecase)
@@ -129,6 +137,8 @@ func (f *fiberServer) initController() {
 	subProgramLearningOutcomeController := controller.NewSubProgramLearningOutcomeController(f.subProgramLearningOutcomeUsecase)
 
 	programOutcomeController := controller.NewProgramOutcomeController(f.programOutcomeUsecase)
+
+	facultyController := controller.NewFacultyController(f.facultyUsecase)
 
 	app.Use(fiberzap.New(fiberzap.Config{
 		Logger: logger.NewZapLogger(),
@@ -160,6 +170,12 @@ func (f *fiberServer) initController() {
 	app.Get("/pos", programOutcomeController.GetAll)
 	app.Get("/pos/:poId", programOutcomeController.GetByID)
 	app.Post("/pos", programOutcomeController.Create)
+
+	app.Get("/faculties", facultyController.GetAll)
+	app.Get("/faculties/:facultyID", facultyController.GetByID)
+	app.Post("/faculties", facultyController.Create)
+	app.Patch("/faculties", facultyController.Update)
+	app.Delete("/faculties", facultyController.Delete)
 
 	app.Get("/metrics", monitor.New())
 
