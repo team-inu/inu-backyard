@@ -6,7 +6,7 @@ type Faculty struct {
 
 type FacultyRepository interface {
 	GetAll() ([]Faculty, error)
-	GetByID(id string) (*Faculty, error)
+	GetByName(id string) (*Faculty, error)
 	Create(faculty *Faculty) error
 	Update(faculty *Faculty, newName string) error
 	Delete(name string) error
@@ -14,7 +14,7 @@ type FacultyRepository interface {
 
 type FacultyUseCase interface {
 	GetAll() ([]Faculty, error)
-	GetByID(id string) (*Faculty, error)
+	GetByName(name string) (*Faculty, error)
 	Create(faculty *Faculty) error
 	Update(faculty *Faculty, newName string) error
 	Delete(name string) error

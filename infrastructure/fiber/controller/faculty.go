@@ -31,7 +31,7 @@ func (c FacultyController) GetAll(ctx *fiber.Ctx) error {
 func (c FacultyController) GetByID(ctx *fiber.Ctx) error {
 	facultyID := ctx.Params("facultyID")
 
-	faculty, err := c.FacultyUseCase.GetByID(facultyID)
+	faculty, err := c.FacultyUseCase.GetByName(facultyID)
 
 	if err != nil {
 		return err
@@ -41,71 +41,53 @@ func (c FacultyController) GetByID(ctx *fiber.Ctx) error {
 }
 
 func (c FacultyController) Create(ctx *fiber.Ctx) error {
-	var faculty request.CreateFacultyRequestBody
-	err := ctx.BodyParser(&faculty)
+	var payload request.CreateFacultyRequestPayload
 
-	if err != nil {
+	if ok, err := c.Validator.Validate(&payload, ctx); !ok {
 		return err
 	}
 
-	err, validationErrors := c.Validator.Validate(&faculty, ctx)
-	if err != nil {
-		return ctx.Status(400).JSON(validationErrors)
-	}
-
-	err = c.FacultyUseCase.Create(&entity.Faculty{
-		Name: faculty.Name,
+	err := c.FacultyUseCase.Create(&entity.Faculty{
+		Name: payload.Name,
 	})
 
 	if err != nil {
 		return err
 	}
 
-	return ctx.JSON(faculty)
+	return ctx.JSON(payload)
 }
 
 func (c FacultyController) Update(ctx *fiber.Ctx) error {
-	var faculty request.UpdateFacultyRequestBody
-	err := ctx.BodyParser(&faculty)
+	var payload request.UpdateFacultyRequestPayload
+
+	if ok, err := c.Validator.Validate(&payload, ctx); !ok {
+		return err
+	}
+
+	err := c.FacultyUseCase.Update(&entity.Faculty{
+		Name: payload.Name,
+	}, payload.NewName)
 
 	if err != nil {
 		return err
 	}
 
-	err, validationErrors := c.Validator.Validate(&faculty, ctx)
-	if err != nil {
-		return ctx.Status(400).JSON(validationErrors)
-	}
-
-	err = c.FacultyUseCase.Update(&entity.Faculty{
-		Name: faculty.Name,
-	}, faculty.NewName)
-
-	if err != nil {
-		return err
-	}
-
-	return ctx.JSON(faculty)
+	return ctx.JSON(payload)
 }
 
 func (c FacultyController) Delete(ctx *fiber.Ctx) error {
-	var faculty request.DeleteFacultyRequestBody
+	var payload request.DeleteFacultyRequestPayload
 
-	err := ctx.BodyParser(&faculty)
-	if err != nil {
+	if ok, err := c.Validator.Validate(&payload, ctx); !ok {
 		return err
 	}
 
-	err, validationErrors := c.Validator.Validate(&faculty, ctx)
-	if err != nil {
-		return ctx.Status(400).JSON(validationErrors)
-	}
-
-	err = c.FacultyUseCase.Delete(faculty.Name)
+	err := c.FacultyUseCase.Delete(payload.Name)
 
 	if err != nil {
 		return err
 	}
 
-	return ctx.JSON(faculty.Name)
+	return ctx.JSON(payload.Name)
 }

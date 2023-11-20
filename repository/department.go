@@ -1,6 +1,8 @@
 package repository
 
 import (
+	"fmt"
+
 	"github.com/team-inu/inu-backyard/entity"
 	"gorm.io/gorm"
 )
@@ -14,29 +16,41 @@ func NewDepartmentRepositoryGorm(gorm *gorm.DB) entity.DepartmentRepository {
 }
 
 func (r DepartmentRepositoryGorm) Create(department *entity.Department) error {
-	return r.gorm.Create(&department).Error
+	err := r.gorm.Create(&department).Error
+	if err != nil {
+		return fmt.Errorf("cannot create department: %w", err)
+	}
+
+	return nil
 }
 
 func (r DepartmentRepositoryGorm) Delete(name string) error {
-	return r.gorm.Where("name = ?", name).Delete(&entity.Department{}).Error
+	err := r.gorm.Where("name = ?", name).Delete(&entity.Department{}).Error
+	if err != nil {
+		return fmt.Errorf("cannot delete department by name: %w", err)
+	}
+
+	return nil
 }
 
 func (r DepartmentRepositoryGorm) GetAll() ([]entity.Department, error) {
 	var departments []entity.Department
 	err := r.gorm.Find(&departments).Error
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("cannot query to get department by name: %w", err)
 	}
 
 	return departments, nil
 }
 
-func (r *DepartmentRepositoryGorm) GetByID(id string) (*entity.Department, error) {
+func (r *DepartmentRepositoryGorm) GetByName(name string) (*entity.Department, error) {
 	var department *entity.Department
 
-	err := r.gorm.Where("id = ?", id).First(&department).Error
-	if err != nil {
-		return nil, err
+	err := r.gorm.Where("name = ?", name).First(&department).Error
+	if err == gorm.ErrRecordNotFound {
+		return nil, nil
+	} else if err != nil {
+		return nil, fmt.Errorf("cannot query to get department by name: %w", err)
 	}
 
 	return department, nil
@@ -47,13 +61,13 @@ func (r *DepartmentRepositoryGorm) Update(department *entity.Department, newName
 	var oldDepartment *entity.Department
 	err := r.gorm.Where("name = ?", department.Name).First(&oldDepartment).Error
 	if err != nil {
-		return err
+		return fmt.Errorf("cannot get department while updating department: %w", err)
 	}
 
 	//update old department with new name
 	err = r.gorm.Model(&oldDepartment).Updates(&entity.Department{Name: newName}).Error
 	if err != nil {
-		return err
+		return fmt.Errorf("cannot update department by name: %w", err)
 	}
 
 	return nil

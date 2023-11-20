@@ -49,4 +49,16 @@ const (
 	ErrUpdateSubPLO   = 20602
 	ErrDeleteSubPLO   = 20603
 	ErrQuerySubPLO    = 20604
+
+	ErrFacultyNotFound = 20700
+	ErrCreateFaculty   = 20701
+	ErrUpdateFaculty   = 20702
+	ErrDeleteFaculty   = 20703
+	ErrQueryFaculty    = 20704
+
+	ErrDepartmentNotFound = 20800
+	ErrCreateDepartment   = 20801
+	ErrUpdateDepartment   = 20802
+	ErrDeleteDepartment   = 20803
+	ErrQueryDepartment    = 20804
 )

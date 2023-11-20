@@ -1,16 +1,16 @@
 package request
 
-type CreateDepartmentRequestBody struct {
+type CreateDepartmentRequestPayload struct {
 	Name        string `json:"name" validate:"required"`
 	FacultyName string `json:"faculty_name" validate:"required"`
 }
 
-type UpdateDepartmentRequestBody struct {
+type UpdateDepartmentRequestPayload struct {
 	Name        string `json:"name" validate:"required"`
 	NewName     string `json:"new_name" validate:"required"`
 	FacultyName string `json:"faculty_name" validate:"required"`
 }
 
-type DeleteDepartmentRequestBody struct {
+type DeleteDepartmentRequestPayload struct {
 	Name string `json:"name" validate:"required"`
 }

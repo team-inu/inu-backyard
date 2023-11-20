@@ -20,21 +20,15 @@ func NewDepartmentController(departmentUseCase entity.DepartmentUseCase) *Depart
 }
 
 func (c DepartmentController) Create(ctx *fiber.Ctx) error {
-	var department request.CreateDepartmentRequestBody
+	var payload request.CreateDepartmentRequestPayload
 
-	err := ctx.BodyParser(&department)
-	if err != nil {
+	if ok, err := c.validator.Validate(&payload, ctx); !ok {
 		return err
 	}
 
-	err, validationErrors := c.validator.Validate(&department, ctx)
-	if err != nil {
-		return ctx.Status(400).JSON(validationErrors)
-	}
-
-	err = c.departmentUseCase.Create(&entity.Department{
-		Name:        department.Name,
-		FacultyName: department.FacultyName,
+	err := c.departmentUseCase.Create(&entity.Department{
+		Name:        payload.Name,
+		FacultyName: payload.FacultyName,
 	})
 
 	if err != nil {
@@ -48,21 +42,13 @@ func (c DepartmentController) Create(ctx *fiber.Ctx) error {
 }
 
 func (c DepartmentController) Delete(ctx *fiber.Ctx) error {
-	var departmentName request.DeleteDepartmentRequestBody
+	var payload request.DeleteDepartmentRequestPayload
 
-	err := ctx.BodyParser(&departmentName)
-	if err != nil {
+	if ok, err := c.validator.Validate(&payload, ctx); !ok {
 		return err
 	}
 
-	err, validationErrors := c.validator.Validate(&departmentName, ctx)
-
-	if err != nil {
-		return ctx.Status(400).JSON(validationErrors)
-	}
-
-	err = c.departmentUseCase.Delete(departmentName.Name)
-
+	err := c.departmentUseCase.Delete(payload.Name)
 	if err != nil {
 		return err
 	}
@@ -89,7 +75,7 @@ func (c DepartmentController) GetAll(ctx *fiber.Ctx) error {
 func (c DepartmentController) GetByName(ctx *fiber.Ctx) error {
 	departmentID := ctx.Params("departmentID")
 
-	department, err := c.departmentUseCase.GetByID(departmentID)
+	department, err := c.departmentUseCase.GetByName(departmentID)
 
 	if err != nil {
 		return err
@@ -103,22 +89,16 @@ func (c DepartmentController) GetByName(ctx *fiber.Ctx) error {
 }
 
 func (c DepartmentController) Update(ctx *fiber.Ctx) error {
-	var department request.UpdateDepartmentRequestBody
+	var payload request.UpdateDepartmentRequestPayload
 
-	err := ctx.BodyParser(&department)
-	if err != nil {
+	if ok, err := c.validator.Validate(&payload, ctx); !ok {
 		return err
 	}
 
-	err, validationErrors := c.validator.Validate(&department, ctx)
-	if err != nil {
-		return ctx.Status(400).JSON(validationErrors)
-	}
-
-	err = c.departmentUseCase.Update(&entity.Department{
-		Name:        department.Name,
-		FacultyName: department.FacultyName,
-	}, department.NewName)
+	err := c.departmentUseCase.Update(&entity.Department{
+		Name:        payload.Name,
+		FacultyName: payload.FacultyName,
+	}, payload.NewName)
 
 	if err != nil {
 		return err

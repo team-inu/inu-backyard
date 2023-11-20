@@ -51,11 +51,7 @@ func (c courseLearningOutcomeController) GetByCourseID(ctx *fiber.Ctx) error {
 }
 
 func (c courseLearningOutcomeController) Create(ctx *fiber.Ctx) error {
-	var payload request.CreateCourseLearningOutcomeBody
-	err := ctx.BodyParser(&payload)
-	if err != nil {
-		return err
-	}
+	var payload request.CreateCourseLearningOutcomePayload
 
 	if ok, err := c.Validator.Validate(&payload, ctx); !ok {
 		return err

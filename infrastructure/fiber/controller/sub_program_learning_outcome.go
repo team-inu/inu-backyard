@@ -40,11 +40,7 @@ func (c subProgramLearningOutcomeController) GetByID(ctx *fiber.Ctx) error {
 }
 
 func (c subProgramLearningOutcomeController) Create(ctx *fiber.Ctx) error {
-	var payload request.CreateSubProgramLearningOutcomeBody
-	err := ctx.BodyParser(&payload)
-	if err != nil {
-		return err
-	}
+	var payload request.CreateSubProgramLearningOutcomePayload
 
 	if ok, err := c.Validator.Validate(&payload, ctx); !ok {
 		return err
