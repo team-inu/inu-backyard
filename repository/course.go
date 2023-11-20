@@ -1,6 +1,8 @@
 package repository
 
 import (
+	"fmt"
+
 	"github.com/team-inu/inu-backyard/entity"
 	"gorm.io/gorm"
 )
@@ -16,8 +18,11 @@ func NewCourseRepositoryGorm(gorm *gorm.DB) entity.CourseRepository {
 func (r courseRepositoryGorm) GetAll() ([]entity.Course, error) {
 	var courses []entity.Course
 	err := r.gorm.Find(&courses).Error
-	if err != nil {
-		return nil, err
+
+	if err == gorm.ErrRecordNotFound {
+		return nil, nil
+	} else if err != nil {
+		return nil, fmt.Errorf("cannot query to get courses: %w", err)
 	}
 
 	return courses, nil
@@ -26,8 +31,11 @@ func (r courseRepositoryGorm) GetAll() ([]entity.Course, error) {
 func (r courseRepositoryGorm) GetByID(id string) (*entity.Course, error) {
 	var course entity.Course
 	err := r.gorm.Where("id = ?", id).First(&course).Error
-	if err != nil {
-		return nil, err
+
+	if err == gorm.ErrRecordNotFound {
+		return nil, nil
+	} else if err != nil {
+		return nil, fmt.Errorf("cannot query to get course by id: %w", err)
 	}
 
 	return &course, nil
