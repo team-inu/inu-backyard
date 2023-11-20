@@ -62,16 +62,12 @@ func (c studentController) GetStudents(ctx *fiber.Ctx) error {
 
 func (c studentController) Create(ctx *fiber.Ctx) error {
 	var payload request.CreateStudentPayload
-	err := ctx.BodyParser(&payload)
-	if err != nil {
-		return err
-	}
 
 	if ok, err := c.Validator.Validate(&payload, ctx); !ok {
 		return err
 	}
 
-	err = c.StudentUseCase.Create(&entity.Student{
+	err := c.StudentUseCase.Create(&entity.Student{
 		ID:             payload.KmuttID,
 		Name:           payload.Name,
 		FirstName:      payload.FirstName,
@@ -96,10 +92,6 @@ func (c studentController) Create(ctx *fiber.Ctx) error {
 
 func (c studentController) CreateMany(ctx *fiber.Ctx) error {
 	var payload request.CreateBulkStudentsPayload
-	err := ctx.BodyParser(&payload)
-	if err != nil {
-		return err
-	}
 
 	if ok, err := c.Validator.Validate(&payload, ctx); !ok {
 		return err
@@ -126,7 +118,7 @@ func (c studentController) CreateMany(ctx *fiber.Ctx) error {
 		})
 	}
 
-	err = c.StudentUseCase.CreateMany(newStudent)
+	err := c.StudentUseCase.CreateMany(newStudent)
 	if err != nil {
 		return err
 	}
