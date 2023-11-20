@@ -3,6 +3,7 @@ package usecase
 import (
 	"github.com/oklog/ulid/v2"
 	"github.com/team-inu/inu-backyard/entity"
+	errs "github.com/team-inu/inu-backyard/entity/error"
 )
 
 type courseLearningOutcomeUsecase struct {
@@ -14,15 +15,30 @@ func NewCourseLearningOutcomeUsecase(courseLearningOutcomeRepo entity.CourseLear
 }
 
 func (c courseLearningOutcomeUsecase) GetAll() ([]entity.CourseLearningOutcome, error) {
-	return c.courseLearningOutcomeRepo.GetAll()
+	clos, err := c.courseLearningOutcomeRepo.GetAll()
+	if err != nil {
+		return nil, errs.New(errs.ErrQueryCLO, "cannot get all CLOs", err)
+	}
+
+	return clos, nil
 }
 
 func (c courseLearningOutcomeUsecase) GetByID(id string) (*entity.CourseLearningOutcome, error) {
-	return c.courseLearningOutcomeRepo.GetByID(id)
+	clo, err := c.courseLearningOutcomeRepo.GetByID(id)
+	if err != nil {
+		return nil, errs.New(errs.ErrQueryCLO, "cannot get CLO by id %s", id, err)
+	}
+
+	return clo, nil
 }
 
 func (c courseLearningOutcomeUsecase) GetByCourseID(courseId string) ([]entity.CourseLearningOutcome, error) {
-	return c.courseLearningOutcomeRepo.GetByCourseID(courseId)
+	clo, err := c.courseLearningOutcomeRepo.GetByCourseID(courseId)
+	if err != nil {
+		return nil, errs.New(errs.ErrQueryCLO, "cannot get CLO by course id %s", courseId, err)
+	}
+
+	return clo, nil
 }
 
 func (c courseLearningOutcomeUsecase) Create(code string, description string, weight int, subProgramLearningOutcomeId string, programOutcomeId string, courseId string, status string) (*entity.CourseLearningOutcome, error) {
@@ -40,12 +56,17 @@ func (c courseLearningOutcomeUsecase) Create(code string, description string, we
 	err := c.courseLearningOutcomeRepo.Create(&clo)
 
 	if err != nil {
-		return nil, err
+		return nil, errs.New(errs.ErrCreateCLO, "cannot create CLO", err)
 	}
 
 	return &clo, nil
 }
 
 func (c courseLearningOutcomeUsecase) Delete(id string) error {
-	return c.courseLearningOutcomeRepo.Delete(id)
+	err := c.courseLearningOutcomeRepo.Delete(id)
+	if err != nil {
+		return errs.New(errs.ErrDeleteCLO, "cannot delete CLO", err)
+	}
+
+	return nil
 }
