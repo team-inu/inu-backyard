@@ -1,14 +1,14 @@
 package request
 
-type CreateFacultyRequestBody struct {
+type CreateFacultyRequestPayload struct {
 	Name string `json:"name" validate:"required"`
 }
 
-type UpdateFacultyRequestBody struct {
+type UpdateFacultyRequestPayload struct {
 	Name    string `json:"name" validate:"required"`
 	NewName string `json:"newName" validate:"required"`
 }
 
-type DeleteFacultyRequestBody struct {
+type DeleteFacultyRequestPayload struct {
 	Name string `json:"name" validate:"required"`
 }

@@ -41,7 +41,7 @@ func (c FacultyController) GetByID(ctx *fiber.Ctx) error {
 }
 
 func (c FacultyController) Create(ctx *fiber.Ctx) error {
-	var payload request.CreateFacultyRequestBody
+	var payload request.CreateFacultyRequestPayload
 
 	if ok, err := c.Validator.Validate(&payload, ctx); !ok {
 		return err
@@ -59,7 +59,7 @@ func (c FacultyController) Create(ctx *fiber.Ctx) error {
 }
 
 func (c FacultyController) Update(ctx *fiber.Ctx) error {
-	var payload request.UpdateFacultyRequestBody
+	var payload request.UpdateFacultyRequestPayload
 
 	if ok, err := c.Validator.Validate(&payload, ctx); !ok {
 		return err
@@ -77,7 +77,7 @@ func (c FacultyController) Update(ctx *fiber.Ctx) error {
 }
 
 func (c FacultyController) Delete(ctx *fiber.Ctx) error {
-	var payload request.DeleteFacultyRequestBody
+	var payload request.DeleteFacultyRequestPayload
 
 	if ok, err := c.Validator.Validate(&payload, ctx); !ok {
 		return err

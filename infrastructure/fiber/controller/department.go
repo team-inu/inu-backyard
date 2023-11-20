@@ -20,7 +20,7 @@ func NewDepartmentController(departmentUseCase entity.DepartmentUseCase) *Depart
 }
 
 func (c DepartmentController) Create(ctx *fiber.Ctx) error {
-	var payload request.CreateDepartmentRequestBody
+	var payload request.CreateDepartmentRequestPayload
 
 	if ok, err := c.validator.Validate(&payload, ctx); !ok {
 		return err
@@ -42,7 +42,7 @@ func (c DepartmentController) Create(ctx *fiber.Ctx) error {
 }
 
 func (c DepartmentController) Delete(ctx *fiber.Ctx) error {
-	var payload request.DeleteDepartmentRequestBody
+	var payload request.DeleteDepartmentRequestPayload
 
 	if ok, err := c.validator.Validate(&payload, ctx); !ok {
 		return err
@@ -89,7 +89,7 @@ func (c DepartmentController) GetByName(ctx *fiber.Ctx) error {
 }
 
 func (c DepartmentController) Update(ctx *fiber.Ctx) error {
-	var payload request.UpdateDepartmentRequestBody
+	var payload request.UpdateDepartmentRequestPayload
 
 	if ok, err := c.validator.Validate(&payload, ctx); !ok {
 		return err

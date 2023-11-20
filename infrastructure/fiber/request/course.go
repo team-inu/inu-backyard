@@ -1,6 +1,6 @@
 package request
 
-type CreateCourseRequestBody struct {
+type CreateCourseRequestPayload struct {
 	Name       string `json:"name" validate:"required"`
 	Code       string `json:"code" validate:"required"`
 	Year       int    `json:"year" validate:"required"`

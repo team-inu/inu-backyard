@@ -40,7 +40,7 @@ func (c programOutcomeController) GetByID(ctx *fiber.Ctx) error {
 }
 
 func (c programOutcomeController) Create(ctx *fiber.Ctx) error {
-	var payload request.CreateProgramOutcomeBody
+	var payload request.CreateProgramOutcomePayload
 	err := ctx.BodyParser(&payload)
 	if err != nil {
 		return err
