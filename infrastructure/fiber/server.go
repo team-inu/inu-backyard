@@ -106,7 +106,8 @@ func (f *fiberServer) initUseCase() {
 
 func (f *fiberServer) initController() {
 	fiberConfig := fiber.Config{
-		AppName: "inu-backyard",
+		AppName:      "inu-backyard",
+		ErrorHandler: errorHandler(logger.NewZapLogger()),
 		// EnablePrintRoutes: true,
 	}
 
