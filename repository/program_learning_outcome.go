@@ -1,6 +1,8 @@
 package repository
 
 import (
+	"fmt"
+
 	"github.com/team-inu/inu-backyard/entity"
 	"gorm.io/gorm"
 )
@@ -16,8 +18,11 @@ func NewProgramLearningOutcomeRepositoryGorm(gorm *gorm.DB) entity.ProgramLearni
 func (r programLearningOutcomeRepositoryGorm) GetAll() ([]entity.ProgramLearningOutcome, error) {
 	var plos []entity.ProgramLearningOutcome
 	err := r.gorm.Find(&plos).Error
-	if err != nil {
-		return nil, err
+
+	if err == gorm.ErrRecordNotFound {
+		return nil, nil
+	} else if err != nil {
+		return nil, fmt.Errorf("cannot query to get PLOs: %w", err)
 	}
 
 	return plos, err
@@ -26,8 +31,11 @@ func (r programLearningOutcomeRepositoryGorm) GetAll() ([]entity.ProgramLearning
 func (r programLearningOutcomeRepositoryGorm) GetByID(id string) (*entity.ProgramLearningOutcome, error) {
 	var plo entity.ProgramLearningOutcome
 	err := r.gorm.Where("id = ?", id).First(&plo).Error
-	if err != nil {
-		return nil, err
+
+	if err == gorm.ErrRecordNotFound {
+		return nil, nil
+	} else if err != nil {
+		return nil, fmt.Errorf("cannot query to get PLO by id: %w", err)
 	}
 
 	return &plo, nil
