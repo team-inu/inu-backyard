@@ -55,4 +55,10 @@ const (
 	ErrUpdateFaculty   = 20702
 	ErrDeleteFaculty   = 20703
 	ErrQueryFaculty    = 20704
+
+	ErrDepartmentNotFound = 20800
+	ErrCreateDepartment   = 20801
+	ErrUpdateDepartment   = 20802
+	ErrDeleteDepartment   = 20803
+	ErrQueryDepartment    = 20804
 )

@@ -9,7 +9,7 @@ type Department struct {
 
 type DepartmentRepository interface {
 	GetAll() ([]Department, error)
-	GetByID(id string) (*Department, error)
+	GetByName(id string) (*Department, error)
 	Create(department *Department) error
 	Update(department *Department, newName string) error
 	Delete(name string) error
@@ -17,7 +17,7 @@ type DepartmentRepository interface {
 
 type DepartmentUseCase interface {
 	GetAll() ([]Department, error)
-	GetByID(id string) (*Department, error)
+	GetByName(name string) (*Department, error)
 	Create(department *Department) error
 	Update(department *Department, newName string) error
 	Delete(id string) error
