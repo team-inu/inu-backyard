@@ -40,18 +40,17 @@ func (c subProgramLearningOutcomeController) GetByID(ctx *fiber.Ctx) error {
 }
 
 func (c subProgramLearningOutcomeController) Create(ctx *fiber.Ctx) error {
-	var splo request.CreateSubProgramLearningOutcomeBody
-	err := ctx.BodyParser(&splo)
+	var payload request.CreateSubProgramLearningOutcomeBody
+	err := ctx.BodyParser(&payload)
 	if err != nil {
 		return err
 	}
 
-	err, validationErrors := c.Validator.Validate(splo, ctx)
-	if err != nil {
-		return ctx.Status(400).JSON(validationErrors)
+	if ok, err := c.Validator.Validate(&payload, ctx); !ok {
+		return err
 	}
 
-	createdClo, err := c.SubProgramLearningOutcomeUsecase.Create(splo.Code, splo.DescriptionThai, splo.DescriptionEng, splo.ProgramLearningOutcomeID)
+	createdClo, err := c.SubProgramLearningOutcomeUsecase.Create(payload.Code, payload.DescriptionThai, payload.DescriptionEng, payload.ProgramLearningOutcomeID)
 	if err != nil {
 		return err
 	}

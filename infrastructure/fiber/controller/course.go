@@ -1,8 +1,6 @@
 package controller
 
 import (
-	"fmt"
-
 	"github.com/gofiber/fiber/v2"
 	"github.com/team-inu/inu-backyard/entity"
 	"github.com/team-inu/inu-backyard/infrastructure/fiber/request"
@@ -42,19 +40,17 @@ func (c courseController) GetByID(ctx *fiber.Ctx) error {
 }
 
 func (c courseController) Create(ctx *fiber.Ctx) error {
-	var course request.CreateCourseRequestBody
-	err := ctx.BodyParser(&course)
+	var payload request.CreateCourseRequestBody
+	err := ctx.BodyParser(&payload)
 	if err != nil {
 		return err
 	}
 
-	err, validationErrors := c.Validator.Validate(course, ctx)
-	if err != nil {
-		return ctx.Status(400).JSON(validationErrors)
+	if ok, err := c.Validator.Validate(&payload, ctx); !ok {
+		return err
 	}
 
-	fmt.Println(course)
-	createdCourse, err := c.CourseUsecase.Create(course.Name, course.Code, course.Year, course.LecturerID)
+	createdCourse, err := c.CourseUsecase.Create(payload.Name, payload.Code, payload.Year, payload.LecturerID)
 	if err != nil {
 		return err
 	}

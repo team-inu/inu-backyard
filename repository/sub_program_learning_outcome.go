@@ -1,6 +1,8 @@
 package repository
 
 import (
+	"fmt"
+
 	"github.com/team-inu/inu-backyard/entity"
 	"gorm.io/gorm"
 )
@@ -16,8 +18,11 @@ func NewSubProgramLearningOutcomeRepositoryGorm(gorm *gorm.DB) entity.SubProgram
 func (r subProgramLearningOutcomeRepositoryGorm) GetAll() ([]entity.SubProgramLearningOutcome, error) {
 	var splos []entity.SubProgramLearningOutcome
 	err := r.gorm.Preload("ProgramLearningOutcome").Find(&splos).Error
-	if err != nil {
-		return nil, err
+
+	if err == gorm.ErrRecordNotFound {
+		return nil, nil
+	} else if err != nil {
+		return nil, fmt.Errorf("cannot query to get subPLOs: %w", err)
 	}
 
 	return splos, err
@@ -26,8 +31,11 @@ func (r subProgramLearningOutcomeRepositoryGorm) GetAll() ([]entity.SubProgramLe
 func (r subProgramLearningOutcomeRepositoryGorm) GetByID(id string) (*entity.SubProgramLearningOutcome, error) {
 	var splo entity.SubProgramLearningOutcome
 	err := r.gorm.Preload("ProgramLearningOutcome").Where("id = ?", id).First(&splo).Error
-	if err != nil {
-		return nil, err
+
+	if err == gorm.ErrRecordNotFound {
+		return nil, nil
+	} else if err != nil {
+		return nil, fmt.Errorf("cannot query to get subPLO by id: %w", err)
 	}
 
 	return &splo, nil
