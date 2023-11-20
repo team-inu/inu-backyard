@@ -1,6 +1,8 @@
 package repository
 
 import (
+	"fmt"
+
 	"github.com/team-inu/inu-backyard/entity"
 	"gorm.io/gorm"
 )
@@ -16,8 +18,11 @@ func NewCourseLearningOutcomeRepositoryGorm(gorm *gorm.DB) entity.CourseLearning
 func (r courseLearningOutcomeRepositoryGorm) GetAll() ([]entity.CourseLearningOutcome, error) {
 	var clos []entity.CourseLearningOutcome
 	err := r.gorm.Preload("SubProgramLearningOutcome").Preload("SubProgramLearningOutcome.ProgramLearningOutcome").Preload("ProgramOutcome").Find(&clos).Error
-	if err != nil {
-		return nil, err
+
+	if err == gorm.ErrRecordNotFound {
+		return nil, nil
+	} else if err != nil {
+		return nil, fmt.Errorf("cannot query to get CLOs: %w", err)
 	}
 
 	return clos, err
@@ -26,8 +31,11 @@ func (r courseLearningOutcomeRepositoryGorm) GetAll() ([]entity.CourseLearningOu
 func (r courseLearningOutcomeRepositoryGorm) GetByID(id string) (*entity.CourseLearningOutcome, error) {
 	var clo entity.CourseLearningOutcome
 	err := r.gorm.Preload("SubProgramLearningOutcome").Preload("SubProgramLearningOutcome.ProgramLearningOutcome").Preload("ProgramOutcome").Where("id = ?", id).First(&clo).Error
-	if err != nil {
-		return nil, err
+
+	if err == gorm.ErrRecordNotFound {
+		return nil, nil
+	} else if err != nil {
+		return nil, fmt.Errorf("cannot query to get CLO by id: %w", err)
 	}
 
 	return &clo, nil
@@ -36,8 +44,11 @@ func (r courseLearningOutcomeRepositoryGorm) GetByID(id string) (*entity.CourseL
 func (r courseLearningOutcomeRepositoryGorm) GetByCourseID(courseId string) ([]entity.CourseLearningOutcome, error) {
 	var clos []entity.CourseLearningOutcome
 	err := r.gorm.Where("course_id = ?", courseId).Find(&clos).Error
-	if err != nil {
-		return nil, err
+
+	if err == gorm.ErrRecordNotFound {
+		return nil, nil
+	} else if err != nil {
+		return nil, fmt.Errorf("cannot query to get CLO by course id: %w", err)
 	}
 
 	return clos, nil

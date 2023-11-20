@@ -6,15 +6,11 @@ import (
 
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
+	errs "github.com/team-inu/inu-backyard/entity/error"
 )
 
-type ValidationErrorDetail struct {
-	Field string `json:"field"`
-	Type  string `json:"type"`
-}
-
 type PayloadValidator interface {
-	Validate(payload interface{}, ctx *fiber.Ctx) (error, []ValidationErrorDetail)
+	Validate(payload interface{}, ctx *fiber.Ctx) (bool, error)
 }
 
 type payloadValidator struct {
@@ -27,34 +23,34 @@ func NewPayloadValidator() PayloadValidator {
 	}
 }
 
-func (v *payloadValidator) Validate(payload interface{}, ctx *fiber.Ctx) (error, []ValidationErrorDetail) {
+func (v *payloadValidator) Validate(payload interface{}, ctx *fiber.Ctx) (bool, error) {
 	if len(ctx.Body()) != 0 {
 		if err := ctx.BodyParser(payload); err != nil {
-			return errors.New("BodyParser payload is invalid"), nil
+			return false, errs.New(errs.ErrBodyParser, err.Error())
 		}
 	}
 	if err := ctx.ParamsParser(payload); err != nil {
-		return errors.New("ParamsParser payload is invalid"), nil
+		return false, errs.New(errs.ErrParamsParser, err.Error())
 	}
 	if err := ctx.QueryParser(payload); err != nil {
-		return errors.New("QueryParser payload is invalid"), nil
+		return false, errs.New(errs.ErrQueryParser, err.Error())
 	}
 	if err := fileParser(payload, ctx); err != nil {
-		return errors.New("fileParser payload is invalid"), nil
+		return false, errs.New(errs.ErrBodyParser, err.Error())
 	}
 
-	if err := v.validateStruct(payload); err != nil {
-		return errors.New("payload validation error"), err
+	if errors := v.validateStruct(payload); errors != nil {
+		return false, errs.NewValidationErr(errs.ErrPayloadValidator, "payload is invalid", errors)
 	}
-	return nil, nil
+	return true, nil
 }
 
-func (v *payloadValidator) validateStruct(payload interface{}) []ValidationErrorDetail {
-	var errDetails []ValidationErrorDetail
+func (v *payloadValidator) validateStruct(payload interface{}) []errs.ValidationErrorDetail {
+	var errDetails []errs.ValidationErrorDetail
 
 	if errors := v.validator.Struct(payload); errors != nil {
 		for _, err := range errors.(validator.ValidationErrors) {
-			detail := &ValidationErrorDetail{
+			detail := &errs.ValidationErrorDetail{
 				Field: err.Field(),
 				Type:  err.Tag(),
 			}

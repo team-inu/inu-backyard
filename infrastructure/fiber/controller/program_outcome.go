@@ -40,18 +40,17 @@ func (c programOutcomeController) GetByID(ctx *fiber.Ctx) error {
 }
 
 func (c programOutcomeController) Create(ctx *fiber.Ctx) error {
-	var po request.CreateProgramOutcomeBody
-	err := ctx.BodyParser(&po)
+	var payload request.CreateProgramOutcomeBody
+	err := ctx.BodyParser(&payload)
 	if err != nil {
 		return err
 	}
 
-	err, validationErrors := c.Validator.Validate(po, ctx)
-	if err != nil {
-		return ctx.Status(400).JSON(validationErrors)
+	if ok, err := c.Validator.Validate(&payload, ctx); !ok {
+		return err
 	}
 
-	createdClo, err := c.ProgramOutcomeUsecase.Create(po.Code, po.Name, po.Description)
+	createdClo, err := c.ProgramOutcomeUsecase.Create(payload.Code, payload.Name, payload.Description)
 	if err != nil {
 		return err
 	}
