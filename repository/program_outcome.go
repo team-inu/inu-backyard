@@ -1,6 +1,8 @@
 package repository
 
 import (
+	"fmt"
+
 	"github.com/team-inu/inu-backyard/entity"
 	"gorm.io/gorm"
 )
@@ -16,8 +18,11 @@ func NewProgramOutcomeRepositoryGorm(gorm *gorm.DB) entity.ProgramOutcomeReposit
 func (r programOutcomeRepositoryGorm) GetAll() ([]entity.ProgramOutcome, error) {
 	var pos []entity.ProgramOutcome
 	err := r.gorm.Find(&pos).Error
-	if err != nil {
-		return nil, err
+
+	if err == gorm.ErrRecordNotFound {
+		return nil, nil
+	} else if err != nil {
+		return nil, fmt.Errorf("cannot query to get POs: %w", err)
 	}
 
 	return pos, err
@@ -26,8 +31,11 @@ func (r programOutcomeRepositoryGorm) GetAll() ([]entity.ProgramOutcome, error) 
 func (r programOutcomeRepositoryGorm) GetByID(id string) (*entity.ProgramOutcome, error) {
 	var po entity.ProgramOutcome
 	err := r.gorm.Where("id = ?", id).First(&po).Error
-	if err != nil {
-		return nil, err
+
+	if err == gorm.ErrRecordNotFound {
+		return nil, nil
+	} else if err != nil {
+		return nil, fmt.Errorf("cannot query to get PO by id: %w", err)
 	}
 
 	return &po, nil
