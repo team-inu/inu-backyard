@@ -11,15 +11,14 @@ type DepartmentRepository interface {
 	GetAll() ([]Department, error)
 	GetByID(id string) (*Department, error)
 	Create(department *Department) error
-	Update(department *Department) error
-	Delete(id string) error
+	Update(department *Department, newName string) error
+	Delete(name string) error
 }
 
 type DepartmentUseCase interface {
 	GetAll() ([]Department, error)
 	GetByID(id string) (*Department, error)
-	Create(name string, facultyName string) (*Department, error)
-	Update(department *Department) error
+	Create(department *Department) error
+	Update(department *Department, newName string) error
 	Delete(id string) error
-	ChangeFacultyName(departmentName string, facultyName string) error
 }
