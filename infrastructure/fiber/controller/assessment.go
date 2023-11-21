@@ -67,16 +67,12 @@ func (c assessmentController) GetAssessmentsByCourseID(ctx *fiber.Ctx) error {
 
 func (c assessmentController) Create(ctx *fiber.Ctx) error {
 	var payload request.CreateAssessmentPayload
-	err := ctx.BodyParser(&payload)
-	if err != nil {
-		return err
-	}
 
 	if ok, err := c.Validator.Validate(&payload, ctx); !ok {
 		return err
 	}
 
-	err = c.AssessmentUseCase.Create(&entity.Assessment{
+	err := c.AssessmentUseCase.Create(&entity.Assessment{
 		Name:                    payload.Name,
 		Description:             payload.Description,
 		Score:                   *payload.Score,
@@ -92,11 +88,6 @@ func (c assessmentController) Create(ctx *fiber.Ctx) error {
 
 func (c assessmentController) CreateMany(ctx *fiber.Ctx) error {
 	var payload request.CreateBulkAssessmentsPayload
-	err := ctx.BodyParser(&payload)
-
-	if err != nil {
-		return err
-	}
 
 	if ok, err := c.Validator.Validate(&payload, ctx); !ok {
 		return err
@@ -114,7 +105,7 @@ func (c assessmentController) CreateMany(ctx *fiber.Ctx) error {
 		})
 	}
 
-	err = c.AssessmentUseCase.CreateMany(newAssessments)
+	err := c.AssessmentUseCase.CreateMany(newAssessments)
 	if err != nil {
 		return err
 	}
