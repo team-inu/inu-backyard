@@ -59,14 +59,22 @@ func (c FacultyController) Create(ctx *fiber.Ctx) error {
 }
 
 func (c FacultyController) Update(ctx *fiber.Ctx) error {
+	facultyName := ctx.Params("facultyName")
+
+	_, err := c.FacultyUseCase.GetByName(facultyName)
+
+	if err != nil {
+		return err
+	}
+
 	var payload request.UpdateFacultyRequestPayload
 
 	if ok, err := c.Validator.Validate(&payload, ctx); !ok {
 		return err
 	}
 
-	err := c.FacultyUseCase.Update(&entity.Faculty{
-		Name: payload.Name,
+	err = c.FacultyUseCase.Update(&entity.Faculty{
+		Name: facultyName,
 	}, payload.NewName)
 
 	if err != nil {
@@ -77,17 +85,19 @@ func (c FacultyController) Update(ctx *fiber.Ctx) error {
 }
 
 func (c FacultyController) Delete(ctx *fiber.Ctx) error {
-	var payload request.DeleteFacultyRequestPayload
+	facultyName := ctx.Params("facultyName")
 
-	if ok, err := c.Validator.Validate(&payload, ctx); !ok {
-		return err
-	}
-
-	err := c.FacultyUseCase.Delete(payload.Name)
+	_, err := c.FacultyUseCase.GetByName(facultyName)
 
 	if err != nil {
 		return err
 	}
 
-	return ctx.JSON(payload.Name)
+	err = c.FacultyUseCase.Delete(facultyName)
+
+	if err != nil {
+		return err
+	}
+
+	return ctx.SendStatus(200)
 }
