@@ -79,8 +79,8 @@ func (c assessmentController) Create(ctx *fiber.Ctx) error {
 	err = c.AssessmentUseCase.Create(&entity.Assessment{
 		Name:                    payload.Name,
 		Description:             payload.Description,
-		Score:                   payload.Score,
-		Weight:                  payload.Weight,
+		Score:                   *payload.Score,
+		Weight:                  *payload.Weight,
 		CourseLearningOutcomeID: payload.CourseLearningOutcomeID,
 	})
 	if err != nil {
@@ -108,8 +108,8 @@ func (c assessmentController) CreateMany(ctx *fiber.Ctx) error {
 		newAssessments = append(newAssessments, entity.Assessment{
 			Name:                    assessment.Name,
 			Description:             assessment.Description,
-			Score:                   assessment.Score,
-			Weight:                  assessment.Weight,
+			Score:                   *assessment.Score,
+			Weight:                  *assessment.Weight,
 			CourseLearningOutcomeID: assessment.CourseLearningOutcomeID,
 		})
 	}

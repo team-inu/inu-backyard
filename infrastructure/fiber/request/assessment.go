@@ -3,8 +3,8 @@ package request
 type CreateAssessmentPayload struct {
 	Name        string `json:"name" validate:"required"`
 	Description string `json:"description"`
-	Score       int    `json:"score" validate:"required"`
-	Weight      int    `json:"weight" validate:"required"`
+	Score       *int   `json:"score" validate:"required"`
+	Weight      *int   `json:"weight" validate:"required"`
 
 	CourseLearningOutcomeID string `json:"courseLearningOutcomeId" validate:"required"`
 }
