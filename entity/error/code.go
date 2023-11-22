@@ -86,4 +86,10 @@ const (
 	ErrUpdateScore   = 21202
 	ErrDeleteScore   = 21203
 	ErrQueryScore    = 21204
+
+	ErrEnrollmentNotFound = 21300
+	ErrCreateEnrollment   = 21301
+	ErrUpdateEnrollment   = 21302
+	ErrDeleteEnrollment   = 21303
+	ErrQueryEnrollment    = 21304
 )
