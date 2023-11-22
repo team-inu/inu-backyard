@@ -58,6 +58,18 @@ type fiberServer struct {
 	scoreRepository entity.ScoreRepository
 
 	scoreUsecase entity.ScoreUsecase
+
+	lecturerRepository entity.LecturerRepository
+
+	lecturerUsecase entity.LecturerUseCase
+
+	assessmentRepository entity.AssessmentRepository
+
+	assessmentUsecase entity.AssessmentUseCase
+
+	programmeRepository entity.ProgrammeRepository
+
+	programmeUsecase entity.ProgrammeUseCase
 }
 
 func NewFiberServer() *fiberServer {
@@ -109,6 +121,12 @@ func (f *fiberServer) initRepository() (err error) {
 
 	f.scoreRepository = repository.NewScoreRepositoryGorm(f.gorm)
 
+	f.lecturerRepository = repository.NewLecturerRepositoryGorm(f.gorm)
+
+	f.assessmentRepository = repository.NewAssessmentRepositoryGorm(f.gorm)
+
+	f.programmeRepository = repository.NewProgrammeRepositoryGorm(f.gorm)
+
 	return nil
 }
 
@@ -122,7 +140,9 @@ func (f *fiberServer) initUseCase() {
 	f.facultyUsecase = usecase.NewFacultyUseCase(f.facultyRepository)
 	f.departmentUsecase = usecase.NewDepartmentUseCase(f.departmentRepository)
 	f.scoreUsecase = usecase.NewScoreUseCase(f.scoreRepository)
-
+	f.lecturerUsecase = usecase.NewLecturerUseCase(f.lecturerRepository)
+	f.assessmentUsecase = usecase.NewAssessmentUseCase(f.assessmentRepository)
+	f.programmeUsecase = usecase.NewProgrammeUseCase(f.programmeRepository)
 }
 
 func (f *fiberServer) initController() {
@@ -158,6 +178,11 @@ func (f *fiberServer) initController() {
 	departmentController := controller.NewDepartmentController(f.departmentUsecase)
 
 	scoreController := controller.NewScoreController(f.scoreUsecase)
+	lecturerController := controller.NewLecturerController(f.lecturerUsecase)
+	assessmentController := controller.NewAssessmentController(f.assessmentUsecase)
+
+	programmeController := controller.NewProgrammeController(f.programmeUsecase)
+
 	app.Use(fiberzap.New(fiberzap.Config{
 		Logger: logger.NewZapLogger(),
 	}))
@@ -206,6 +231,25 @@ func (f *fiberServer) initController() {
 	app.Post("/scores", scoreController.Create)
 	app.Patch("/scores", scoreController.Update)
 	app.Delete("/scores", scoreController.Delete)
+
+	app.Get("/lecturers", lecturerController.GetAll)
+	app.Get("/lecturers/:lecturerID", lecturerController.GetByID)
+	app.Post("/lecturers", lecturerController.Create)
+	app.Patch("/lecturers/:lecturerID", lecturerController.Update)
+	app.Delete("/lecturers/:lecturerID", lecturerController.Delete)
+
+	app.Get("/assessments", assessmentController.GetAssessments)
+	app.Get("/assessments/:assessmentID", assessmentController.GetByID)
+	app.Post("/assessments", assessmentController.Create)
+	app.Post("/assessments/bulk", assessmentController.CreateMany)
+	app.Patch("/assessments", assessmentController.Update)
+	app.Delete("/assessments", assessmentController.Delete)
+
+	app.Get("/programmes", programmeController.GetAll)
+	app.Get("/programmes/:programmeName", programmeController.GetByName)
+	app.Post("/programmes", programmeController.Create)
+	app.Patch("/programmes/:programmeName", programmeController.Update)
+	app.Delete("/programmes/:programmeName", programmeController.Delete)
 
 	app.Get("/metrics", monitor.New())
 
