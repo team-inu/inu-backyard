@@ -67,7 +67,14 @@ func (u assessmentUseCase) CreateMany(assessments []entity.Assessment) error {
 }
 
 func (u assessmentUseCase) Update(id string, assessment *entity.Assessment) error {
-	err := u.assessmentRepo.Update(id, assessment)
+	existAssessment, err := u.GetByID(id)
+	if err != nil {
+		return errs.New(errs.SameCode, "cannot get assessment id %s to update", id, err)
+	} else if existAssessment == nil {
+		return errs.New(errs.ErrAssessmentNotFound, "cannot get assessment id %s to update", id)
+	}
+
+	err = u.assessmentRepo.Update(id, assessment)
 
 	if err != nil {
 		return errs.New(errs.ErrUpdateAssessment, "cannot update assessment by id %s", assessment.ID, err)
@@ -77,7 +84,14 @@ func (u assessmentUseCase) Update(id string, assessment *entity.Assessment) erro
 }
 
 func (u assessmentUseCase) Delete(id string) error {
-	err := u.assessmentRepo.Delete(id)
+	assessment, err := u.assessmentRepo.GetByID(id)
+	if err != nil {
+		return errs.New(errs.SameCode, "cannot get assessment id %s to delete", id, err)
+	} else if assessment == nil {
+		return errs.New(errs.ErrAssessmentNotFound, "cannot get assessment id %s to delete", id)
+	}
+
+	err = u.assessmentRepo.Delete(id)
 
 	if err != nil {
 		return err
