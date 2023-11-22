@@ -4,6 +4,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/team-inu/inu-backyard/entity"
 	"github.com/team-inu/inu-backyard/infrastructure/fiber/request"
+	"github.com/team-inu/inu-backyard/infrastructure/fiber/response"
 	"github.com/team-inu/inu-backyard/internal/validator"
 )
 
@@ -28,7 +29,7 @@ func (c assessmentController) GetByID(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	return ctx.JSON(assessment)
+	return response.NewSuccessResponse(ctx, fiber.StatusOK, assessment)
 }
 
 func (c assessmentController) GetAssessments(ctx *fiber.Ctx) error {
@@ -38,7 +39,7 @@ func (c assessmentController) GetAssessments(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	assessment, err := c.AssessmentUseCase.GetByParams(&entity.Assessment{
+	assessments, err := c.AssessmentUseCase.GetByParams(&entity.Assessment{
 		CourseLearningOutcomeID: payload.CourseLearningOutcomeID,
 	}, -1, -1)
 
@@ -46,7 +47,7 @@ func (c assessmentController) GetAssessments(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	return ctx.JSON(assessment)
+	return response.NewSuccessResponse(ctx, fiber.StatusOK, assessments)
 }
 
 func (c assessmentController) GetAssessmentsByCourseID(ctx *fiber.Ctx) error {
@@ -62,7 +63,7 @@ func (c assessmentController) GetAssessmentsByCourseID(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	return ctx.JSON(assessment)
+	return response.NewSuccessResponse(ctx, fiber.StatusOK, assessment)
 }
 
 func (c assessmentController) Create(ctx *fiber.Ctx) error {
@@ -83,7 +84,7 @@ func (c assessmentController) Create(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	return ctx.JSON(payload)
+	return response.NewSuccessResponse(ctx, fiber.StatusCreated, nil)
 }
 
 func (c assessmentController) CreateMany(ctx *fiber.Ctx) error {
@@ -110,7 +111,7 @@ func (c assessmentController) CreateMany(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	return ctx.JSON(payload)
+	return response.NewSuccessResponse(ctx, fiber.StatusCreated, nil)
 }
 
 func (c assessmentController) Update(ctx *fiber.Ctx) error {
@@ -132,7 +133,7 @@ func (c assessmentController) Update(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	return ctx.JSON(payload)
+	return response.NewSuccessResponse(ctx, fiber.StatusOK, nil)
 }
 
 func (c assessmentController) Delete(ctx *fiber.Ctx) error {
@@ -148,5 +149,5 @@ func (c assessmentController) Delete(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	return ctx.JSON(payload.ID)
+	return response.NewSuccessResponse(ctx, fiber.StatusOK, nil)
 }
