@@ -61,4 +61,10 @@ const (
 	ErrUpdateDepartment   = 20802
 	ErrDeleteDepartment   = 20803
 	ErrQueryDepartment    = 20804
+
+	ErrLecturerNotFound = 20900
+	ErrCreateLecturer   = 20901
+	ErrUpdateLecturer   = 20902
+	ErrDeleteLecturer   = 20903
+	ErrQueryLecturer    = 20904
 )
