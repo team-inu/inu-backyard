@@ -54,6 +54,10 @@ type fiberServer struct {
 	departmentRepository entity.DepartmentRepository
 
 	departmentUsecase entity.DepartmentUseCase
+
+	assessmentRepository entity.AssessmentRepository
+
+	assessmentUsecase entity.AssessmentUseCase
 }
 
 func NewFiberServer() *fiberServer {
@@ -103,6 +107,8 @@ func (f *fiberServer) initRepository() (err error) {
 
 	f.departmentRepository = repository.NewDepartmentRepositoryGorm(f.gorm)
 
+	f.assessmentRepository = repository.NewAssessmentRepositoryGorm(f.gorm)
+
 	return nil
 }
 
@@ -115,6 +121,7 @@ func (f *fiberServer) initUseCase() {
 	f.programOutcomeUsecase = usecase.NewProgramOutcomeUsecase(f.programOutcomeRepository)
 	f.facultyUsecase = usecase.NewFacultyUseCase(f.facultyRepository)
 	f.departmentUsecase = usecase.NewDepartmentUseCase(f.departmentRepository)
+	f.assessmentUsecase = usecase.NewAssessmentUseCase(f.assessmentRepository)
 
 }
 
@@ -149,6 +156,8 @@ func (f *fiberServer) initController() {
 	facultyController := controller.NewFacultyController(f.facultyUsecase)
 
 	departmentController := controller.NewDepartmentController(f.departmentUsecase)
+
+	assessmentController := controller.NewAssessmentController(f.assessmentUsecase)
 
 	app.Use(fiberzap.New(fiberzap.Config{
 		Logger: logger.NewZapLogger(),
@@ -192,6 +201,13 @@ func (f *fiberServer) initController() {
 	app.Post("/departments", departmentController.Create)
 	app.Patch("/departments", departmentController.Update)
 	app.Delete("/departments", departmentController.Delete)
+
+	app.Get("/assessments", assessmentController.GetAssessments)
+	app.Get("/assessments/:assessmentID", assessmentController.GetByID)
+	app.Post("/assessments", assessmentController.Create)
+	app.Post("/assessments/bulk", assessmentController.CreateMany)
+	app.Patch("/assessments", assessmentController.Update)
+	app.Delete("/assessments", assessmentController.Delete)
 
 	app.Get("/metrics", monitor.New())
 
