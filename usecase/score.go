@@ -14,8 +14,8 @@ func NewScoreUseCase(scoreRepo entity.ScoreRepository) entity.ScoreUsecase {
 	return &scoreUseCase{scoreRepo: scoreRepo}
 }
 
-func (s scoreUseCase) GetAll() ([]entity.Score, error) {
-	scores, err := s.scoreRepo.GetAll()
+func (u scoreUseCase) GetAll() ([]entity.Score, error) {
+	scores, err := u.scoreRepo.GetAll()
 	if err != nil {
 		return nil, errs.New(errs.ErrQueryScore, "cannot get all scores", err)
 	}
@@ -23,8 +23,8 @@ func (s scoreUseCase) GetAll() ([]entity.Score, error) {
 	return scores, nil
 }
 
-func (s scoreUseCase) GetByID(id string) (*entity.Score, error) {
-	score, err := s.scoreRepo.GetByID(id)
+func (u scoreUseCase) GetByID(id string) (*entity.Score, error) {
+	score, err := u.scoreRepo.GetByID(id)
 	if err != nil {
 		return nil, errs.New(errs.ErrQueryScore, "cannot get score by id", err)
 	}
@@ -32,7 +32,7 @@ func (s scoreUseCase) GetByID(id string) (*entity.Score, error) {
 	return score, nil
 }
 
-func (s scoreUseCase) Create(score float64, studentID string, assessmentID string, lecturerID string) (*entity.Score, error) {
+func (u scoreUseCase) Create(score float64, studentID string, assessmentID string, lecturerID string) (*entity.Score, error) {
 	createdScore := entity.Score{
 		ID:           ulid.Make().String(),
 		Score:        score,
@@ -41,7 +41,7 @@ func (s scoreUseCase) Create(score float64, studentID string, assessmentID strin
 		AssessmentID: assessmentID,
 	}
 
-	err := s.scoreRepo.Create(&createdScore)
+	err := u.scoreRepo.Create(&createdScore)
 
 	if err != nil {
 		return nil, errs.New(errs.ErrCreateScore, "cannot create score", err)
@@ -50,17 +50,19 @@ func (s scoreUseCase) Create(score float64, studentID string, assessmentID strin
 	return &createdScore, nil
 }
 
-func (s scoreUseCase) Update(scoreID string, score float64) error {
-	oldScore, err := s.scoreRepo.GetByID(scoreID)
+func (u scoreUseCase) Update(scoreID string, score float64) error {
+	existScore, err := u.GetByID(scoreID)
 	if err != nil {
-		return errs.New(errs.ErrQueryScore, "cannot get score by id", err)
+		return errs.New(errs.SameCode, "cannot get score by id %s ", scoreID, err)
+	} else if existScore == nil {
+		return errs.New(errs.ErrScoreNotFound, "score not found", err)
 	}
-	err = s.scoreRepo.Update(&entity.Score{
-		ID:           oldScore.ID,
+	err = u.scoreRepo.Update(&entity.Score{
+		ID:           existScore.ID,
 		Score:        score,
-		StudentID:    oldScore.StudentID,
-		LecturerID:   oldScore.LecturerID,
-		AssessmentID: oldScore.AssessmentID,
+		StudentID:    existScore.StudentID,
+		LecturerID:   existScore.LecturerID,
+		AssessmentID: existScore.AssessmentID,
 	})
 	if err != nil {
 		return errs.New(errs.ErrUpdateScore, "cannot update score", err)
@@ -69,17 +71,16 @@ func (s scoreUseCase) Update(scoreID string, score float64) error {
 	return nil
 }
 
-func (s scoreUseCase) Delete(id string) error {
-	_, err := s.scoreRepo.GetByID(id)
-
+func (u scoreUseCase) Delete(id string) error {
+	existScore, err := u.GetByID(id)
 	if err != nil {
-		return errs.New(errs.ErrQueryScore, "cannot get score by id", err)
+		return errs.New(errs.SameCode, "cannot get score by id %s ", id, err)
+	} else if existScore == nil {
+		return errs.New(errs.ErrScoreNotFound, "score not found", err)
 	}
-	err = s.scoreRepo.Delete(id)
-
+	err = u.scoreRepo.Delete(id)
 	if err != nil {
-		return errs.New(errs.ErrDeleteScore, "cannot delete score", err)
+		return errs.New(errs.ErrDeleteScore, "cannot delete score by id %s", id, err)
 	}
-
 	return nil
 }
