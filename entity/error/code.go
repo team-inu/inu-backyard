@@ -67,4 +67,10 @@ const (
 	ErrUpdateLecturer   = 20902
 	ErrDeleteLecturer   = 20903
 	ErrQueryLecturer    = 20904
+
+	ErrAssessmentNotFound = 21000
+	ErrCreateAssessment   = 21001
+	ErrUpdateAssessment   = 21002
+	ErrDeleteAssessment   = 21003
+	ErrQueryAssessment    = 21004
 )
