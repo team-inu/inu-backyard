@@ -55,6 +55,10 @@ type fiberServer struct {
 
 	departmentUsecase entity.DepartmentUseCase
 
+	lecturerRepository entity.LecturerRepository
+
+	lecturerUsecase entity.LecturerUseCase
+
 	assessmentRepository entity.AssessmentRepository
 
 	assessmentUsecase entity.AssessmentUseCase
@@ -107,6 +111,8 @@ func (f *fiberServer) initRepository() (err error) {
 
 	f.departmentRepository = repository.NewDepartmentRepositoryGorm(f.gorm)
 
+	f.lecturerRepository = repository.NewLecturerRepositoryGorm(f.gorm)
+
 	f.assessmentRepository = repository.NewAssessmentRepositoryGorm(f.gorm)
 
 	return nil
@@ -121,6 +127,7 @@ func (f *fiberServer) initUseCase() {
 	f.programOutcomeUsecase = usecase.NewProgramOutcomeUsecase(f.programOutcomeRepository)
 	f.facultyUsecase = usecase.NewFacultyUseCase(f.facultyRepository)
 	f.departmentUsecase = usecase.NewDepartmentUseCase(f.departmentRepository)
+	f.lecturerUsecase = usecase.NewLecturerUseCase(f.lecturerRepository)
 	f.assessmentUsecase = usecase.NewAssessmentUseCase(f.assessmentRepository)
 
 }
@@ -157,6 +164,7 @@ func (f *fiberServer) initController() {
 
 	departmentController := controller.NewDepartmentController(f.departmentUsecase)
 
+	lecturerController := controller.NewLecturerController(f.lecturerUsecase)
 	assessmentController := controller.NewAssessmentController(f.assessmentUsecase)
 
 	app.Use(fiberzap.New(fiberzap.Config{
@@ -201,6 +209,12 @@ func (f *fiberServer) initController() {
 	app.Post("/departments", departmentController.Create)
 	app.Patch("/departments/:departmentName", departmentController.Update)
 	app.Delete("/departments/:departmentName", departmentController.Delete)
+
+	app.Get("/lecturers", lecturerController.GetAll)
+	app.Get("/lecturers/:lecturerID", lecturerController.GetByID)
+	app.Post("/lecturers", lecturerController.Create)
+	app.Patch("/lecturers/:lecturerID", lecturerController.Update)
+	app.Delete("/lecturers/:lecturerID", lecturerController.Delete)
 
 	app.Get("/assessments", assessmentController.GetAssessments)
 	app.Get("/assessments/:assessmentID", assessmentController.GetByID)
