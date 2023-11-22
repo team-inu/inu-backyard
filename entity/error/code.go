@@ -86,4 +86,10 @@ const (
 	ErrUpdateScore   = 21202
 	ErrDeleteScore   = 21203
 	ErrQueryScore    = 21204
+
+	ErrSemesterNotFound = 21400
+	ErrCreateSemester   = 21401
+	ErrUpdateSemester   = 21402
+	ErrDeleteSemester   = 21403
+	ErrQuerySemester    = 21404
 )
