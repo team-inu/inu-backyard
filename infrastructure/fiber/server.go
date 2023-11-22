@@ -191,16 +191,16 @@ func (f *fiberServer) initController() {
 	app.Post("/pos", programOutcomeController.Create)
 
 	app.Get("/faculties", facultyController.GetAll)
-	app.Get("/faculties/:facultyID", facultyController.GetByID)
+	app.Get("/faculties/:facultyName", facultyController.GetByID)
 	app.Post("/faculties", facultyController.Create)
-	app.Patch("/faculties", facultyController.Update)
-	app.Delete("/faculties", facultyController.Delete)
+	app.Patch("/faculties/:facultyName", facultyController.Update)
+	app.Delete("/faculties/:facultyName", facultyController.Delete)
 
 	app.Get("/departments", departmentController.GetAll)
-	app.Get("/departments/:departmentID", departmentController.GetByName)
+	app.Get("/departments/:departmentName", departmentController.GetByName)
 	app.Post("/departments", departmentController.Create)
-	app.Patch("/departments", departmentController.Update)
-	app.Delete("/departments", departmentController.Delete)
+	app.Patch("/departments/:departmentName", departmentController.Update)
+	app.Delete("/departments/:departmentName", departmentController.Delete)
 
 	app.Get("/assessments", assessmentController.GetAssessments)
 	app.Get("/assessments/:assessmentID", assessmentController.GetByID)

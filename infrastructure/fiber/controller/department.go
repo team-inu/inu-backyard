@@ -35,28 +35,25 @@ func (c DepartmentController) Create(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	return ctx.JSON(fiber.Map{
-		"message": "success created",
-		"status":  200,
-	})
+	return ctx.JSON(payload)
 }
 
 func (c DepartmentController) Delete(ctx *fiber.Ctx) error {
-	var payload request.DeleteDepartmentRequestPayload
+	departmentName := ctx.Params("departmentName")
 
-	if ok, err := c.validator.Validate(&payload, ctx); !ok {
-		return err
-	}
+	_, err := c.departmentUseCase.GetByName(departmentName)
 
-	err := c.departmentUseCase.Delete(payload.Name)
 	if err != nil {
 		return err
 	}
 
-	return ctx.JSON(fiber.Map{
-		"message": "success deleted",
-		"status":  200,
-	})
+	err = c.departmentUseCase.Delete(departmentName)
+
+	if err != nil {
+		return err
+	}
+
+	return ctx.SendStatus(200)
 }
 
 func (c DepartmentController) GetAll(ctx *fiber.Ctx) error {
@@ -65,38 +62,38 @@ func (c DepartmentController) GetAll(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	return ctx.JSON(fiber.Map{
-		"message": "success",
-		"status":  200,
-		"data":    departments,
-	})
+	return ctx.JSON(departments)
 }
 
 func (c DepartmentController) GetByName(ctx *fiber.Ctx) error {
-	departmentID := ctx.Params("departmentID")
+	departmentName := ctx.Params("departmentName")
 
-	department, err := c.departmentUseCase.GetByName(departmentID)
+	department, err := c.departmentUseCase.GetByName(departmentName)
 
 	if err != nil {
 		return err
 	}
 
-	return ctx.JSON(fiber.Map{
-		"message": "success",
-		"status":  200,
-		"data":    department,
-	})
+	return ctx.JSON(department)
 }
 
 func (c DepartmentController) Update(ctx *fiber.Ctx) error {
+	departmentName := ctx.Params("departmentName")
+
+	_, err := c.departmentUseCase.GetByName(departmentName)
+
+	if err != nil {
+		return err
+	}
+
 	var payload request.UpdateDepartmentRequestPayload
 
 	if ok, err := c.validator.Validate(&payload, ctx); !ok {
 		return err
 	}
 
-	err := c.departmentUseCase.Update(&entity.Department{
-		Name:        payload.Name,
+	err = c.departmentUseCase.Update(&entity.Department{
+		Name:        departmentName,
 		FacultyName: payload.FacultyName,
 	}, payload.NewName)
 
@@ -104,8 +101,5 @@ func (c DepartmentController) Update(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	return ctx.JSON(fiber.Map{
-		"message": "success updated",
-		"status":  200,
-	})
+	return ctx.SendStatus(200)
 }
