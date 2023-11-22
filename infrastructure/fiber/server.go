@@ -55,6 +55,10 @@ type fiberServer struct {
 
 	departmentUsecase entity.DepartmentUseCase
 
+	lecturerRepository entity.LecturerRepository
+
+	lecturerUsecase entity.LecturerUseCase
+
 	assessmentRepository entity.AssessmentRepository
 
 	assessmentUsecase entity.AssessmentUseCase
@@ -111,6 +115,8 @@ func (f *fiberServer) initRepository() (err error) {
 
 	f.departmentRepository = repository.NewDepartmentRepositoryGorm(f.gorm)
 
+	f.lecturerRepository = repository.NewLecturerRepositoryGorm(f.gorm)
+
 	f.assessmentRepository = repository.NewAssessmentRepositoryGorm(f.gorm)
 
 	f.programmeRepository = repository.NewProgrammeRepositoryGorm(f.gorm)
@@ -127,6 +133,7 @@ func (f *fiberServer) initUseCase() {
 	f.programOutcomeUsecase = usecase.NewProgramOutcomeUsecase(f.programOutcomeRepository)
 	f.facultyUsecase = usecase.NewFacultyUseCase(f.facultyRepository)
 	f.departmentUsecase = usecase.NewDepartmentUseCase(f.departmentRepository)
+	f.lecturerUsecase = usecase.NewLecturerUseCase(f.lecturerRepository)
 	f.assessmentUsecase = usecase.NewAssessmentUseCase(f.assessmentRepository)
 	f.programmeUsecase = usecase.NewProgrammeUseCase(f.programmeRepository)
 }
@@ -163,6 +170,7 @@ func (f *fiberServer) initController() {
 
 	departmentController := controller.NewDepartmentController(f.departmentUsecase)
 
+	lecturerController := controller.NewLecturerController(f.lecturerUsecase)
 	assessmentController := controller.NewAssessmentController(f.assessmentUsecase)
 
 	programmeController := controller.NewProgrammeController(f.programmeUsecase)
@@ -209,6 +217,12 @@ func (f *fiberServer) initController() {
 	app.Post("/departments", departmentController.Create)
 	app.Patch("/departments", departmentController.Update)
 	app.Delete("/departments", departmentController.Delete)
+
+	app.Get("/lecturers", lecturerController.GetAll)
+	app.Get("/lecturers/:lecturerID", lecturerController.GetByID)
+	app.Post("/lecturers", lecturerController.Create)
+	app.Patch("/lecturers/:lecturerID", lecturerController.Update)
+	app.Delete("/lecturers/:lecturerID", lecturerController.Delete)
 
 	app.Get("/assessments", assessmentController.GetAssessments)
 	app.Get("/assessments/:assessmentID", assessmentController.GetByID)

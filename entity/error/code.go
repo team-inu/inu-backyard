@@ -74,4 +74,10 @@ const (
 	ErrUpdateProgramme   = 21103
 	ErrDeleteProgramme   = 21103
 	ErrQueryProgramme    = 21104
+
+	ErrLecturerNotFound = 21000
+	ErrCreateLecturer   = 21001
+	ErrUpdateLecturer   = 21002
+	ErrDeleteLecturer   = 21003
+	ErrQueryLecturer    = 21004
 )
