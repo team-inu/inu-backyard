@@ -11,15 +11,17 @@ type Lecturer struct {
 type LecturerRepository interface {
 	GetAll() ([]Lecturer, error)
 	GetByID(id string) (*Lecturer, error)
+	GetByParams(params *Lecturer, limit int, offset int) ([]Lecturer, error)
 	Create(lecturer *Lecturer) error
-	Update(lecturer *Lecturer) error
+	Update(id string, lecturer *Lecturer) error
 	Delete(id string) error
 }
 
 type LecturerUseCase interface {
 	GetAll() ([]Lecturer, error)
 	GetByID(id string) (*Lecturer, error)
-	Create(name string, firstName string, lastName string) (*Lecturer, error)
-	Update(lecturer *Lecturer) error
+	GetByParams(params *Lecturer, limit int, offset int) ([]Lecturer, error)
+	Create(name string, firstName string, lastName string) error
+	Update(id string, lecturer *Lecturer) error
 	Delete(id string) error
 }
