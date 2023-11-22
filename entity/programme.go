@@ -6,16 +6,16 @@ type Programme struct {
 
 type ProgrammeRepository interface {
 	GetAll() ([]Programme, error)
-	GetByID(id string) (*Programme, error)
+	GetByName(name string) (*Programme, error)
 	Create(programme *Programme) error
-	Update(programme *Programme) error
-	Delete(id string) error
+	Update(name string, programme *Programme) error
+	Delete(name string) error
 }
 
 type ProgrammeUseCase interface {
 	GetAll() ([]Programme, error)
-	GetByID(id string) (*Programme, error)
-	Create(name string) (*Programme, error)
-	Update(programme *Programme) error
-	Delete(id string) error
+	GetByName(name string) (*Programme, error)
+	Create(name string) error
+	Update(name string, programme *Programme) error
+	Delete(name string) error
 }
