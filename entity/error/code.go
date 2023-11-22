@@ -68,6 +68,12 @@ const (
 	ErrDeleteAssessment   = 20903
 	ErrQueryAssessment    = 20904
 
+	ErrLecturerNotFound = 21000
+	ErrCreateLecturer   = 21001
+	ErrUpdateLecturer   = 21002
+	ErrDeleteLecturer   = 21003
+	ErrQueryLecturer    = 21004
+
 	ErrProgrammeNotFound = 21100
 	ErrCreateProgramme   = 21101
 	ErrDupName           = 21102
@@ -75,9 +81,9 @@ const (
 	ErrDeleteProgramme   = 21103
 	ErrQueryProgramme    = 21104
 
-	ErrLecturerNotFound = 21000
-	ErrCreateLecturer   = 21001
-	ErrUpdateLecturer   = 21002
-	ErrDeleteLecturer   = 21003
-	ErrQueryLecturer    = 21004
+	ErrScoreNotFound = 21200
+	ErrCreateScore   = 21201
+	ErrUpdateScore   = 21202
+	ErrDeleteScore   = 21203
+	ErrQueryScore    = 21204
 )
