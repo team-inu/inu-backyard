@@ -67,4 +67,11 @@ const (
 	ErrUpdateAssessment   = 20902
 	ErrDeleteAssessment   = 20903
 	ErrQueryAssessment    = 20904
+
+	ErrProgrammeNotFound = 21100
+	ErrCreateProgramme   = 21101
+	ErrDupName           = 21102
+	ErrUpdateProgramme   = 21103
+	ErrDeleteProgramme   = 21103
+	ErrQueryProgramme    = 21104
 )
