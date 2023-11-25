@@ -92,4 +92,10 @@ const (
 	ErrUpdateEnrollment   = 21302
 	ErrDeleteEnrollment   = 21303
 	ErrQueryEnrollment    = 21304
+
+	ErrSemesterNotFound = 21400
+	ErrCreateSemester   = 21401
+	ErrUpdateSemester   = 21402
+	ErrDeleteSemester   = 21403
+	ErrQuerySemester    = 21404
 )

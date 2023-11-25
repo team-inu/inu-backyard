@@ -23,57 +23,35 @@ type fiberServer struct {
 
 	gorm *gorm.DB
 
-	studentRepository entity.StudentRepository
-
-	studentUseCase entity.StudentUseCase
-
-	courseRepository entity.CourseRepository
-
-	courseUseCase entity.CourseUsecase
-
-	courseLearningOutcomeRepository entity.CourseLearningOutcomeRepository
-
-	courseLearningOutcomeUsecase entity.CourseLearningOutcomeUsecase
-
-	programLearningOutcomeRepository entity.ProgramLearningOutcomeRepository
-
-	programLearningOutcomeUsecase entity.ProgramLearningOutcomeUsecase
-
+	studentRepository                   entity.StudentRepository
+	courseRepository                    entity.CourseRepository
+	courseLearningOutcomeRepository     entity.CourseLearningOutcomeRepository
+	programLearningOutcomeRepository    entity.ProgramLearningOutcomeRepository
 	subProgramLearningOutcomeRepository entity.SubProgramLearningOutcomeRepository
+	programOutcomeRepository            entity.ProgramOutcomeRepository
+	facultyRepository                   entity.FacultyRepository
+	departmentRepository                entity.DepartmentRepository
+	scoreRepository                     entity.ScoreRepository
+	lecturerRepository                  entity.LecturerRepository
+	assessmentRepository                entity.AssessmentRepository
+	programmeRepository                 entity.ProgrammeRepository
+	semesterRepository                  entity.SemesterRepository
+	enrollmentRepository                entity.EnrollmentRepository
 
+	studentUseCase                   entity.StudentUseCase
+	courseUseCase                    entity.CourseUsecase
+	courseLearningOutcomeUsecase     entity.CourseLearningOutcomeUsecase
+	programLearningOutcomeUsecase    entity.ProgramLearningOutcomeUsecase
 	subProgramLearningOutcomeUsecase entity.SubProgramLearningOutcomeUsecase
-
-	programOutcomeRepository entity.ProgramOutcomeRepository
-
-	programOutcomeUsecase entity.ProgramOutcomeUsecase
-
-	facultyRepository entity.FacultyRepository
-
-	facultyUsecase entity.FacultyUseCase
-
-	departmentRepository entity.DepartmentRepository
-
-	departmentUsecase entity.DepartmentUseCase
-
-	scoreRepository entity.ScoreRepository
-
-	scoreUsecase entity.ScoreUsecase
-
-	lecturerRepository entity.LecturerRepository
-
-	lecturerUsecase entity.LecturerUseCase
-
-	assessmentRepository entity.AssessmentRepository
-
-	assessmentUsecase entity.AssessmentUseCase
-
-	programmeRepository entity.ProgrammeRepository
-
-	programmeUsecase entity.ProgrammeUseCase
-
-	enrollmentRepository entity.EnrollmentRepository
-
-	enrollmentUsecase entity.EnrollmentUseCase
+	programOutcomeUsecase            entity.ProgramOutcomeUsecase
+	facultyUsecase                   entity.FacultyUseCase
+	departmentUsecase                entity.DepartmentUseCase
+	scoreUsecase                     entity.ScoreUsecase
+	lecturerUsecase                  entity.LecturerUseCase
+	assessmentUsecase                entity.AssessmentUseCase
+	programmeUsecase                 entity.ProgrammeUseCase
+	semesterUsecase                  entity.SemesterUseCase
+	enrollmentUsecase                entity.EnrollmentUseCase
 }
 
 func NewFiberServer() *fiberServer {
@@ -109,28 +87,18 @@ func (f *fiberServer) initRepository() (err error) {
 	f.gorm = gormDB
 
 	f.studentRepository = repository.NewStudentRepositoryGorm(f.gorm)
-
 	f.courseRepository = repository.NewCourseRepositoryGorm(f.gorm)
-
 	f.courseLearningOutcomeRepository = repository.NewCourseLearningOutcomeRepositoryGorm(f.gorm)
-
 	f.programLearningOutcomeRepository = repository.NewProgramLearningOutcomeRepositoryGorm(f.gorm)
-
 	f.subProgramLearningOutcomeRepository = repository.NewSubProgramLearningOutcomeRepositoryGorm(f.gorm)
-
 	f.programOutcomeRepository = repository.NewProgramOutcomeRepositoryGorm(f.gorm)
-
 	f.facultyRepository = repository.NewFacultyRepositoryGorm(f.gorm)
-
 	f.departmentRepository = repository.NewDepartmentRepositoryGorm(f.gorm)
-
 	f.scoreRepository = repository.NewScoreRepositoryGorm(f.gorm)
-
 	f.lecturerRepository = repository.NewLecturerRepositoryGorm(f.gorm)
-
 	f.assessmentRepository = repository.NewAssessmentRepositoryGorm(f.gorm)
-
 	f.programmeRepository = repository.NewProgrammeRepositoryGorm(f.gorm)
+	f.semesterRepository = repository.NewSemesterRepositoryGorm(f.gorm)
 
 	f.enrollmentRepository = repository.NewEnrollmentRepositoryGorm(f.gorm)
 
@@ -151,6 +119,7 @@ func (f *fiberServer) initUseCase() {
 	f.assessmentUsecase = usecase.NewAssessmentUseCase(f.assessmentRepository)
 	f.programmeUsecase = usecase.NewProgrammeUseCase(f.programmeRepository)
 	f.enrollmentUsecase = usecase.NewEnrollmentUseCase(f.enrollmentRepository)
+	f.semesterUsecase = usecase.NewSemesterUseCase(f.semesterRepository)
 }
 
 func (f *fiberServer) initController() {
@@ -170,28 +139,20 @@ func (f *fiberServer) initController() {
 	}))
 
 	studentController := controller.NewStudentController(f.studentUseCase)
-
 	courseController := controller.NewCourseController(f.courseUseCase)
-
 	courseLearningOutcomeController := controller.NewCourseLearningOutcomeController(f.courseLearningOutcomeUsecase)
-
 	programLearningOutcomeController := controller.NewProgramLearningOutcomeController(f.programLearningOutcomeUsecase)
-
 	subProgramLearningOutcomeController := controller.NewSubProgramLearningOutcomeController(f.subProgramLearningOutcomeUsecase)
-
 	programOutcomeController := controller.NewProgramOutcomeController(f.programOutcomeUsecase)
-
 	facultyController := controller.NewFacultyController(f.facultyUsecase)
-
 	departmentController := controller.NewDepartmentController(f.departmentUsecase)
-
 	scoreController := controller.NewScoreController(f.scoreUsecase)
 
 	lecturerController := controller.NewLecturerController(f.lecturerUsecase)
 
 	assessmentController := controller.NewAssessmentController(f.assessmentUsecase)
-
 	programmeController := controller.NewProgrammeController(f.programmeUsecase)
+	semesterController := controller.NewSemesterController(f.semesterUsecase)
 
 	enrollmentController := controller.NewEnrollmentController(f.enrollmentUsecase)
 
@@ -268,6 +229,12 @@ func (f *fiberServer) initController() {
 	app.Post("/enrollments", enrollmentController.Create)
 	app.Patch("/enrollments/:enrollmentID", enrollmentController.Update)
 	app.Delete("/enrollments/:enrollmentID", enrollmentController.Delete)
+
+	app.Get("/semesters", semesterController.GetAll)
+	app.Get("/semesters/:semesterID", semesterController.GetByID)
+	app.Post("/semesters", semesterController.Create)
+	app.Patch("/semesters/:semesterID", semesterController.Update)
+	app.Delete("/semesters/:semesterID", semesterController.Delete)
 
 	app.Get("/metrics", monitor.New())
 
