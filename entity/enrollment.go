@@ -13,7 +13,7 @@ type EnrollmentRepository interface {
 	GetAll() ([]Enrollment, error)
 	GetByID(id string) (*Enrollment, error)
 	Create(enrollment *Enrollment) error
-	Update(enrollment *Enrollment) error
+	Update(id string, enrollment *Enrollment) error
 	Delete(id string) error
 }
 
@@ -21,7 +21,7 @@ type EnrollmentUseCase interface {
 	GetAll() ([]Enrollment, error)
 	GetByID(id string) (*Enrollment, error)
 	Create(courseID string, studentID string) (*Enrollment, error)
-	Update(enrollment *Enrollment) error
+	Update(id string, enrollment *Enrollment) error
 	Delete(id string) error
 	Enroll(studentID string, courseID string) error
 	Withdraw(studentID string, courseID string) error

@@ -36,6 +36,7 @@ type fiberServer struct {
 	assessmentRepository                entity.AssessmentRepository
 	programmeRepository                 entity.ProgrammeRepository
 	semesterRepository                  entity.SemesterRepository
+	enrollmentRepository                entity.EnrollmentRepository
 
 	studentUseCase                   entity.StudentUseCase
 	courseUseCase                    entity.CourseUsecase
@@ -50,6 +51,7 @@ type fiberServer struct {
 	assessmentUsecase                entity.AssessmentUseCase
 	programmeUsecase                 entity.ProgrammeUseCase
 	semesterUsecase                  entity.SemesterUseCase
+	enrollmentUsecase                entity.EnrollmentUseCase
 }
 
 func NewFiberServer() *fiberServer {
@@ -64,6 +66,7 @@ func (f *fiberServer) Run(config FiberServerConfig) {
 	}
 	err = f.gorm.AutoMigrate(
 		&entity.Student{},
+		&entity.Enrollment{},
 	)
 
 	if err != nil {
@@ -97,6 +100,8 @@ func (f *fiberServer) initRepository() (err error) {
 	f.programmeRepository = repository.NewProgrammeRepositoryGorm(f.gorm)
 	f.semesterRepository = repository.NewSemesterRepositoryGorm(f.gorm)
 
+	f.enrollmentRepository = repository.NewEnrollmentRepositoryGorm(f.gorm)
+
 	return nil
 }
 
@@ -113,6 +118,7 @@ func (f *fiberServer) initUseCase() {
 	f.lecturerUsecase = usecase.NewLecturerUseCase(f.lecturerRepository)
 	f.assessmentUsecase = usecase.NewAssessmentUseCase(f.assessmentRepository)
 	f.programmeUsecase = usecase.NewProgrammeUseCase(f.programmeRepository)
+	f.enrollmentUsecase = usecase.NewEnrollmentUseCase(f.enrollmentRepository)
 	f.semesterUsecase = usecase.NewSemesterUseCase(f.semesterRepository)
 }
 
@@ -141,10 +147,14 @@ func (f *fiberServer) initController() {
 	facultyController := controller.NewFacultyController(f.facultyUsecase)
 	departmentController := controller.NewDepartmentController(f.departmentUsecase)
 	scoreController := controller.NewScoreController(f.scoreUsecase)
+
 	lecturerController := controller.NewLecturerController(f.lecturerUsecase)
+
 	assessmentController := controller.NewAssessmentController(f.assessmentUsecase)
 	programmeController := controller.NewProgrammeController(f.programmeUsecase)
 	semesterController := controller.NewSemesterController(f.semesterUsecase)
+
+	enrollmentController := controller.NewEnrollmentController(f.enrollmentUsecase)
 
 	app.Use(fiberzap.New(fiberzap.Config{
 		Logger: logger.NewZapLogger(),
@@ -213,6 +223,12 @@ func (f *fiberServer) initController() {
 	app.Post("/programmes", programmeController.Create)
 	app.Patch("/programmes/:programmeName", programmeController.Update)
 	app.Delete("/programmes/:programmeName", programmeController.Delete)
+
+	app.Get("/enrollments", enrollmentController.GetAll)
+	app.Get("/enrollments/:enrollmentID", enrollmentController.GetByID)
+	app.Post("/enrollments", enrollmentController.Create)
+	app.Patch("/enrollments/:enrollmentID", enrollmentController.Update)
+	app.Delete("/enrollments/:enrollmentID", enrollmentController.Delete)
 
 	app.Get("/semesters", semesterController.GetAll)
 	app.Get("/semesters/:semesterID", semesterController.GetByID)
