@@ -13,14 +13,14 @@ type GradeRepository interface {
 	GetAll() ([]Grade, error)
 	GetByID(id string) (*Grade, error)
 	Create(grade *Grade) error
-	Update(grade *Grade) error
+	Update(id string, grade *Grade) error
 	Delete(id string) error
 }
 
 type GradeUseCase interface {
 	GetAll() ([]Grade, error)
 	GetByID(id string) (*Grade, error)
-	Create(studentID string, year string, grade string) (*Grade, error)
-	Update(grade *Grade) error
+	Create(studentID string, year string, grade string) error
+	Update(id string, grade *Grade) error
 	Delete(id string) error
 }

@@ -98,4 +98,10 @@ const (
 	ErrUpdateSemester   = 21402
 	ErrDeleteSemester   = 21403
 	ErrQuerySemester    = 21404
+
+	ErrGradeNotFound = 21500
+	ErrCreateGrade   = 21501
+	ErrUpdateGrade   = 21502
+	ErrDeleteGrade   = 21503
+	ErrQueryGrade    = 21504
 )

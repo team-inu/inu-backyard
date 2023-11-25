@@ -37,6 +37,7 @@ type fiberServer struct {
 	programmeRepository                 entity.ProgrammeRepository
 	semesterRepository                  entity.SemesterRepository
 	enrollmentRepository                entity.EnrollmentRepository
+	gradeRepository                     entity.GradeRepository
 
 	studentUseCase                   entity.StudentUseCase
 	courseUseCase                    entity.CourseUsecase
@@ -52,6 +53,7 @@ type fiberServer struct {
 	programmeUsecase                 entity.ProgrammeUseCase
 	semesterUsecase                  entity.SemesterUseCase
 	enrollmentUsecase                entity.EnrollmentUseCase
+	gradeUsecase                     entity.GradeUseCase
 }
 
 func NewFiberServer() *fiberServer {
@@ -102,6 +104,8 @@ func (f *fiberServer) initRepository() (err error) {
 
 	f.enrollmentRepository = repository.NewEnrollmentRepositoryGorm(f.gorm)
 
+	f.gradeRepository = repository.NewGradeRepositoryGorm(f.gorm)
+
 	return nil
 }
 
@@ -120,6 +124,7 @@ func (f *fiberServer) initUseCase() {
 	f.programmeUsecase = usecase.NewProgrammeUseCase(f.programmeRepository)
 	f.enrollmentUsecase = usecase.NewEnrollmentUseCase(f.enrollmentRepository)
 	f.semesterUsecase = usecase.NewSemesterUseCase(f.semesterRepository)
+	f.gradeUsecase = usecase.NewGradeUseCase(f.gradeRepository)
 }
 
 func (f *fiberServer) initController() {
@@ -155,6 +160,8 @@ func (f *fiberServer) initController() {
 	semesterController := controller.NewSemesterController(f.semesterUsecase)
 
 	enrollmentController := controller.NewEnrollmentController(f.enrollmentUsecase)
+
+	gradeController := controller.NewGradeController(f.gradeUsecase)
 
 	app.Use(fiberzap.New(fiberzap.Config{
 		Logger: logger.NewZapLogger(),
@@ -235,6 +242,12 @@ func (f *fiberServer) initController() {
 	app.Post("/semesters", semesterController.Create)
 	app.Patch("/semesters/:semesterID", semesterController.Update)
 	app.Delete("/semesters/:semesterID", semesterController.Delete)
+
+	app.Get("/grades", gradeController.GetAll)
+	app.Get("/grades/:gradeID", gradeController.GetByID)
+	app.Post("/grades", gradeController.Create)
+	app.Patch("/grades/:gradeID", gradeController.Update)
+	app.Delete("/grades/:gradeID", gradeController.Delete)
 
 	app.Get("/metrics", monitor.New())
 
