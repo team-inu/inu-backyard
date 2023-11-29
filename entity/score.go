@@ -16,7 +16,7 @@ type ScoreRepository interface {
 	GetAll() ([]Score, error)
 	GetByID(id string) (*Score, error)
 	Create(score *Score) error
-	Update(score *Score) error
+	Update(id string, score *Score) error
 	Delete(id string) error
 }
 
