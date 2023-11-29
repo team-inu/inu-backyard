@@ -4,23 +4,24 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/team-inu/inu-backyard/entity"
 	"github.com/team-inu/inu-backyard/infrastructure/fiber/request"
+	"github.com/team-inu/inu-backyard/infrastructure/fiber/response"
 	"github.com/team-inu/inu-backyard/internal/validator"
 )
 
 type programOutcomeController struct {
-	ProgramOutcomeUsecase entity.ProgramOutcomeUsecase
+	programOutcomeUsecase entity.ProgramOutcomeUsecase
 	Validator             validator.PayloadValidator
 }
 
 func NewProgramOutcomeController(programOutcomeUsecase entity.ProgramOutcomeUsecase) *programOutcomeController {
 	return &programOutcomeController{
-		ProgramOutcomeUsecase: programOutcomeUsecase,
+		programOutcomeUsecase: programOutcomeUsecase,
 		Validator:             validator.NewPayloadValidator(),
 	}
 }
 
 func (c programOutcomeController) GetAll(ctx *fiber.Ctx) error {
-	pos, err := c.ProgramOutcomeUsecase.GetAll()
+	pos, err := c.programOutcomeUsecase.GetAll()
 	if err != nil {
 		return err
 	}
@@ -31,12 +32,12 @@ func (c programOutcomeController) GetAll(ctx *fiber.Ctx) error {
 func (c programOutcomeController) GetByID(ctx *fiber.Ctx) error {
 	poId := ctx.Params("poId")
 
-	pos, err := c.ProgramOutcomeUsecase.GetByID(poId)
+	po, err := c.programOutcomeUsecase.GetByID(poId)
 	if err != nil {
 		return err
 	}
 
-	return ctx.JSON(pos)
+	return response.NewSuccessResponse(ctx, fiber.StatusCreated, po)
 }
 
 func (c programOutcomeController) Create(ctx *fiber.Ctx) error {
@@ -46,26 +47,48 @@ func (c programOutcomeController) Create(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	createdClo, err := c.ProgramOutcomeUsecase.Create(payload.Code, payload.Name, payload.Description)
+	err := c.programOutcomeUsecase.Create(payload.Code, payload.Name, payload.Description)
 	if err != nil {
 		return err
 	}
 
-	return ctx.JSON(createdClo)
+	return response.NewSuccessResponse(ctx, fiber.StatusCreated, nil)
+}
+
+func (c programOutcomeController) Update(ctx *fiber.Ctx) error {
+	var payload request.UpdateProgramOutcomePayload
+
+	if ok, err := c.Validator.Validate(&payload, ctx); !ok {
+		return err
+	}
+
+	id := ctx.Params("poID")
+
+	err := c.programOutcomeUsecase.Update(id, &entity.ProgramOutcome{
+		Code:        payload.Code,
+		Name:        payload.Name,
+		Description: payload.Description,
+	})
+
+	if err != nil {
+		return err
+	}
+
+	return response.NewSuccessResponse(ctx, fiber.StatusOK, nil)
 }
 
 func (c programOutcomeController) Delete(ctx *fiber.Ctx) error {
 	poId := ctx.Params("poId")
 
-	_, err := c.ProgramOutcomeUsecase.GetByID(poId)
+	_, err := c.programOutcomeUsecase.GetByID(poId)
 	if err != nil {
 		return err
 	}
 
-	err = c.ProgramOutcomeUsecase.Delete(poId)
+	err = c.programOutcomeUsecase.Delete(poId)
 	if err != nil {
 		return err
 	}
 
-	return ctx.SendStatus(200)
+	return response.NewSuccessResponse(ctx, fiber.StatusOK, nil)
 }
