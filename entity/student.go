@@ -26,7 +26,7 @@ type StudentRepository interface {
 	GetByParams(params *Student, limit int, offset int) ([]Student, error)
 	Create(student *Student) error
 	CreateMany(student []Student) error
-	Update(student *Student) error
+	Update(id string, student *Student) error
 	Delete(id string) error
 }
 
@@ -36,5 +36,6 @@ type StudentUseCase interface {
 	GetByParams(params *Student, limit int, offset int) ([]Student, error)
 	Create(student *Student) error
 	CreateMany(student []Student) error
-	Update(student *Student) error
+	Update(id string, student *Student) error
+	Delete(id string) error
 }
