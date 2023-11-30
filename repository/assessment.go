@@ -43,11 +43,21 @@ func (r assessmentRepositoryGorm) GetByParams(params *entity.Assessment, limit i
 }
 
 func (r assessmentRepositoryGorm) Create(assessment *entity.Assessment) error {
-	return r.gorm.Create(&assessment).Error
+	err := r.gorm.Create(&assessment).Error
+	if err != nil {
+		return fmt.Errorf("cannot create assessment: %w", err)
+	}
+
+	return nil
 }
 
 func (r assessmentRepositoryGorm) CreateMany(assessments []entity.Assessment) error {
-	return r.gorm.Create(&assessments).Error
+	err := r.gorm.Create(&assessments).Error
+	if err != nil {
+		return fmt.Errorf("cannot create assessments: %w", err)
+	}
+
+	return nil
 }
 
 func (r assessmentRepositoryGorm) Update(id string, assessment *entity.Assessment) error {

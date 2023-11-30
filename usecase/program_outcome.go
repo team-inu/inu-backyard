@@ -33,7 +33,7 @@ func (c programOutcomeUsecase) GetByID(id string) (*entity.ProgramOutcome, error
 	return po, nil
 }
 
-func (c programOutcomeUsecase) Create(code string, name string, description string) (*entity.ProgramOutcome, error) {
+func (c programOutcomeUsecase) Create(code string, name string, description string) error {
 	po := entity.ProgramOutcome{
 		ID:          ulid.Make().String(),
 		Code:        code,
@@ -44,10 +44,26 @@ func (c programOutcomeUsecase) Create(code string, name string, description stri
 	err := c.programOutcomeRepo.Create(&po)
 
 	if err != nil {
-		return nil, errs.New(errs.ErrCreatePO, "cannot create PO", err)
+		return errs.New(errs.ErrCreatePO, "cannot create PO", err)
 	}
 
-	return &po, nil
+	return nil
+}
+
+func (u programOutcomeUsecase) Update(id string, programOutcome *entity.ProgramOutcome) error {
+	existProgramOutcome, err := u.GetByID(id)
+	if err != nil {
+		return errs.New(errs.SameCode, "cannot get programOutcome id %s to update", id, err)
+	} else if existProgramOutcome == nil {
+		return errs.New(errs.ErrPONotFound, "cannot get programOutcome id %s to update", id)
+	}
+
+	err = u.programOutcomeRepo.Update(id, programOutcome)
+	if err != nil {
+		return errs.New(errs.ErrUpdatePO, "cannot update programOutcome by id %s", programOutcome.ID, err)
+	}
+
+	return nil
 }
 
 func (c programOutcomeUsecase) Delete(id string) error {

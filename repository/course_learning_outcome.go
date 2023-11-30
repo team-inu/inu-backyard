@@ -58,10 +58,21 @@ func (r courseLearningOutcomeRepositoryGorm) Create(courseLearningOutcome *entit
 	return r.gorm.Create(&courseLearningOutcome).Error
 }
 
-func (r courseLearningOutcomeRepositoryGorm) Update(courseLearningOutcome *entity.CourseLearningOutcome) error {
-	return r.gorm.Model(&courseLearningOutcome).Updates(&courseLearningOutcome).Error
+func (r courseLearningOutcomeRepositoryGorm) Update(id string, courseLearningOutcome *entity.CourseLearningOutcome) error {
+	err := r.gorm.Model(&entity.CourseLearningOutcome{}).Where("id = ?", id).Updates(courseLearningOutcome).Error
+	if err != nil {
+		return fmt.Errorf("cannot update courseLearningOutcome: %w", err)
+	}
+
+	return nil
 }
 
 func (r courseLearningOutcomeRepositoryGorm) Delete(id string) error {
-	return r.gorm.Where("id = ?", id).Delete(&entity.CourseLearningOutcome{}).Error
+	err := r.gorm.Delete(&entity.CourseLearningOutcome{ID: id}).Error
+
+	if err != nil {
+		return fmt.Errorf("cannot delete courseLearningOutcome: %w", err)
+	}
+
+	return nil
 }

@@ -32,7 +32,7 @@ func (c programLearningOutcomeUsecase) GetByID(id string) (*entity.ProgramLearni
 	return plo, nil
 }
 
-func (c programLearningOutcomeUsecase) Create(code string, descriptionThai string, descriptionEng string, programYear int) (*entity.ProgramLearningOutcome, error) {
+func (c programLearningOutcomeUsecase) Create(code string, descriptionThai string, descriptionEng string, programYear int) error {
 	plo := entity.ProgramLearningOutcome{
 		ID:              ulid.Make().String(),
 		Code:            code,
@@ -44,10 +44,26 @@ func (c programLearningOutcomeUsecase) Create(code string, descriptionThai strin
 	err := c.programLearningOutcomeRepo.Create(&plo)
 
 	if err != nil {
-		return nil, errs.New(errs.ErrCreatePLO, "cannot create PLO", err)
+		return errs.New(errs.ErrCreatePLO, "cannot create PLO", err)
 	}
 
-	return &plo, nil
+	return nil
+}
+
+func (u programLearningOutcomeUsecase) Update(id string, programLearningOutcome *entity.ProgramLearningOutcome) error {
+	existProgramLearningOutcome, err := u.GetByID(id)
+	if err != nil {
+		return errs.New(errs.SameCode, "cannot get programLearningOutcome id %s to update", id, err)
+	} else if existProgramLearningOutcome == nil {
+		return errs.New(errs.ErrPLONotFound, "cannot get programLearningOutcome id %s to update", id)
+	}
+
+	err = u.programLearningOutcomeRepo.Update(id, programLearningOutcome)
+	if err != nil {
+		return errs.New(errs.ErrUpdatePLO, "cannot update programLearningOutcome by id %s", programLearningOutcome.ID, err)
+	}
+
+	return nil
 }
 
 func (c programLearningOutcomeUsecase) Delete(id string) error {

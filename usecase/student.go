@@ -59,11 +59,20 @@ func (u studentUseCase) CreateMany(students []entity.Student) error {
 	return nil
 }
 
-func (u studentUseCase) Update(student *entity.Student) error {
-	err := u.studentRepo.Update(student)
+func (u studentUseCase) Update(id string, student *entity.Student) error {
+	err := u.studentRepo.Update(id, student)
 
 	if err != nil {
 		return errs.New(errs.ErrUpdateStudent, "cannot update student by id %s", student.ID, err)
+	}
+
+	return nil
+}
+
+func (c studentUseCase) Delete(id string) error {
+	err := c.studentRepo.Delete(id)
+	if err != nil {
+		return errs.New(errs.ErrDeleteSubPLO, "cannot delete student", err)
 	}
 
 	return nil

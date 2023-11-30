@@ -42,13 +42,29 @@ func (r subProgramLearningOutcomeRepositoryGorm) GetByID(id string) (*entity.Sub
 }
 
 func (r subProgramLearningOutcomeRepositoryGorm) Create(subProgramLearningOutcome *entity.SubProgramLearningOutcome) error {
-	return r.gorm.Create(&subProgramLearningOutcome).Error
+	err := r.gorm.Create(&subProgramLearningOutcome).Error
+	if err != nil {
+		return fmt.Errorf("cannot create subProgramLearningOutcome: %w", err)
+	}
+
+	return nil
 }
 
-func (r subProgramLearningOutcomeRepositoryGorm) Update(subProgramLearningOutcome *entity.SubProgramLearningOutcome) error {
-	return r.gorm.Model(&subProgramLearningOutcome).Updates(&subProgramLearningOutcome).Error
+func (r subProgramLearningOutcomeRepositoryGorm) Update(id string, subProgramLearningOutcome *entity.SubProgramLearningOutcome) error {
+	err := r.gorm.Model(&entity.SubProgramLearningOutcome{}).Where("id = ?", id).Updates(subProgramLearningOutcome).Error
+	if err != nil {
+		return fmt.Errorf("cannot update subProgramLearningOutcome: %w", err)
+	}
+
+	return nil
 }
 
 func (r subProgramLearningOutcomeRepositoryGorm) Delete(id string) error {
-	return r.gorm.Where("id = ?", id).Delete(&entity.SubProgramLearningOutcome{}).Error
+	err := r.gorm.Delete(&entity.SubProgramLearningOutcome{ID: id}).Error
+
+	if err != nil {
+		return fmt.Errorf("cannot delete subProgramLearningOutcome: %w", err)
+	}
+
+	return nil
 }

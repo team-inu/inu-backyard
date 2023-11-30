@@ -32,21 +32,38 @@ func (c courseUsecase) GetByID(id string) (*entity.Course, error) {
 	return course, nil
 }
 
-func (c courseUsecase) Create(name string, code string, year int, lecturerId string) (*entity.Course, error) {
+func (c courseUsecase) Create(name string, code string, semesterId string, lecturerId string) error {
 	course := entity.Course{
 		ID:         ulid.Make().String(),
 		Name:       name,
 		Code:       code,
+		SemesterID: semesterId,
 		LecturerID: lecturerId,
 	}
 
 	err := c.courseRepo.Create(&course)
 
 	if err != nil {
-		return nil, errs.New(errs.ErrCreateCourse, "cannot create course", err)
+		return errs.New(errs.ErrCreateCourse, "cannot create course", err)
 	}
 
-	return &course, nil
+	return nil
+}
+
+func (u courseUsecase) Update(id string, course *entity.Course) error {
+	existCourse, err := u.GetByID(id)
+	if err != nil {
+		return errs.New(errs.SameCode, "cannot get course id %s to update", id, err)
+	} else if existCourse == nil {
+		return errs.New(errs.ErrCourseNotFound, "cannot get course id %s to update", id)
+	}
+
+	err = u.courseRepo.Update(id, course)
+	if err != nil {
+		return errs.New(errs.ErrUpdateCourse, "cannot update course by id %s", course.ID, err)
+	}
+
+	return nil
 }
 
 func (c courseUsecase) Delete(id string) error {

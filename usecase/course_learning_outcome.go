@@ -41,7 +41,7 @@ func (c courseLearningOutcomeUsecase) GetByCourseID(courseId string) ([]entity.C
 	return clo, nil
 }
 
-func (c courseLearningOutcomeUsecase) Create(code string, description string, weight int, subProgramLearningOutcomeId string, programOutcomeId string, courseId string, status string) (*entity.CourseLearningOutcome, error) {
+func (c courseLearningOutcomeUsecase) Create(code string, description string, weight int, subProgramLearningOutcomeId string, programOutcomeId string, courseId string, status string) error {
 	clo := entity.CourseLearningOutcome{
 		ID:                          ulid.Make().String(),
 		Code:                        code,
@@ -56,10 +56,26 @@ func (c courseLearningOutcomeUsecase) Create(code string, description string, we
 	err := c.courseLearningOutcomeRepo.Create(&clo)
 
 	if err != nil {
-		return nil, errs.New(errs.ErrCreateCLO, "cannot create CLO", err)
+		return errs.New(errs.ErrCreateCLO, "cannot create CLO", err)
 	}
 
-	return &clo, nil
+	return nil
+}
+
+func (u courseLearningOutcomeUsecase) Update(id string, courseLearningOutcome *entity.CourseLearningOutcome) error {
+	existCourseLearningOutcome, err := u.GetByID(id)
+	if err != nil {
+		return errs.New(errs.SameCode, "cannot get courseLearningOutcome id %s to update", id, err)
+	} else if existCourseLearningOutcome == nil {
+		return errs.New(errs.ErrCLONotFound, "cannot get courseLearningOutcome id %s to update", id)
+	}
+
+	err = u.courseLearningOutcomeRepo.Update(id, courseLearningOutcome)
+	if err != nil {
+		return errs.New(errs.ErrUpdateCLO, "cannot update courseLearningOutcome by id %s", courseLearningOutcome.ID, err)
+	}
+
+	return nil
 }
 
 func (c courseLearningOutcomeUsecase) Delete(id string) error {

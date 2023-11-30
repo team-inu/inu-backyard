@@ -57,8 +57,7 @@ func (u scoreUseCase) Update(scoreID string, score float64) error {
 	} else if existScore == nil {
 		return errs.New(errs.ErrScoreNotFound, "score not found", err)
 	}
-	err = u.scoreRepo.Update(&entity.Score{
-		ID:           existScore.ID,
+	err = u.scoreRepo.Update(scoreID, &entity.Score{
 		Score:        score,
 		StudentID:    existScore.StudentID,
 		LecturerID:   existScore.LecturerID,

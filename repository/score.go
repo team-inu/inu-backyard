@@ -40,13 +40,29 @@ func (r scoreRepository) GetByID(id string) (*entity.Score, error) {
 }
 
 func (r scoreRepository) Create(score *entity.Score) error {
-	return r.gorm.Create(&score).Error
+	err := r.gorm.Create(&score).Error
+	if err != nil {
+		return fmt.Errorf("cannot create score: %w", err)
+	}
+
+	return nil
 }
 
-func (r scoreRepository) Update(score *entity.Score) error {
-	return r.gorm.Model(&score).Updates(&score).Error
+func (r scoreRepository) Update(id string, score *entity.Score) error {
+	err := r.gorm.Model(&entity.Score{}).Where("id = ?", id).Updates(score).Error
+	if err != nil {
+		return fmt.Errorf("cannot update score: %w", err)
+	}
+
+	return nil
 }
 
 func (r scoreRepository) Delete(id string) error {
-	return r.gorm.Where("id = ?", id).Delete(&entity.Score{}).Error
+	err := r.gorm.Delete(&entity.Score{ID: id}).Error
+
+	if err != nil {
+		return fmt.Errorf("cannot delete score: %w", err)
+	}
+
+	return nil
 }
