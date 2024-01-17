@@ -6,3 +6,10 @@ type CreateSubProgramLearningOutcomePayload struct {
 	DescriptionEng           string `json:"descriptionEng" validate:"required"`
 	ProgramLearningOutcomeID string `json:"programLearningOutcomeId"`
 }
+
+type UpdateSubProgramLearningOutcomePayload struct {
+	Code                     string `json:"code"`
+	DescriptionThai          string `json:"descriptionThai"`
+	DescriptionEng           string `json:"descriptionEng"`
+	ProgramLearningOutcomeID string `json:"programLearningOutcomeId"`
+}

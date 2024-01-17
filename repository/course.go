@@ -42,13 +42,29 @@ func (r courseRepositoryGorm) GetByID(id string) (*entity.Course, error) {
 }
 
 func (r courseRepositoryGorm) Create(course *entity.Course) error {
-	return r.gorm.Create(&course).Error
+	err := r.gorm.Create(&course).Error
+	if err != nil {
+		return fmt.Errorf("cannot create course: %w", err)
+	}
+
+	return nil
 }
 
-func (r courseRepositoryGorm) Update(course *entity.Course) error {
-	return r.gorm.Model(&course).Updates(&course).Error
+func (r courseRepositoryGorm) Update(id string, course *entity.Course) error {
+	err := r.gorm.Model(&entity.Course{}).Where("id = ?", id).Updates(course).Error
+	if err != nil {
+		return fmt.Errorf("cannot update course: %w", err)
+	}
+
+	return nil
 }
 
 func (r courseRepositoryGorm) Delete(id string) error {
-	return r.gorm.Where("id = ?", id).Delete(&entity.Course{}).Error
+	err := r.gorm.Delete(&entity.Course{ID: id}).Error
+
+	if err != nil {
+		return fmt.Errorf("cannot delete course: %w", err)
+	}
+
+	return nil
 }

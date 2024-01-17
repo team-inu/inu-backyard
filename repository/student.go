@@ -18,7 +18,7 @@ func NewStudentRepositoryGorm(gorm *gorm.DB) entity.StudentRepository {
 func (r studentRepositoryGorm) GetByID(id string) (*entity.Student, error) {
 	var student *entity.Student
 
-	err := r.gorm.Where("idx = ?", id).First(&student).Error
+	err := r.gorm.Where("id = ?", id).First(&student).Error
 
 	if err == gorm.ErrRecordNotFound {
 		return nil, nil
@@ -56,17 +56,38 @@ func (r studentRepositoryGorm) GetByParams(params *entity.Student, limit int, of
 }
 
 func (r studentRepositoryGorm) Create(student *entity.Student) error {
-	return r.gorm.Create(&student).Error
+	err := r.gorm.Create(&student).Error
+	if err != nil {
+		return fmt.Errorf("cannot create student: %w", err)
+	}
+
+	return nil
 }
 
 func (r studentRepositoryGorm) CreateMany(students []entity.Student) error {
-	return r.gorm.Create(&students).Error
+	err := r.gorm.Create(&students).Error
+	if err != nil {
+		return fmt.Errorf("cannot create student: %w", err)
+	}
+
+	return nil
 }
 
-func (r studentRepositoryGorm) Update(student *entity.Student) error {
-	return r.gorm.Model(&student).Updates(&student).Error
+func (r studentRepositoryGorm) Update(id string, student *entity.Student) error {
+	err := r.gorm.Model(&entity.Student{}).Where("id = ?", id).Updates(student).Error
+	if err != nil {
+		return fmt.Errorf("cannot update student: %w", err)
+	}
+
+	return nil
 }
 
 func (r studentRepositoryGorm) Delete(id string) error {
-	return r.gorm.Where("id = ?", id).Delete(&entity.Student{}).Error
+	err := r.gorm.Delete(&entity.Student{ID: id}).Error
+
+	if err != nil {
+		return fmt.Errorf("cannot delete student: %w", err)
+	}
+
+	return nil
 }

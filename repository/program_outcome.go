@@ -42,13 +42,29 @@ func (r programOutcomeRepositoryGorm) GetByID(id string) (*entity.ProgramOutcome
 }
 
 func (r programOutcomeRepositoryGorm) Create(programOutcome *entity.ProgramOutcome) error {
-	return r.gorm.Create(&programOutcome).Error
+	err := r.gorm.Create(&programOutcome).Error
+	if err != nil {
+		return fmt.Errorf("cannot create programOutcome: %w", err)
+	}
+
+	return nil
 }
 
-func (r programOutcomeRepositoryGorm) Update(programOutcome *entity.ProgramOutcome) error {
-	return r.gorm.Model(&programOutcome).Updates(&programOutcome).Error
+func (r programOutcomeRepositoryGorm) Update(id string, programOutcome *entity.ProgramOutcome) error {
+	err := r.gorm.Model(&entity.ProgramOutcome{}).Where("id = ?", id).Updates(programOutcome).Error
+	if err != nil {
+		return fmt.Errorf("cannot update programOutcome: %w", err)
+	}
+
+	return nil
 }
 
 func (r programOutcomeRepositoryGorm) Delete(id string) error {
-	return r.gorm.Where("id = ?", id).Delete(&entity.ProgramOutcome{}).Error
+	err := r.gorm.Delete(&entity.ProgramOutcome{ID: id}).Error
+
+	if err != nil {
+		return fmt.Errorf("cannot delete programOutcome: %w", err)
+	}
+
+	return nil
 }

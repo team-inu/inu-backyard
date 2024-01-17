@@ -9,3 +9,13 @@ type CreateCourseLearningOutcomePayload struct {
 	CourseId                    string `json:"courseId" validate:"required"`
 	Status                      string `json:"status"`
 }
+
+type UpdateCourseLearningOutcomePayload struct {
+	Code                        string `json:"code"`
+	Description                 string `json:"description"`
+	Weight                      int    `json:"weight"`
+	SubProgramLearningOutcomeID string `json:"subProgramLearningOutcomeId"`
+	ProgramOutcomeID            string `json:"programOutcomeId"`
+	CourseId                    string `json:"courseId"`
+	Status                      string `json:"status"`
+}

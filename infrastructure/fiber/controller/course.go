@@ -4,23 +4,24 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/team-inu/inu-backyard/entity"
 	"github.com/team-inu/inu-backyard/infrastructure/fiber/request"
+	"github.com/team-inu/inu-backyard/infrastructure/fiber/response"
 	"github.com/team-inu/inu-backyard/internal/validator"
 )
 
 type courseController struct {
-	CourseUsecase entity.CourseUsecase
+	courseUsecase entity.CourseUsecase
 	Validator     validator.PayloadValidator
 }
 
 func NewCourseController(courseUsecase entity.CourseUsecase) *courseController {
 	return &courseController{
-		CourseUsecase: courseUsecase,
+		courseUsecase: courseUsecase,
 		Validator:     validator.NewPayloadValidator(),
 	}
 }
 
 func (c courseController) GetAll(ctx *fiber.Ctx) error {
-	courses, err := c.CourseUsecase.GetAll()
+	courses, err := c.courseUsecase.GetAll()
 	if err != nil {
 		return err
 	}
@@ -31,12 +32,12 @@ func (c courseController) GetAll(ctx *fiber.Ctx) error {
 func (c courseController) GetByID(ctx *fiber.Ctx) error {
 	courseID := ctx.Params("courseID")
 
-	course, err := c.CourseUsecase.GetByID(courseID)
+	course, err := c.courseUsecase.GetByID(courseID)
 	if err != nil {
 		return err
 	}
 
-	return ctx.JSON(course)
+	return response.NewSuccessResponse(ctx, fiber.StatusCreated, course)
 }
 
 func (c courseController) Create(ctx *fiber.Ctx) error {
@@ -46,26 +47,45 @@ func (c courseController) Create(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	createdCourse, err := c.CourseUsecase.Create(payload.Name, payload.Code, payload.Year, payload.LecturerID)
+	err := c.courseUsecase.Create(payload.Name, payload.Code, payload.SemesterID, payload.LecturerID)
 	if err != nil {
 		return err
 	}
 
-	return ctx.JSON(createdCourse)
+	return response.NewSuccessResponse(ctx, fiber.StatusCreated, nil)
+}
+
+func (c courseController) Update(ctx *fiber.Ctx) error {
+	var payload request.UpdateCourseRequestPayload
+
+	if ok, err := c.Validator.Validate(&payload, ctx); !ok {
+		return err
+	}
+
+	id := ctx.Params("courseID")
+
+	err := c.courseUsecase.Update(id, &entity.Course{
+		Name:       payload.Name,
+		Code:       payload.Code,
+		SemesterID: payload.SemesterID,
+		LecturerID: payload.LecturerID,
+	})
+
+	if err != nil {
+		return err
+	}
+
+	return response.NewSuccessResponse(ctx, fiber.StatusOK, nil)
 }
 
 func (c courseController) Delete(ctx *fiber.Ctx) error {
-	courseID := ctx.Params("courseID")
+	id := ctx.Params("courseID")
 
-	_, err := c.CourseUsecase.GetByID(courseID)
+	err := c.courseUsecase.Delete(id)
+
 	if err != nil {
 		return err
 	}
 
-	err = c.CourseUsecase.Delete(courseID)
-	if err != nil {
-		return err
-	}
-
-	return ctx.SendStatus(200)
+	return response.NewSuccessResponse(ctx, fiber.StatusOK, nil)
 }

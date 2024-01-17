@@ -14,13 +14,14 @@ type SubProgramLearningOutcomeRepository interface {
 	GetAll() ([]SubProgramLearningOutcome, error)
 	GetByID(id string) (*SubProgramLearningOutcome, error)
 	Create(programLearningOutcome *SubProgramLearningOutcome) error
-	Update(programLearningOutcome *SubProgramLearningOutcome) error
+	Update(id string, programLearningOutcome *SubProgramLearningOutcome) error
 	Delete(id string) error
 }
 
 type SubProgramLearningOutcomeUsecase interface {
 	GetAll() ([]SubProgramLearningOutcome, error)
 	GetByID(id string) (*SubProgramLearningOutcome, error)
-	Create(code string, descriptionThai string, descriptionEng string, programLearningOutcomeId string) (*SubProgramLearningOutcome, error)
+	Create(code string, descriptionThai string, descriptionEng string, programLearningOutcomeId string) error
+	Update(id string, programLearningOutcome *SubProgramLearningOutcome) error
 	Delete(id string) error
 }

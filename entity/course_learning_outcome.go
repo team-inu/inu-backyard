@@ -20,7 +20,7 @@ type CourseLearningOutcomeRepository interface {
 	GetByID(id string) (*CourseLearningOutcome, error)
 	GetByCourseID(courseId string) ([]CourseLearningOutcome, error)
 	Create(courseLearningOutcome *CourseLearningOutcome) error
-	Update(courseLearningOutcome *CourseLearningOutcome) error
+	Update(id string, courseLearningOutcome *CourseLearningOutcome) error
 	Delete(id string) error
 }
 
@@ -28,6 +28,7 @@ type CourseLearningOutcomeUsecase interface {
 	GetAll() ([]CourseLearningOutcome, error)
 	GetByID(id string) (*CourseLearningOutcome, error)
 	GetByCourseID(courseId string) ([]CourseLearningOutcome, error)
-	Create(code string, description string, weight int, subProgramLearningOutcomeId string, programOutcomeId string, courseId string, status string) (*CourseLearningOutcome, error)
+	Create(code string, description string, weight int, subProgramLearningOutcomeId string, programOutcomeId string, courseId string, status string) error
+	Update(id string, courseLearningOutcome *CourseLearningOutcome) error
 	Delete(id string) error
 }
