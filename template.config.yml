@@ -4,3 +4,9 @@ database:
   user: root
   password: root
   databaseName: inu_backyard
+client:
+  auth:
+    session:
+      prefix: $
+      secret: secret
+      maxAge: 604800 # 7 days in second unit

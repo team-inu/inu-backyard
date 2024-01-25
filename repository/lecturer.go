@@ -28,6 +28,21 @@ func (r lecturerRepositoryGorm) GetAll() ([]entity.Lecturer, error) {
 	return lecturers, nil
 }
 
+func (r lecturerRepositoryGorm) GetBySessionId(sessionId string) (*entity.Lecturer, error) {
+	//join session and lecturer with session id
+	var lecturer *entity.Lecturer
+
+	err := r.gorm.Joins("JOIN session ON session.lecturer.id = lecturer.id").Where("session.id = ?", sessionId).First(&lecturer).Error
+
+	if err == gorm.ErrRecordNotFound {
+		return nil, nil
+	} else if err != nil {
+		return nil, fmt.Errorf("cannot query to get lecturer by session id: %w", err)
+	}
+
+	return lecturer, nil
+}
+
 func (r lecturerRepositoryGorm) GetByID(id string) (*entity.Lecturer, error) {
 	var lecturer *entity.Lecturer
 
@@ -37,6 +52,19 @@ func (r lecturerRepositoryGorm) GetByID(id string) (*entity.Lecturer, error) {
 		return nil, nil
 	} else if err != nil {
 		return nil, fmt.Errorf("cannot query to get lecturer by id: %w", err)
+	}
+
+	return lecturer, nil
+}
+
+func (r lecturerRepositoryGorm) GetByEmail(email string) (*entity.Lecturer, error) {
+	var lecturer *entity.Lecturer
+
+	err := r.gorm.Where("email = ?", email).First(&lecturer).Error
+	if err == gorm.ErrRecordNotFound {
+		return nil, nil
+	} else if err != nil {
+		return nil, fmt.Errorf("cannot query to get lecturer by email: %w", err)
 	}
 
 	return lecturer, nil

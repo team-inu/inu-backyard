@@ -6,7 +6,7 @@ import (
 )
 
 func main() {
-	var fiberConfig fiber.FiberServerConfig
+	var fiberConfig config.FiberServerConfig
 
 	config.SetConfig(&fiberConfig)
 	config.PrintConfig()

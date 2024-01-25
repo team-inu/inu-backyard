@@ -73,6 +73,7 @@ const (
 	ErrUpdateLecturer   = 21002
 	ErrDeleteLecturer   = 21003
 	ErrQueryLecturer    = 21004
+	ErrLecturerPassword = 21005
 
 	ErrProgrammeNotFound = 21100
 	ErrCreateProgramme   = 21101
@@ -104,4 +105,16 @@ const (
 	ErrUpdateGrade   = 21502
 	ErrDeleteGrade   = 21503
 	ErrQueryGrade    = 21504
+
+	ErrSessionNotFound   = 21600
+	ErrCreateSession     = 21601
+	ErrUpdateSession     = 21602
+	ErrDeleteSession     = 21603
+	ErrQuerySession      = 21604
+	ErrInvalidSession    = 21605
+	ErrSessionExpired    = 21606
+	ErrGetSession        = 21607
+	ErrSignatureMismatch = 21608
+	ErrSessionPrefix     = 21609
+	ErrDupSession        = 21610
 )

@@ -23,10 +23,28 @@ func (u lecturerUseCase) GetAll() ([]entity.Lecturer, error) {
 	return lecturers, nil
 }
 
+func (u lecturerUseCase) GetByEmail(email string) (*entity.Lecturer, error) {
+	lecturer, err := u.lecturerRepo.GetByEmail(email)
+	if err != nil {
+		return nil, errs.New(errs.ErrQueryLecturer, "cannot get lecturer by email %s", email, err)
+	}
+
+	return lecturer, nil
+}
+
 func (u lecturerUseCase) GetByID(id string) (*entity.Lecturer, error) {
 	lecturer, err := u.lecturerRepo.GetByID(id)
 	if err != nil {
 		return nil, errs.New(errs.ErrQueryLecturer, "cannot get lecturer by id %s", id, err)
+	}
+
+	return lecturer, nil
+}
+
+func (u lecturerUseCase) GetBySessionId(sessionId string) (*entity.Lecturer, error) {
+	lecturer, err := u.lecturerRepo.GetBySessionId(sessionId)
+	if err != nil {
+		return nil, errs.New(errs.ErrQueryLecturer, "cannot get lecturer by session id %s", sessionId, err)
 	}
 
 	return lecturer, nil

@@ -8,18 +8,15 @@ import (
 	"github.com/team-inu/inu-backyard/entity"
 	"github.com/team-inu/inu-backyard/infrastructure/database"
 	"github.com/team-inu/inu-backyard/infrastructure/fiber/controller"
+	"github.com/team-inu/inu-backyard/internal/config"
 	"github.com/team-inu/inu-backyard/internal/logger"
 	"github.com/team-inu/inu-backyard/repository"
 	"github.com/team-inu/inu-backyard/usecase"
 	"gorm.io/gorm"
 )
 
-type FiberServerConfig struct {
-	Database database.GormConfig
-}
-
 type fiberServer struct {
-	config FiberServerConfig
+	config config.FiberServerConfig
 
 	gorm *gorm.DB
 
@@ -38,6 +35,7 @@ type fiberServer struct {
 	semesterRepository                  entity.SemesterRepository
 	enrollmentRepository                entity.EnrollmentRepository
 	gradeRepository                     entity.GradeRepository
+	sessionRepository                   entity.SessionRepository
 
 	studentUseCase                   entity.StudentUseCase
 	courseUseCase                    entity.CourseUsecase
@@ -54,14 +52,17 @@ type fiberServer struct {
 	semesterUsecase                  entity.SemesterUseCase
 	enrollmentUsecase                entity.EnrollmentUseCase
 	gradeUsecase                     entity.GradeUseCase
+	sessionUsecase                   entity.SessionUseCase
+	authUsecase                      entity.AuthUseCase
 }
 
 func NewFiberServer() *fiberServer {
 	return &fiberServer{}
 }
 
-func (f *fiberServer) Run(config FiberServerConfig) {
+func (f *fiberServer) Run(config config.FiberServerConfig) {
 	f.config = config
+
 	err := f.initRepository()
 	if err != nil {
 		panic(err)
@@ -106,6 +107,8 @@ func (f *fiberServer) initRepository() (err error) {
 
 	f.gradeRepository = repository.NewGradeRepositoryGorm(f.gorm)
 
+	f.sessionRepository = repository.NewSessionRepository(f.gorm)
+
 	return nil
 }
 
@@ -125,6 +128,8 @@ func (f *fiberServer) initUseCase() {
 	f.enrollmentUsecase = usecase.NewEnrollmentUseCase(f.enrollmentRepository)
 	f.semesterUsecase = usecase.NewSemesterUseCase(f.semesterRepository)
 	f.gradeUsecase = usecase.NewGradeUseCase(f.gradeRepository)
+	f.sessionUsecase = usecase.NewSessionUsecase(f.sessionRepository, f.config.Client.Auth)
+	f.authUsecase = usecase.NewAuthUsecase(f.sessionUsecase, f.lecturerUsecase)
 }
 
 func (f *fiberServer) initController() {
@@ -162,6 +167,7 @@ func (f *fiberServer) initController() {
 	enrollmentController := controller.NewEnrollmentController(f.enrollmentUsecase)
 
 	gradeController := controller.NewGradeController(f.gradeUsecase)
+	authController := controller.NewAuthController(f.config.Client.Auth, f.authUsecase, f.lecturerUsecase)
 
 	app.Use(fiberzap.New(fiberzap.Config{
 		Logger: logger.NewZapLogger(),
@@ -259,6 +265,10 @@ func (f *fiberServer) initController() {
 	app.Post("/grades", gradeController.Create)
 	app.Patch("/grades/:gradeID", gradeController.Update)
 	app.Delete("/grades/:gradeID", gradeController.Delete)
+
+	app.Post("/auth/login", authController.SignIn)
+	app.Post("/auth/logout", authController.SignOut)
+	app.Get("/auth/me", authController.Me)
 
 	app.Get("/metrics", monitor.New())
 

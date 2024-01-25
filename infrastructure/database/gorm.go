@@ -21,7 +21,7 @@ func NewGorm(config *GormConfig) (gormDB *gorm.DB, err error) {
 		},
 	}
 
-	dsn := config.User + ":" + config.Password + "@tcp(" + config.Host + ":" + config.Port + ")/" + config.DatabaseName
+	dsn := config.User + ":" + config.Password + "@tcp(" + config.Host + ":" + config.Port + ")/" + config.DatabaseName + "?parseTime=true"
 	gormDB, err = gorm.Open(mysql.Open(dsn), gormConfig)
 	if err != nil {
 		return nil, err
