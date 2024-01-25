@@ -61,7 +61,7 @@ func (u sessionUsecase) Create(
 	userId string, ipAddress string, userAgent string,
 ) (*fiber.Cookie, error) {
 	fmt.Println("=====xxxxx")
-	if err := u.sessionRepository.DeleteDuplicates(userId, userAgent, ipAddress); err != nil {
+	if err := u.sessionRepository.DeleteDuplicates(userId, ipAddress, userAgent); err != nil {
 		return nil, errs.New(
 			errs.ErrDupSession,
 			"cannot delete previous session to create a new session for user id %d", userId,
