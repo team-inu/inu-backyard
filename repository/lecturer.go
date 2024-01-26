@@ -29,10 +29,9 @@ func (r lecturerRepositoryGorm) GetAll() ([]entity.Lecturer, error) {
 }
 
 func (r lecturerRepositoryGorm) GetBySessionId(sessionId string) (*entity.Lecturer, error) {
-	//join session and lecturer with session id
 	var lecturer *entity.Lecturer
 
-	err := r.gorm.Joins("JOIN session ON session.lecturer.id = lecturer.id").Where("session.id = ?", sessionId).First(&lecturer).Error
+	err := r.gorm.Joins("JOIN session ON session.lecturer_id = lecturer_id").Where("session.id = ?", sessionId).First(&lecturer).Error
 
 	if err == gorm.ErrRecordNotFound {
 		return nil, nil

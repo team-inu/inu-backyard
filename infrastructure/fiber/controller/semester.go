@@ -13,10 +13,10 @@ type semesterController struct {
 	Validator       validator.PayloadValidator
 }
 
-func NewSemesterController(semesterUseCase entity.SemesterUseCase) *semesterController {
+func NewSemesterController(validator validator.PayloadValidator, semesterUseCase entity.SemesterUseCase) *semesterController {
 	return &semesterController{
 		SemesterUseCase: semesterUseCase,
-		Validator:       validator.NewPayloadValidator(),
+		Validator:       validator,
 	}
 }
 

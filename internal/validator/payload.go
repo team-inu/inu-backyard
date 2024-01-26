@@ -9,6 +9,7 @@ import (
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
 	errs "github.com/team-inu/inu-backyard/entity/error"
+	"github.com/team-inu/inu-backyard/internal/config"
 )
 
 type PayloadValidator interface {
@@ -18,16 +19,18 @@ type PayloadValidator interface {
 
 type payloadValidator struct {
 	validator *validator.Validate
+	config    *config.AuthConfig
 }
 
-func NewPayloadValidator() PayloadValidator {
+func NewPayloadValidator(config *config.AuthConfig) PayloadValidator {
 	return &payloadValidator{
 		validator: validator.New(),
+		config:    config,
 	}
 }
 
 func (v *payloadValidator) ValidateAuth(ctx *fiber.Ctx) (string, error) {
-	sid := ctx.Cookies("constant.SessionCookieName") // TODO: move cookie name to constant
+	sid := ctx.Cookies(v.config.Session.CookieName) // TODO: move cookie name to constant
 	if sid == "" {
 		return "", errs.New(errs.ErrAuthHeader, "missing auth header")
 	}

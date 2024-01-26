@@ -12,10 +12,10 @@ type scoreController struct {
 	Validator    validator.PayloadValidator
 }
 
-func NewScoreController(scoreUsecase entity.ScoreUsecase) *scoreController {
+func NewScoreController(validator validator.PayloadValidator, scoreUsecase entity.ScoreUsecase) *scoreController {
 	return &scoreController{
 		ScoreUsecase: scoreUsecase,
-		Validator:    validator.NewPayloadValidator(),
+		Validator:    validator,
 	}
 }
 

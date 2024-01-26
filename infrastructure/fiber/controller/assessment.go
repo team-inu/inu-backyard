@@ -13,10 +13,10 @@ type assessmentController struct {
 	Validator         validator.PayloadValidator
 }
 
-func NewAssessmentController(assessmentUseCase entity.AssessmentUseCase) *assessmentController {
+func NewAssessmentController(validator validator.PayloadValidator, assessmentUseCase entity.AssessmentUseCase) *assessmentController {
 	return &assessmentController{
 		AssessmentUseCase: assessmentUseCase,
-		Validator:         validator.NewPayloadValidator(),
+		Validator:         validator,
 	}
 }
 

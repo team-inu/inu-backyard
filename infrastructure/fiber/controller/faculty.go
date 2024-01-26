@@ -12,10 +12,10 @@ type FacultyController struct {
 	Validator      validator.PayloadValidator
 }
 
-func NewFacultyController(facultyUseCase entity.FacultyUseCase) *FacultyController {
+func NewFacultyController(validator validator.PayloadValidator, facultyUseCase entity.FacultyUseCase) *FacultyController {
 	return &FacultyController{
 		FacultyUseCase: facultyUseCase,
-		Validator:      validator.NewPayloadValidator(),
+		Validator:      validator,
 	}
 }
 

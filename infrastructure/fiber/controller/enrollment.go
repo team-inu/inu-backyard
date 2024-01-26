@@ -12,10 +12,10 @@ type enrollmentController struct {
 	Validator         validator.PayloadValidator
 }
 
-func NewEnrollmentController(enrollmentUseCase entity.EnrollmentUseCase) *enrollmentController {
+func NewEnrollmentController(validator validator.PayloadValidator, enrollmentUseCase entity.EnrollmentUseCase) *enrollmentController {
 	return &enrollmentController{
 		EnrollmentUseCase: enrollmentUseCase,
-		Validator:         validator.NewPayloadValidator(),
+		Validator:         validator,
 	}
 }
 

@@ -13,10 +13,10 @@ type programOutcomeController struct {
 	Validator             validator.PayloadValidator
 }
 
-func NewProgramOutcomeController(programOutcomeUsecase entity.ProgramOutcomeUsecase) *programOutcomeController {
+func NewProgramOutcomeController(validator validator.PayloadValidator, programOutcomeUsecase entity.ProgramOutcomeUsecase) *programOutcomeController {
 	return &programOutcomeController{
 		programOutcomeUsecase: programOutcomeUsecase,
-		Validator:             validator.NewPayloadValidator(),
+		Validator:             validator,
 	}
 }
 

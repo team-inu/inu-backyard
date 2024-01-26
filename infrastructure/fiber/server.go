@@ -8,8 +8,10 @@ import (
 	"github.com/team-inu/inu-backyard/entity"
 	"github.com/team-inu/inu-backyard/infrastructure/database"
 	"github.com/team-inu/inu-backyard/infrastructure/fiber/controller"
+	"github.com/team-inu/inu-backyard/infrastructure/fiber/middleware"
 	"github.com/team-inu/inu-backyard/internal/config"
 	"github.com/team-inu/inu-backyard/internal/logger"
+	"github.com/team-inu/inu-backyard/internal/validator"
 	"github.com/team-inu/inu-backyard/repository"
 	"github.com/team-inu/inu-backyard/usecase"
 	"gorm.io/gorm"
@@ -141,33 +143,38 @@ func (f *fiberServer) initController() {
 
 	app := fiber.New(fiberConfig)
 
+	validator := validator.NewPayloadValidator(&f.config.Client.Auth)
+
+	authMiddleware := middleware.NewAuthMiddleware(validator, f.authUsecase)
+
+	//TODO: change to production url
 	app.Use(cors.New(cors.Config{
 		AllowHeaders:     "Origin,Content-Type,Accept,Content-Length,Accept-Language,Accept-Encoding,Connection,Access-Control-Allow-Origin",
-		AllowOrigins:     "*",
+		AllowOrigins:     "http://localhost:3000",
 		AllowCredentials: true,
 		AllowMethods:     "GET,POST,HEAD,PUT,DELETE,PATCH,OPTIONS",
 	}))
 
-	studentController := controller.NewStudentController(f.studentUseCase)
-	courseController := controller.NewCourseController(f.courseUseCase)
-	courseLearningOutcomeController := controller.NewCourseLearningOutcomeController(f.courseLearningOutcomeUsecase)
-	programLearningOutcomeController := controller.NewProgramLearningOutcomeController(f.programLearningOutcomeUsecase)
-	subProgramLearningOutcomeController := controller.NewSubProgramLearningOutcomeController(f.subProgramLearningOutcomeUsecase)
-	programOutcomeController := controller.NewProgramOutcomeController(f.programOutcomeUsecase)
-	facultyController := controller.NewFacultyController(f.facultyUsecase)
-	departmentController := controller.NewDepartmentController(f.departmentUsecase)
-	scoreController := controller.NewScoreController(f.scoreUsecase)
+	studentController := controller.NewStudentController(validator, f.studentUseCase)
+	courseController := controller.NewCourseController(validator, f.courseUseCase)
+	courseLearningOutcomeController := controller.NewCourseLearningOutcomeController(validator, f.courseLearningOutcomeUsecase)
+	programLearningOutcomeController := controller.NewProgramLearningOutcomeController(validator, f.programLearningOutcomeUsecase)
+	subProgramLearningOutcomeController := controller.NewSubProgramLearningOutcomeController(validator, f.subProgramLearningOutcomeUsecase)
+	programOutcomeController := controller.NewProgramOutcomeController(validator, f.programOutcomeUsecase)
+	facultyController := controller.NewFacultyController(validator, f.facultyUsecase)
+	departmentController := controller.NewDepartmentController(validator, f.departmentUsecase)
+	scoreController := controller.NewScoreController(validator, f.scoreUsecase)
 
-	lecturerController := controller.NewLecturerController(f.lecturerUsecase)
+	lecturerController := controller.NewLecturerController(validator, f.lecturerUsecase)
 
-	assessmentController := controller.NewAssessmentController(f.assessmentUsecase)
-	programmeController := controller.NewProgrammeController(f.programmeUsecase)
-	semesterController := controller.NewSemesterController(f.semesterUsecase)
+	assessmentController := controller.NewAssessmentController(validator, f.assessmentUsecase)
+	programmeController := controller.NewProgrammeController(validator, f.programmeUsecase)
+	semesterController := controller.NewSemesterController(validator, f.semesterUsecase)
 
-	enrollmentController := controller.NewEnrollmentController(f.enrollmentUsecase)
+	enrollmentController := controller.NewEnrollmentController(validator, f.enrollmentUsecase)
 
-	gradeController := controller.NewGradeController(f.gradeUsecase)
-	authController := controller.NewAuthController(f.config.Client.Auth, f.authUsecase, f.lecturerUsecase)
+	gradeController := controller.NewGradeController(validator, f.gradeUsecase)
+	authController := controller.NewAuthController(validator, f.config.Client.Auth, f.authUsecase, f.lecturerUsecase)
 
 	app.Use(fiberzap.New(fiberzap.Config{
 		Logger: logger.NewZapLogger(),
@@ -267,8 +274,8 @@ func (f *fiberServer) initController() {
 	app.Delete("/grades/:gradeID", gradeController.Delete)
 
 	app.Post("/auth/login", authController.SignIn)
-	app.Post("/auth/logout", authController.SignOut)
-	app.Get("/auth/me", authController.Me)
+	app.Get("/auth/logout", authController.SignOut)
+	app.Get("/auth/me", authMiddleware, authController.Me)
 
 	app.Get("/metrics", monitor.New())
 

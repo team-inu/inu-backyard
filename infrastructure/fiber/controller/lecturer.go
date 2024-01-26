@@ -13,10 +13,10 @@ type lecturerController struct {
 	Validator       validator.PayloadValidator
 }
 
-func NewLecturerController(lecturerUseCase entity.LecturerUseCase) *lecturerController {
+func NewLecturerController(validator validator.PayloadValidator, lecturerUseCase entity.LecturerUseCase) *lecturerController {
 	return &lecturerController{
 		lecturerUseCase: lecturerUseCase,
-		Validator:       validator.NewPayloadValidator(),
+		Validator:       validator,
 	}
 }
 

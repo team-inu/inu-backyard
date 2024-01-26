@@ -13,10 +13,10 @@ type gradeController struct {
 	Validator    validator.PayloadValidator
 }
 
-func NewGradeController(gradeUseCase entity.GradeUseCase) *gradeController {
+func NewGradeController(validator validator.PayloadValidator, gradeUseCase entity.GradeUseCase) *gradeController {
 	return &gradeController{
 		gradeUseCase: gradeUseCase,
-		Validator:    validator.NewPayloadValidator(),
+		Validator:    validator,
 	}
 }
 

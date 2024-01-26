@@ -12,10 +12,10 @@ type DepartmentController struct {
 	validator         validator.PayloadValidator
 }
 
-func NewDepartmentController(departmentUseCase entity.DepartmentUseCase) *DepartmentController {
+func NewDepartmentController(validator validator.PayloadValidator, departmentUseCase entity.DepartmentUseCase) *DepartmentController {
 	return &DepartmentController{
 		departmentUseCase: departmentUseCase,
-		validator:         validator.NewPayloadValidator(),
+		validator:         validator,
 	}
 }
 

@@ -13,10 +13,10 @@ type programmeController struct {
 	Validator        validator.PayloadValidator
 }
 
-func NewProgrammeController(programmeUseCase entity.ProgrammeUseCase) *programmeController {
+func NewProgrammeController(validator validator.PayloadValidator, programmeUseCase entity.ProgrammeUseCase) *programmeController {
 	return &programmeController{
 		programmeUseCase: programmeUseCase,
-		Validator:        validator.NewPayloadValidator(),
+		Validator:        validator,
 	}
 }
 

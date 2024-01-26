@@ -21,13 +21,14 @@ type AuthController struct {
 }
 
 func NewAuthController(
+	validator validator.PayloadValidator,
 	config config.AuthConfig,
 	authUseCase entity.AuthUseCase,
 	lecturerUseCase entity.LecturerUseCase,
 ) *AuthController {
 	return &AuthController{
 		config:          config,
-		validator:       validator.NewPayloadValidator(),
+		validator:       validator,
 		authUseCase:     authUseCase,
 		lecturerUseCase: lecturerUseCase,
 	}
