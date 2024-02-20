@@ -8,38 +8,38 @@ import (
 	"github.com/team-inu/inu-backyard/internal/validator"
 )
 
-type assessmentController struct {
-	AssessmentUseCase entity.AssessmentUseCase
+type assignmentController struct {
+	AssignmentUseCase entity.AssignmentUseCase
 	Validator         validator.PayloadValidator
 }
 
-func NewAssessmentController(validator validator.PayloadValidator, assessmentUseCase entity.AssessmentUseCase) *assessmentController {
-	return &assessmentController{
-		AssessmentUseCase: assessmentUseCase,
+func NewAssignmentController(validator validator.PayloadValidator, assignmentUseCase entity.AssignmentUseCase) *assignmentController {
+	return &assignmentController{
+		AssignmentUseCase: assignmentUseCase,
 		Validator:         validator,
 	}
 }
 
-func (c assessmentController) GetByID(ctx *fiber.Ctx) error {
-	assessmentID := ctx.Params("assessmentID")
+func (c assignmentController) GetByID(ctx *fiber.Ctx) error {
+	assignmentID := ctx.Params("assignmentID")
 
-	assessment, err := c.AssessmentUseCase.GetByID(assessmentID)
+	assignment, err := c.AssignmentUseCase.GetByID(assignmentID)
 
 	if err != nil {
 		return err
 	}
 
-	return response.NewSuccessResponse(ctx, fiber.StatusOK, assessment)
+	return response.NewSuccessResponse(ctx, fiber.StatusOK, assignment)
 }
 
-func (c assessmentController) GetAssessments(ctx *fiber.Ctx) error {
-	var payload request.GetAssessmentsByParamsPayload
+func (c assignmentController) GetAssignments(ctx *fiber.Ctx) error {
+	var payload request.GetAssignmentsByParamsPayload
 
 	if ok, err := c.Validator.Validate(&payload, ctx); !ok {
 		return err
 	}
 
-	assessments, err := c.AssessmentUseCase.GetByParams(&entity.Assessment{
+	assignments, err := c.AssignmentUseCase.GetByParams(&entity.Assignment{
 		CourseLearningOutcomeID: payload.CourseLearningOutcomeID,
 	}, -1, -1)
 
@@ -47,33 +47,33 @@ func (c assessmentController) GetAssessments(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	return response.NewSuccessResponse(ctx, fiber.StatusOK, assessments)
+	return response.NewSuccessResponse(ctx, fiber.StatusOK, assignments)
 }
 
-func (c assessmentController) GetAssessmentsByCourseID(ctx *fiber.Ctx) error {
-	var payload request.GetAssessmentsByCourseIDPayload
+func (c assignmentController) GetAssignmentsByCourseID(ctx *fiber.Ctx) error {
+	var payload request.GetAssignmentsByCourseIDPayload
 
 	if ok, err := c.Validator.Validate(&payload, ctx); !ok {
 		return err
 	}
 
-	assessment, err := c.AssessmentUseCase.GetByCourseID(payload.CourseID, -1, -1)
+	assignment, err := c.AssignmentUseCase.GetByCourseID(payload.CourseID, -1, -1)
 
 	if err != nil {
 		return err
 	}
 
-	return response.NewSuccessResponse(ctx, fiber.StatusOK, assessment)
+	return response.NewSuccessResponse(ctx, fiber.StatusOK, assignment)
 }
 
-func (c assessmentController) Create(ctx *fiber.Ctx) error {
-	var payload request.CreateAssessmentPayload
+func (c assignmentController) Create(ctx *fiber.Ctx) error {
+	var payload request.CreateAssignmentPayload
 
 	if ok, err := c.Validator.Validate(&payload, ctx); !ok {
 		return err
 	}
 
-	err := c.AssessmentUseCase.Create(&entity.Assessment{
+	err := c.AssignmentUseCase.Create(&entity.Assignment{
 		Name:                    payload.Name,
 		Description:             payload.Description,
 		Score:                   *payload.Score,
@@ -87,26 +87,26 @@ func (c assessmentController) Create(ctx *fiber.Ctx) error {
 	return response.NewSuccessResponse(ctx, fiber.StatusCreated, nil)
 }
 
-func (c assessmentController) CreateMany(ctx *fiber.Ctx) error {
-	var payload request.CreateBulkAssessmentsPayload
+func (c assignmentController) CreateMany(ctx *fiber.Ctx) error {
+	var payload request.CreateBulkAssignmentsPayload
 
 	if ok, err := c.Validator.Validate(&payload, ctx); !ok {
 		return err
 	}
 
-	newAssessments := []entity.Assessment{}
+	newAssignments := []entity.Assignment{}
 
-	for _, assessment := range payload.Assessments {
-		newAssessments = append(newAssessments, entity.Assessment{
-			Name:                    assessment.Name,
-			Description:             assessment.Description,
-			Score:                   *assessment.Score,
-			Weight:                  *assessment.Weight,
-			CourseLearningOutcomeID: assessment.CourseLearningOutcomeID,
+	for _, assignment := range payload.Assignments {
+		newAssignments = append(newAssignments, entity.Assignment{
+			Name:                    assignment.Name,
+			Description:             assignment.Description,
+			Score:                   *assignment.Score,
+			Weight:                  *assignment.Weight,
+			CourseLearningOutcomeID: assignment.CourseLearningOutcomeID,
 		})
 	}
 
-	err := c.AssessmentUseCase.CreateMany(newAssessments)
+	err := c.AssignmentUseCase.CreateMany(newAssignments)
 	if err != nil {
 		return err
 	}
@@ -114,14 +114,14 @@ func (c assessmentController) CreateMany(ctx *fiber.Ctx) error {
 	return response.NewSuccessResponse(ctx, fiber.StatusCreated, nil)
 }
 
-func (c assessmentController) Update(ctx *fiber.Ctx) error {
-	var payload request.UpdateAssessmentRequestPayload
+func (c assignmentController) Update(ctx *fiber.Ctx) error {
+	var payload request.UpdateAssignmentRequestPayload
 
 	if ok, err := c.Validator.Validate(&payload, ctx); !ok {
 		return err
 	}
 
-	err := c.AssessmentUseCase.Update(payload.ID, &entity.Assessment{
+	err := c.AssignmentUseCase.Update(payload.ID, &entity.Assignment{
 		Name:                    payload.Name,
 		Description:             payload.Description,
 		Score:                   payload.Score,
@@ -136,14 +136,14 @@ func (c assessmentController) Update(ctx *fiber.Ctx) error {
 	return response.NewSuccessResponse(ctx, fiber.StatusOK, nil)
 }
 
-func (c assessmentController) Delete(ctx *fiber.Ctx) error {
-	var payload request.DeleteAssessmentRequestPayload
+func (c assignmentController) Delete(ctx *fiber.Ctx) error {
+	var payload request.DeleteAssignmentRequestPayload
 
 	if ok, err := c.Validator.Validate(&payload, ctx); !ok {
 		return err
 	}
 
-	err := c.AssessmentUseCase.Delete(payload.ID)
+	err := c.AssignmentUseCase.Delete(payload.ID)
 
 	if err != nil {
 		return err

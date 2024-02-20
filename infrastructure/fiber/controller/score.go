@@ -46,7 +46,7 @@ func (c scoreController) Create(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	createdScore, err := c.ScoreUsecase.Create(payload.Score, payload.StudentID, payload.AssessmentID, payload.LecturerID)
+	createdScore, err := c.ScoreUsecase.Create(payload.Score, payload.StudentID, payload.AssignmentID, payload.LecturerID)
 	if err != nil {
 		return err
 	}

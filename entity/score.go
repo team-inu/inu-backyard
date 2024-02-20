@@ -5,11 +5,11 @@ type Score struct {
 	Score        float64 ` json:"score"`
 	StudentID    string  `json:"student_id"`
 	LecturerID   string  `json:"lecturer_id"`
-	AssessmentID string  `json:"assessment_id"`
+	AssignmentID string  `json:"assignment_id"`
 
 	Student    Student
 	Lecturer   Lecturer
-	Assessment Assessment
+	Assignment Assignment
 }
 
 type ScoreRepository interface {
@@ -23,7 +23,7 @@ type ScoreRepository interface {
 type ScoreUsecase interface {
 	GetAll() ([]Score, error)
 	GetByID(id string) (*Score, error)
-	Create(score float64, studentID string, assessmentID string, lecturerID string) (*Score, error)
+	Create(score float64, studentID string, assignmentID string, lecturerID string) (*Score, error)
 	Update(scoreID string, score float64) error
 	Delete(id string) error
 }

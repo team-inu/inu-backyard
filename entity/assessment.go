@@ -1,6 +1,6 @@
 package entity
 
-type Assessment struct {
+type Assignment struct {
 	ID                      string `json:"id" gorm:"primaryKey;type:char(255)"`
 	Name                    string `json:"name"`
 	Description             string `json:"description"`
@@ -11,21 +11,21 @@ type Assessment struct {
 	CourseLearningOutcome CourseLearningOutcome ` gorm:"references:Code"`
 }
 
-type AssessmentRepository interface {
-	GetByID(id string) (*Assessment, error)
-	GetByParams(params *Assessment, limit int, offset int) ([]Assessment, error)
-	Create(assessment *Assessment) error
-	CreateMany(assessment []Assessment) error
-	Update(id string, assessment *Assessment) error
+type AssignmentRepository interface {
+	GetByID(id string) (*Assignment, error)
+	GetByParams(params *Assignment, limit int, offset int) ([]Assignment, error)
+	Create(assignment *Assignment) error
+	CreateMany(assignment []Assignment) error
+	Update(id string, assignment *Assignment) error
 	Delete(id string) error
 }
 
-type AssessmentUseCase interface {
-	GetByID(id string) (*Assessment, error)
-	GetByParams(params *Assessment, limit int, offset int) ([]Assessment, error)
-	GetByCourseID(courseID string, limit int, offset int) ([]Assessment, error)
-	Create(assessment *Assessment) error
-	CreateMany(assessment []Assessment) error
-	Update(id string, assessment *Assessment) error
+type AssignmentUseCase interface {
+	GetByID(id string) (*Assignment, error)
+	GetByParams(params *Assignment, limit int, offset int) ([]Assignment, error)
+	GetByCourseID(courseID string, limit int, offset int) ([]Assignment, error)
+	Create(assignment *Assignment) error
+	CreateMany(assignment []Assignment) error
+	Update(id string, assignment *Assignment) error
 	Delete(id string) error
 }

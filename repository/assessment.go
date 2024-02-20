@@ -7,80 +7,80 @@ import (
 	"gorm.io/gorm"
 )
 
-type assessmentRepositoryGorm struct {
+type assignmentRepositoryGorm struct {
 	gorm *gorm.DB
 }
 
-func NewAssessmentRepositoryGorm(gorm *gorm.DB) entity.AssessmentRepository {
-	return &assessmentRepositoryGorm{gorm: gorm}
+func NewAssignmentRepositoryGorm(gorm *gorm.DB) entity.AssignmentRepository {
+	return &assignmentRepositoryGorm{gorm: gorm}
 }
 
-func (r assessmentRepositoryGorm) GetByID(id string) (*entity.Assessment, error) {
-	var assessment *entity.Assessment
+func (r assignmentRepositoryGorm) GetByID(id string) (*entity.Assignment, error) {
+	var assignment *entity.Assignment
 
-	err := r.gorm.Where("id = ?", id).First(&assessment).Error
+	err := r.gorm.Where("id = ?", id).First(&assignment).Error
 
 	if err == gorm.ErrRecordNotFound {
 		return nil, nil
 	} else if err != nil {
-		return nil, fmt.Errorf("cannot query to get assessment by id: %w", err)
+		return nil, fmt.Errorf("cannot query to get assignment by id: %w", err)
 	}
 
-	return assessment, nil
+	return assignment, nil
 }
 
-func (r assessmentRepositoryGorm) GetByParams(params *entity.Assessment, limit int, offset int) ([]entity.Assessment, error) {
-	var assessments []entity.Assessment
+func (r assignmentRepositoryGorm) GetByParams(params *entity.Assignment, limit int, offset int) ([]entity.Assignment, error) {
+	var assignments []entity.Assignment
 
-	err := r.gorm.Where(params).Limit(limit).Offset(offset).Find(&assessments).Error
+	err := r.gorm.Where(params).Limit(limit).Offset(offset).Find(&assignments).Error
 	if err == gorm.ErrRecordNotFound {
 		return nil, nil
 	} else if err != nil {
-		return nil, fmt.Errorf("cannot query to get assessment by params: %w", err)
+		return nil, fmt.Errorf("cannot query to get assignment by params: %w", err)
 	}
 
-	return assessments, nil
+	return assignments, nil
 }
 
-func (r assessmentRepositoryGorm) Create(assessment *entity.Assessment) error {
-	err := r.gorm.Create(&assessment).Error
+func (r assignmentRepositoryGorm) Create(assignment *entity.Assignment) error {
+	err := r.gorm.Create(&assignment).Error
 	if err != nil {
-		return fmt.Errorf("cannot create assessment: %w", err)
+		return fmt.Errorf("cannot create assignment: %w", err)
 	}
 
 	return nil
 }
 
-func (r assessmentRepositoryGorm) CreateMany(assessments []entity.Assessment) error {
-	err := r.gorm.Create(&assessments).Error
+func (r assignmentRepositoryGorm) CreateMany(assignments []entity.Assignment) error {
+	err := r.gorm.Create(&assignments).Error
 	if err != nil {
-		return fmt.Errorf("cannot create assessments: %w", err)
+		return fmt.Errorf("cannot create assignments: %w", err)
 	}
 
 	return nil
 }
 
-func (r assessmentRepositoryGorm) Update(id string, assessment *entity.Assessment) error {
-	//find old assessment by name
-	var oldAssessment *entity.Assessment
-	err := r.gorm.Where("id = ?", id).First(&oldAssessment).Error
+func (r assignmentRepositoryGorm) Update(id string, assignment *entity.Assignment) error {
+	//find old assignment by name
+	var oldAssignment *entity.Assignment
+	err := r.gorm.Where("id = ?", id).First(&oldAssignment).Error
 	if err != nil {
-		return fmt.Errorf("cannot get assessment while updating assessment: %w", err)
+		return fmt.Errorf("cannot get assignment while updating assignment: %w", err)
 	}
 
-	//update old assessment with new name
-	err = r.gorm.Model(&oldAssessment).Updates(assessment).Error
+	//update old assignment with new name
+	err = r.gorm.Model(&oldAssignment).Updates(assignment).Error
 	if err != nil {
-		return fmt.Errorf("cannot update assessment by id: %w", err)
+		return fmt.Errorf("cannot update assignment by id: %w", err)
 	}
 
 	return nil
 }
 
-func (r assessmentRepositoryGorm) Delete(id string) error {
-	err := r.gorm.Where("id = ?", id).Delete(&entity.Assessment{}).Error
+func (r assignmentRepositoryGorm) Delete(id string) error {
+	err := r.gorm.Where("id = ?", id).Delete(&entity.Assignment{}).Error
 	if err != nil {
-		return fmt.Errorf("cannot delete assessment by id: %w", err)
+		return fmt.Errorf("cannot delete assignment by id: %w", err)
 	}
 
 	return nil

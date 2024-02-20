@@ -6,92 +6,92 @@ import (
 	errs "github.com/team-inu/inu-backyard/entity/error"
 )
 
-type assessmentUseCase struct {
-	assessmentRepo            entity.AssessmentRepository
+type assignmentUseCase struct {
+	assignmentRepo            entity.AssignmentRepository
 	courseLearningOutcomeRepo entity.CourseLearningOutcomeRepository
 }
 
-func NewAssessmentUseCase(assessmentRepo entity.AssessmentRepository) entity.AssessmentUseCase {
-	return &assessmentUseCase{assessmentRepo: assessmentRepo}
+func NewAssignmentUseCase(assignmentRepo entity.AssignmentRepository) entity.AssignmentUseCase {
+	return &assignmentUseCase{assignmentRepo: assignmentRepo}
 }
 
-func (u assessmentUseCase) GetByID(id string) (*entity.Assessment, error) {
-	assessment, err := u.assessmentRepo.GetByID(id)
+func (u assignmentUseCase) GetByID(id string) (*entity.Assignment, error) {
+	assignment, err := u.assignmentRepo.GetByID(id)
 	if err != nil {
-		return nil, errs.New(errs.ErrQueryAssessment, "cannot get assessment by id %s", id, err)
+		return nil, errs.New(errs.ErrQueryAssignment, "cannot get assignment by id %s", id, err)
 	}
 
-	return assessment, nil
+	return assignment, nil
 }
 
-func (u assessmentUseCase) GetByParams(params *entity.Assessment, limit int, offset int) ([]entity.Assessment, error) {
-	assessments, err := u.assessmentRepo.GetByParams(params, limit, offset)
+func (u assignmentUseCase) GetByParams(params *entity.Assignment, limit int, offset int) ([]entity.Assignment, error) {
+	assignments, err := u.assignmentRepo.GetByParams(params, limit, offset)
 
 	if err != nil {
-		return nil, errs.New(errs.ErrQueryAssessment, "cannot get assessment by params", err)
+		return nil, errs.New(errs.ErrQueryAssignment, "cannot get assignment by params", err)
 	}
 
-	return assessments, nil
+	return assignments, nil
 }
 
-func (u assessmentUseCase) GetByCourseID(courseID string, limit int, offset int) ([]entity.Assessment, error) {
+func (u assignmentUseCase) GetByCourseID(courseID string, limit int, offset int) ([]entity.Assignment, error) {
 	// clos, err := u.courseLearningOutcomeRepo.GetByCourseID(courseID)
 
 	// if err != nil {
-	// 	return nil, errs.New(errs.ErrQueryAssessment, "cannot get assessment by params", err)
+	// 	return nil, errs.New(errs.ErrQueryAssignment, "cannot get assignment by params", err)
 	// }
-	// TODO: after we have table between assessment and clos
+	// TODO: after we have table between assignment and clos
 	return nil, nil
 }
 
-func (u assessmentUseCase) Create(assessment *entity.Assessment) error {
-	assessment.ID = ulid.Make().String()
-	err := u.assessmentRepo.Create(assessment)
+func (u assignmentUseCase) Create(assignment *entity.Assignment) error {
+	assignment.ID = ulid.Make().String()
+	err := u.assignmentRepo.Create(assignment)
 	if err != nil {
-		return errs.New(errs.ErrCreateAssessment, "cannot create assessment", err)
+		return errs.New(errs.ErrCreateAssignment, "cannot create assignment", err)
 	}
 
 	return nil
 }
 
-func (u assessmentUseCase) CreateMany(assessments []entity.Assessment) error {
-	for index, _ := range assessments {
-		assessments[index].ID = ulid.Make().String()
+func (u assignmentUseCase) CreateMany(assignments []entity.Assignment) error {
+	for index, _ := range assignments {
+		assignments[index].ID = ulid.Make().String()
 	}
-	err := u.assessmentRepo.CreateMany(assessments)
+	err := u.assignmentRepo.CreateMany(assignments)
 	if err != nil {
-		return errs.New(errs.ErrCreateAssessment, "cannot create assessments", err)
+		return errs.New(errs.ErrCreateAssignment, "cannot create assignments", err)
 	}
 
 	return nil
 }
 
-func (u assessmentUseCase) Update(id string, assessment *entity.Assessment) error {
-	existAssessment, err := u.GetByID(id)
+func (u assignmentUseCase) Update(id string, assignment *entity.Assignment) error {
+	existAssignment, err := u.GetByID(id)
 	if err != nil {
-		return errs.New(errs.SameCode, "cannot get assessment id %s to update", id, err)
-	} else if existAssessment == nil {
-		return errs.New(errs.ErrAssessmentNotFound, "cannot get assessment id %s to update", id)
+		return errs.New(errs.SameCode, "cannot get assignment id %s to update", id, err)
+	} else if existAssignment == nil {
+		return errs.New(errs.ErrAssignmentNotFound, "cannot get assignment id %s to update", id)
 	}
 
-	err = u.assessmentRepo.Update(id, assessment)
+	err = u.assignmentRepo.Update(id, assignment)
 
 	if err != nil {
-		return errs.New(errs.ErrUpdateAssessment, "cannot update assessment by id %s", assessment.ID, err)
+		return errs.New(errs.ErrUpdateAssignment, "cannot update assignment by id %s", assignment.ID, err)
 	}
 
 	return nil
 }
 
-func (u assessmentUseCase) Delete(id string) error {
-	assessment, err := u.assessmentRepo.GetByID(id)
+func (u assignmentUseCase) Delete(id string) error {
+	assignment, err := u.assignmentRepo.GetByID(id)
 	if err != nil {
-		return errs.New(errs.SameCode, "cannot get assessment id %s to delete", id, err)
-	} else if assessment == nil {
-		return errs.New(errs.ErrAssessmentNotFound, "cannot get assessment id %s to delete", id)
+		return errs.New(errs.SameCode, "cannot get assignment id %s to delete", id, err)
+	} else if assignment == nil {
+		return errs.New(errs.ErrAssignmentNotFound, "cannot get assignment id %s to delete", id)
 	}
 
-	err = u.assessmentRepo.Delete(id)
+	err = u.assignmentRepo.Delete(id)
 
 	if err != nil {
 		return err

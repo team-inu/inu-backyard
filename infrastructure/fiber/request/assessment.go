@@ -1,6 +1,6 @@
 package request
 
-type CreateAssessmentPayload struct {
+type CreateAssignmentPayload struct {
 	Name        string `json:"name" validate:"required"`
 	Description string `json:"description"`
 	Score       *int   `json:"score" validate:"required"`
@@ -9,19 +9,19 @@ type CreateAssessmentPayload struct {
 	CourseLearningOutcomeID string `json:"courseLearningOutcomeId" validate:"required"`
 }
 
-type GetAssessmentsByParamsPayload struct {
+type GetAssignmentsByParamsPayload struct {
 	CourseLearningOutcomeID string `json:"courseLearningOutcomeId"`
 }
 
-type GetAssessmentsByCourseIDPayload struct {
+type GetAssignmentsByCourseIDPayload struct {
 	CourseID string `json:"courseId"`
 }
 
-type CreateBulkAssessmentsPayload struct {
-	Assessments []CreateAssessmentPayload
+type CreateBulkAssignmentsPayload struct {
+	Assignments []CreateAssignmentPayload
 }
 
-type UpdateAssessmentRequestPayload struct {
+type UpdateAssignmentRequestPayload struct {
 	ID string `json:"id" validate:"required"`
 
 	Name                    string `json:"name"`
@@ -31,6 +31,6 @@ type UpdateAssessmentRequestPayload struct {
 	CourseLearningOutcomeID string `json:"courseLearningOutcomeId"`
 }
 
-type DeleteAssessmentRequestPayload struct {
+type DeleteAssignmentRequestPayload struct {
 	ID string `json:"id" validate:"required"`
 }

@@ -32,13 +32,13 @@ func (u scoreUseCase) GetByID(id string) (*entity.Score, error) {
 	return score, nil
 }
 
-func (u scoreUseCase) Create(score float64, studentID string, assessmentID string, lecturerID string) (*entity.Score, error) {
+func (u scoreUseCase) Create(score float64, studentID string, assignmentID string, lecturerID string) (*entity.Score, error) {
 	createdScore := entity.Score{
 		ID:           ulid.Make().String(),
 		Score:        score,
 		StudentID:    studentID,
 		LecturerID:   lecturerID,
-		AssessmentID: assessmentID,
+		AssignmentID: assignmentID,
 	}
 
 	err := u.scoreRepo.Create(&createdScore)
@@ -61,7 +61,7 @@ func (u scoreUseCase) Update(scoreID string, score float64) error {
 		Score:        score,
 		StudentID:    existScore.StudentID,
 		LecturerID:   existScore.LecturerID,
-		AssessmentID: existScore.AssessmentID,
+		AssignmentID: existScore.AssignmentID,
 	})
 	if err != nil {
 		return errs.New(errs.ErrUpdateScore, "cannot update score", err)

@@ -32,7 +32,7 @@ type fiberServer struct {
 	departmentRepository                entity.DepartmentRepository
 	scoreRepository                     entity.ScoreRepository
 	lecturerRepository                  entity.LecturerRepository
-	assessmentRepository                entity.AssessmentRepository
+	assignmentRepository                entity.AssignmentRepository
 	programmeRepository                 entity.ProgrammeRepository
 	semesterRepository                  entity.SemesterRepository
 	enrollmentRepository                entity.EnrollmentRepository
@@ -49,7 +49,7 @@ type fiberServer struct {
 	departmentUsecase                entity.DepartmentUseCase
 	scoreUsecase                     entity.ScoreUsecase
 	lecturerUsecase                  entity.LecturerUseCase
-	assessmentUsecase                entity.AssessmentUseCase
+	assignmentUsecase                entity.AssignmentUseCase
 	programmeUsecase                 entity.ProgrammeUseCase
 	semesterUsecase                  entity.SemesterUseCase
 	enrollmentUsecase                entity.EnrollmentUseCase
@@ -101,7 +101,7 @@ func (f *fiberServer) initRepository() (err error) {
 	f.departmentRepository = repository.NewDepartmentRepositoryGorm(f.gorm)
 	f.scoreRepository = repository.NewScoreRepositoryGorm(f.gorm)
 	f.lecturerRepository = repository.NewLecturerRepositoryGorm(f.gorm)
-	f.assessmentRepository = repository.NewAssessmentRepositoryGorm(f.gorm)
+	f.assignmentRepository = repository.NewAssignmentRepositoryGorm(f.gorm)
 	f.programmeRepository = repository.NewProgrammeRepositoryGorm(f.gorm)
 	f.semesterRepository = repository.NewSemesterRepositoryGorm(f.gorm)
 
@@ -125,7 +125,7 @@ func (f *fiberServer) initUseCase() {
 	f.departmentUsecase = usecase.NewDepartmentUseCase(f.departmentRepository)
 	f.scoreUsecase = usecase.NewScoreUseCase(f.scoreRepository)
 	f.lecturerUsecase = usecase.NewLecturerUseCase(f.lecturerRepository)
-	f.assessmentUsecase = usecase.NewAssessmentUseCase(f.assessmentRepository)
+	f.assignmentUsecase = usecase.NewAssignmentUseCase(f.assignmentRepository)
 	f.programmeUsecase = usecase.NewProgrammeUseCase(f.programmeRepository)
 	f.enrollmentUsecase = usecase.NewEnrollmentUseCase(f.enrollmentRepository)
 	f.semesterUsecase = usecase.NewSemesterUseCase(f.semesterRepository)
@@ -167,7 +167,7 @@ func (f *fiberServer) initController() {
 
 	lecturerController := controller.NewLecturerController(validator, f.lecturerUsecase)
 
-	assessmentController := controller.NewAssessmentController(validator, f.assessmentUsecase)
+	assignmentController := controller.NewAssignmentController(validator, f.assignmentUsecase)
 	programmeController := controller.NewProgrammeController(validator, f.programmeUsecase)
 	semesterController := controller.NewSemesterController(validator, f.semesterUsecase)
 
@@ -242,12 +242,12 @@ func (f *fiberServer) initController() {
 	app.Patch("/lecturers/:lecturerID", lecturerController.Update)
 	app.Delete("/lecturers/:lecturerID", lecturerController.Delete)
 
-	app.Get("/assessments", assessmentController.GetAssessments)
-	app.Get("/assessments/:assessmentID", assessmentController.GetByID)
-	app.Post("/assessments", assessmentController.Create)
-	app.Post("/assessments/bulk", assessmentController.CreateMany)
-	app.Patch("/assessments/:assessmentID", assessmentController.Update)
-	app.Delete("/assessments/:assessmentID", assessmentController.Delete)
+	app.Get("/assignments", assignmentController.GetAssignments)
+	app.Get("/assignments/:assignmentID", assignmentController.GetByID)
+	app.Post("/assignments", assignmentController.Create)
+	app.Post("/assignments/bulk", assignmentController.CreateMany)
+	app.Patch("/assignments/:assignmentID", assignmentController.Update)
+	app.Delete("/assignments/:assignmentID", assignmentController.Delete)
 
 	app.Get("/programmes", programmeController.GetAll)
 	app.Get("/programmes/:programmeName", programmeController.GetByName)
