@@ -1,12 +1,13 @@
 package entity
 
 type Grade struct {
-	ID        string `gorm:"primaryKey;type:char(255)"`
-	StudentID string
-	Year      string
-	Grade     string
+	ID         string `gorm:"primaryKey;type:char(255)"`
+	StudentID  string
+	SemesterID string
+	Grade      string
 
-	Student Student
+	Semester Semester
+	Student  Student
 }
 
 type GradeRepository interface {

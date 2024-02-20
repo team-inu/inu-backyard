@@ -1,14 +1,16 @@
 package entity
 
 type Assignment struct {
-	ID                      string `json:"id" gorm:"primaryKey;type:char(255)"`
-	Name                    string `json:"name"`
-	Description             string `json:"description"`
-	Score                   int    `json:"score"`
-	Weight                  int    `json:"weight"`
-	CourseLearningOutcomeID string `json:"courseLearningOutcomeID"`
+	ID                               string  `json:"id" gorm:"primaryKey;type:char(255)"`
+	Name                             string  `json:"name"`
+	Description                      string  `json:"description"`
+	MaxScore                         int     `json:"maxScore"`
+	Weight                           int     `json:"weight"`
+	ExpectedScorePercentage          float64 `json:"expectedScorePercentage"`
+	ExpectedPassingStudentPercentage float64 `json:"expectedPassingStudentPercentage"`
+	CourseLearningOutcomeID          string  `json:"courseLearningOutcomeID"`
 
-	CourseLearningOutcome CourseLearningOutcome ` gorm:"references:Code"`
+	CourseLearningOutcomes []*CourseLearningOutcome `gorm:"many2many:clo_assignment"`
 }
 
 type AssignmentRepository interface {

@@ -6,6 +6,9 @@ type ProgramLearningOutcome struct {
 	DescriptionThai string `json:"descriptionThai"`
 	DescriptionEng  string `json:"descriptionEng"`
 	ProgramYear     int    `json:"programYear"`
+	ProgrammeID     string `json:"programmeID"`
+
+	Programme Programme
 }
 
 type ProgramLearningOutcomeRepository interface {

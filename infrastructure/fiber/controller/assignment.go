@@ -76,7 +76,6 @@ func (c assignmentController) Create(ctx *fiber.Ctx) error {
 	err := c.AssignmentUseCase.Create(&entity.Assignment{
 		Name:                    payload.Name,
 		Description:             payload.Description,
-		Score:                   *payload.Score,
 		Weight:                  *payload.Weight,
 		CourseLearningOutcomeID: payload.CourseLearningOutcomeID,
 	})
@@ -100,7 +99,6 @@ func (c assignmentController) CreateMany(ctx *fiber.Ctx) error {
 		newAssignments = append(newAssignments, entity.Assignment{
 			Name:                    assignment.Name,
 			Description:             assignment.Description,
-			Score:                   *assignment.Score,
 			Weight:                  *assignment.Weight,
 			CourseLearningOutcomeID: assignment.CourseLearningOutcomeID,
 		})
@@ -124,7 +122,6 @@ func (c assignmentController) Update(ctx *fiber.Ctx) error {
 	err := c.AssignmentUseCase.Update(payload.ID, &entity.Assignment{
 		Name:                    payload.Name,
 		Description:             payload.Description,
-		Score:                   payload.Score,
 		Weight:                  payload.Weight,
 		CourseLearningOutcomeID: payload.CourseLearningOutcomeID,
 	})

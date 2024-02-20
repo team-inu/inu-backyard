@@ -68,7 +68,6 @@ func (c gradeController) Update(ctx *fiber.Ctx) error {
 
 	err := c.gradeUseCase.Update(id, &entity.Grade{
 		StudentID: payload.StudentID,
-		Year:      payload.Year,
 		Grade:     payload.Grade,
 	})
 

@@ -5,9 +5,10 @@ type SubProgramLearningOutcome struct {
 	Code                     string `json:"code"`
 	DescriptionThai          string `json:"descriptionThai"`
 	DescriptionEng           string `json:"descriptionEng"`
-	ProgramLearningOutcomeID string `json:"programLearningOutcomeId"`
+	ProgramLearningOutcomeID string `json:"programLearningOutcomeID"`
 
-	ProgramLearningOutcome ProgramLearningOutcome `gorm:"references:Code"`
+	CourseLearningOutcome  []*CourseLearningOutcome `gorm:"many2many:clo_subplo"`
+	ProgramLearningOutcome ProgramLearningOutcome
 }
 
 type SubProgramLearningOutcomeRepository interface {
@@ -21,7 +22,7 @@ type SubProgramLearningOutcomeRepository interface {
 type SubProgramLearningOutcomeUsecase interface {
 	GetAll() ([]SubProgramLearningOutcome, error)
 	GetByID(id string) (*SubProgramLearningOutcome, error)
-	Create(code string, descriptionThai string, descriptionEng string, programLearningOutcomeId string) error
+	Create(code string, descriptionThai string, descriptionEng string, programLearningOutcomeID string) error
 	Update(id string, programLearningOutcome *SubProgramLearningOutcome) error
 	Delete(id string) error
 }

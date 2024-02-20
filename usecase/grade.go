@@ -36,7 +36,6 @@ func (u gradeUseCase) Create(studentID string, year string, grade string) error 
 	createdGrade := &entity.Grade{
 		ID:        ulid.Make().String(),
 		StudentID: studentID,
-		Year:      year,
 		Grade:     grade,
 	}
 

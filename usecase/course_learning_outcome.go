@@ -46,10 +46,8 @@ func (c courseLearningOutcomeUsecase) Create(code string, description string, we
 		ID:                          ulid.Make().String(),
 		Code:                        code,
 		Description:                 description,
-		Weight:                      weight,
 		SubProgramLearningOutcomeID: subProgramLearningOutcomeId,
 		ProgramOutcomeID:            programOutcomeId,
-		CourseId:                    courseId,
 		Status:                      status,
 	}
 
