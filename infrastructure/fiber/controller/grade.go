@@ -29,10 +29,10 @@ func (c gradeController) GetAll(ctx *fiber.Ctx) error {
 	return ctx.JSON(grades)
 }
 
-func (c gradeController) GetByID(ctx *fiber.Ctx) error {
-	gradeID := ctx.Params("gradeID")
+func (c gradeController) GetById(ctx *fiber.Ctx) error {
+	gradeId := ctx.Params("gradeId")
 
-	grade, err := c.gradeUseCase.GetByID(gradeID)
+	grade, err := c.gradeUseCase.GetById(gradeId)
 
 	if err != nil {
 		return err
@@ -48,7 +48,7 @@ func (c gradeController) Create(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	err := c.gradeUseCase.Create(payload.StudentID, payload.Year, payload.Grade)
+	err := c.gradeUseCase.Create(payload.StudentId, payload.Year, payload.Grade)
 
 	if err != nil {
 		return err
@@ -64,10 +64,10 @@ func (c gradeController) Update(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	id := ctx.Params("gradeID")
+	id := ctx.Params("gradeId")
 
 	err := c.gradeUseCase.Update(id, &entity.Grade{
-		StudentID: payload.StudentID,
+		StudentId: payload.StudentId,
 		Grade:     payload.Grade,
 	})
 
@@ -79,7 +79,7 @@ func (c gradeController) Update(ctx *fiber.Ctx) error {
 }
 
 func (c gradeController) Delete(ctx *fiber.Ctx) error {
-	id := ctx.Params("gradeID")
+	id := ctx.Params("gradeId")
 
 	err := c.gradeUseCase.Delete(id)
 

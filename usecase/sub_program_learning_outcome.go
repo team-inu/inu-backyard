@@ -23,8 +23,8 @@ func (c subProgramLearningOutcomeUsecase) GetAll() ([]entity.SubProgramLearningO
 	return splos, nil
 }
 
-func (c subProgramLearningOutcomeUsecase) GetByID(id string) (*entity.SubProgramLearningOutcome, error) {
-	splo, err := c.subProgramLearningOutcomeRepo.GetByID(id)
+func (c subProgramLearningOutcomeUsecase) GetById(id string) (*entity.SubProgramLearningOutcome, error) {
+	splo, err := c.subProgramLearningOutcomeRepo.GetById(id)
 	if err != nil {
 		return nil, errs.New(errs.ErrQuerySubPLO, "cannot get sub plo by id %s", id, err)
 	}
@@ -34,11 +34,11 @@ func (c subProgramLearningOutcomeUsecase) GetByID(id string) (*entity.SubProgram
 
 func (c subProgramLearningOutcomeUsecase) Create(code string, descriptionThai string, descriptionEng string, programLearningOutcomeId string) error {
 	splo := entity.SubProgramLearningOutcome{
-		ID:                       ulid.Make().String(),
+		Id:                       ulid.Make().String(),
 		Code:                     code,
 		DescriptionThai:          descriptionThai,
 		DescriptionEng:           descriptionEng,
-		ProgramLearningOutcomeID: programLearningOutcomeId,
+		ProgramLearningOutcomeId: programLearningOutcomeId,
 	}
 
 	err := c.subProgramLearningOutcomeRepo.Create(&splo)
@@ -51,7 +51,7 @@ func (c subProgramLearningOutcomeUsecase) Create(code string, descriptionThai st
 }
 
 func (u subProgramLearningOutcomeUsecase) Update(id string, subProgramLearningOutcome *entity.SubProgramLearningOutcome) error {
-	existSubProgramLearningOutcome, err := u.GetByID(id)
+	existSubProgramLearningOutcome, err := u.GetById(id)
 	if err != nil {
 		return errs.New(errs.SameCode, "cannot get subProgramLearningOutcome id %s to update", id, err)
 	} else if existSubProgramLearningOutcome == nil {
@@ -60,7 +60,7 @@ func (u subProgramLearningOutcomeUsecase) Update(id string, subProgramLearningOu
 
 	err = u.subProgramLearningOutcomeRepo.Update(id, subProgramLearningOutcome)
 	if err != nil {
-		return errs.New(errs.ErrUpdateSubPLO, "cannot update subProgramLearningOutcome by id %s", subProgramLearningOutcome.ID, err)
+		return errs.New(errs.ErrUpdateSubPLO, "cannot update subProgramLearningOutcome by id %s", subProgramLearningOutcome.Id, err)
 	}
 
 	return nil

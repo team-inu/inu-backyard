@@ -23,8 +23,8 @@ func (c courseLearningOutcomeUsecase) GetAll() ([]entity.CourseLearningOutcome, 
 	return clos, nil
 }
 
-func (c courseLearningOutcomeUsecase) GetByID(id string) (*entity.CourseLearningOutcome, error) {
-	clo, err := c.courseLearningOutcomeRepo.GetByID(id)
+func (c courseLearningOutcomeUsecase) GetById(id string) (*entity.CourseLearningOutcome, error) {
+	clo, err := c.courseLearningOutcomeRepo.GetById(id)
 	if err != nil {
 		return nil, errs.New(errs.ErrQueryCLO, "cannot get CLO by id %s", id, err)
 	}
@@ -32,8 +32,8 @@ func (c courseLearningOutcomeUsecase) GetByID(id string) (*entity.CourseLearning
 	return clo, nil
 }
 
-func (c courseLearningOutcomeUsecase) GetByCourseID(courseId string) ([]entity.CourseLearningOutcome, error) {
-	clo, err := c.courseLearningOutcomeRepo.GetByCourseID(courseId)
+func (c courseLearningOutcomeUsecase) GetByCourseId(courseId string) ([]entity.CourseLearningOutcome, error) {
+	clo, err := c.courseLearningOutcomeRepo.GetByCourseId(courseId)
 	if err != nil {
 		return nil, errs.New(errs.ErrQueryCLO, "cannot get CLO by course id %s", courseId, err)
 	}
@@ -43,11 +43,11 @@ func (c courseLearningOutcomeUsecase) GetByCourseID(courseId string) ([]entity.C
 
 func (c courseLearningOutcomeUsecase) Create(code string, description string, weight int, subProgramLearningOutcomeId string, programOutcomeId string, courseId string, status string) error {
 	clo := entity.CourseLearningOutcome{
-		ID:                          ulid.Make().String(),
+		Id:                          ulid.Make().String(),
 		Code:                        code,
 		Description:                 description,
-		SubProgramLearningOutcomeID: subProgramLearningOutcomeId,
-		ProgramOutcomeID:            programOutcomeId,
+		SubProgramLearningOutcomeId: subProgramLearningOutcomeId,
+		ProgramOutcomeId:            programOutcomeId,
 		Status:                      status,
 	}
 
@@ -61,7 +61,7 @@ func (c courseLearningOutcomeUsecase) Create(code string, description string, we
 }
 
 func (u courseLearningOutcomeUsecase) Update(id string, courseLearningOutcome *entity.CourseLearningOutcome) error {
-	existCourseLearningOutcome, err := u.GetByID(id)
+	existCourseLearningOutcome, err := u.GetById(id)
 	if err != nil {
 		return errs.New(errs.SameCode, "cannot get courseLearningOutcome id %s to update", id, err)
 	} else if existCourseLearningOutcome == nil {
@@ -70,7 +70,7 @@ func (u courseLearningOutcomeUsecase) Update(id string, courseLearningOutcome *e
 
 	err = u.courseLearningOutcomeRepo.Update(id, courseLearningOutcome)
 	if err != nil {
-		return errs.New(errs.ErrUpdateCLO, "cannot update courseLearningOutcome by id %s", courseLearningOutcome.ID, err)
+		return errs.New(errs.ErrUpdateCLO, "cannot update courseLearningOutcome by id %s", courseLearningOutcome.Id, err)
 	}
 
 	return nil

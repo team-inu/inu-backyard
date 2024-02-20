@@ -1,11 +1,11 @@
 package entity
 
 type SubProgramLearningOutcome struct {
-	ID                       string `json:"id" gorm:"primaryKey;type:char(255)"`
+	Id                       string `json:"id" gorm:"primaryKey;type:char(255)"`
 	Code                     string `json:"code"`
 	DescriptionThai          string `json:"descriptionThai"`
 	DescriptionEng           string `json:"descriptionEng"`
-	ProgramLearningOutcomeID string `json:"programLearningOutcomeID"`
+	ProgramLearningOutcomeId string `json:"programLearningOutcomeId"`
 
 	CourseLearningOutcome  []*CourseLearningOutcome `gorm:"many2many:clo_subplo"`
 	ProgramLearningOutcome ProgramLearningOutcome
@@ -13,7 +13,7 @@ type SubProgramLearningOutcome struct {
 
 type SubProgramLearningOutcomeRepository interface {
 	GetAll() ([]SubProgramLearningOutcome, error)
-	GetByID(id string) (*SubProgramLearningOutcome, error)
+	GetById(id string) (*SubProgramLearningOutcome, error)
 	Create(programLearningOutcome *SubProgramLearningOutcome) error
 	Update(id string, programLearningOutcome *SubProgramLearningOutcome) error
 	Delete(id string) error
@@ -21,8 +21,8 @@ type SubProgramLearningOutcomeRepository interface {
 
 type SubProgramLearningOutcomeUsecase interface {
 	GetAll() ([]SubProgramLearningOutcome, error)
-	GetByID(id string) (*SubProgramLearningOutcome, error)
-	Create(code string, descriptionThai string, descriptionEng string, programLearningOutcomeID string) error
+	GetById(id string) (*SubProgramLearningOutcome, error)
+	Create(code string, descriptionThai string, descriptionEng string, programLearningOutcomeId string) error
 	Update(id string, programLearningOutcome *SubProgramLearningOutcome) error
 	Delete(id string) error
 }

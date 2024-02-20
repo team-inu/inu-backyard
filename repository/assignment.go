@@ -15,7 +15,7 @@ func NewAssignmentRepositoryGorm(gorm *gorm.DB) entity.AssignmentRepository {
 	return &assignmentRepositoryGorm{gorm: gorm}
 }
 
-func (r assignmentRepositoryGorm) GetByID(id string) (*entity.Assignment, error) {
+func (r assignmentRepositoryGorm) GetById(id string) (*entity.Assignment, error) {
 	var assignment *entity.Assignment
 
 	err := r.gorm.Where("id = ?", id).First(&assignment).Error

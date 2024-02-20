@@ -1,9 +1,9 @@
 package entity
 
 type Enrollment struct {
-	ID        string `json:"id" gorm:"primaryKey;type:char(255)"`
-	CourseID  string `json:"course_id"`
-	StudentID string `json:"student_id"`
+	Id        string `json:"id" gorm:"primaryKey;type:char(255)"`
+	CourseId  string `json:"course_id"`
+	StudentId string `json:"student_id"`
 
 	Course  Course
 	Student Student
@@ -11,7 +11,7 @@ type Enrollment struct {
 
 type EnrollmentRepository interface {
 	GetAll() ([]Enrollment, error)
-	GetByID(id string) (*Enrollment, error)
+	GetById(id string) (*Enrollment, error)
 	Create(enrollment *Enrollment) error
 	Update(id string, enrollment *Enrollment) error
 	Delete(id string) error
@@ -19,10 +19,10 @@ type EnrollmentRepository interface {
 
 type EnrollmentUseCase interface {
 	GetAll() ([]Enrollment, error)
-	GetByID(id string) (*Enrollment, error)
-	Create(courseID string, studentID string) (*Enrollment, error)
+	GetById(id string) (*Enrollment, error)
+	Create(courseId string, studentId string) (*Enrollment, error)
 	Update(id string, enrollment *Enrollment) error
 	Delete(id string) error
-	Enroll(studentID string, courseID string) error
-	Withdraw(studentID string, courseID string) error
+	Enroll(studentId string, courseId string) error
+	Withdraw(studentId string, courseId string) error
 }

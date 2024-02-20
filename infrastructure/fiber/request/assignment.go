@@ -6,15 +6,15 @@ type CreateAssignmentPayload struct {
 	Score       *int   `json:"score" validate:"required"`
 	Weight      *int   `json:"weight" validate:"required"`
 
-	CourseLearningOutcomeID string `json:"courseLearningOutcomeId" validate:"required"`
+	CourseLearningOutcomeId string `json:"courseLearningOutcomeId" validate:"required"`
 }
 
 type GetAssignmentsByParamsPayload struct {
-	CourseLearningOutcomeID string `json:"courseLearningOutcomeId"`
+	CourseLearningOutcomeId string `json:"courseLearningOutcomeId"`
 }
 
-type GetAssignmentsByCourseIDPayload struct {
-	CourseID string `json:"courseId"`
+type GetAssignmentsByCourseIdPayload struct {
+	CourseId string `json:"courseId"`
 }
 
 type CreateBulkAssignmentsPayload struct {
@@ -22,15 +22,15 @@ type CreateBulkAssignmentsPayload struct {
 }
 
 type UpdateAssignmentRequestPayload struct {
-	ID string `json:"id" validate:"required"`
+	Id string `json:"id" validate:"required"`
 
 	Name                    string `json:"name"`
 	Description             string `json:"description"`
 	Score                   int    `json:"score"`
 	Weight                  int    `json:"weight"`
-	CourseLearningOutcomeID string `json:"courseLearningOutcomeId"`
+	CourseLearningOutcomeId string `json:"courseLearningOutcomeId"`
 }
 
 type DeleteAssignmentRequestPayload struct {
-	ID string `json:"id" validate:"required"`
+	Id string `json:"id" validate:"required"`
 }

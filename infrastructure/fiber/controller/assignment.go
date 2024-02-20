@@ -20,10 +20,10 @@ func NewAssignmentController(validator validator.PayloadValidator, assignmentUse
 	}
 }
 
-func (c assignmentController) GetByID(ctx *fiber.Ctx) error {
-	assignmentID := ctx.Params("assignmentID")
+func (c assignmentController) GetById(ctx *fiber.Ctx) error {
+	assignmentId := ctx.Params("assignmentId")
 
-	assignment, err := c.AssignmentUseCase.GetByID(assignmentID)
+	assignment, err := c.AssignmentUseCase.GetById(assignmentId)
 
 	if err != nil {
 		return err
@@ -40,7 +40,7 @@ func (c assignmentController) GetAssignments(ctx *fiber.Ctx) error {
 	}
 
 	assignments, err := c.AssignmentUseCase.GetByParams(&entity.Assignment{
-		CourseLearningOutcomeID: payload.CourseLearningOutcomeID,
+		CourseLearningOutcomeId: payload.CourseLearningOutcomeId,
 	}, -1, -1)
 
 	if err != nil {
@@ -50,14 +50,14 @@ func (c assignmentController) GetAssignments(ctx *fiber.Ctx) error {
 	return response.NewSuccessResponse(ctx, fiber.StatusOK, assignments)
 }
 
-func (c assignmentController) GetAssignmentsByCourseID(ctx *fiber.Ctx) error {
-	var payload request.GetAssignmentsByCourseIDPayload
+func (c assignmentController) GetAssignmentsByCourseId(ctx *fiber.Ctx) error {
+	var payload request.GetAssignmentsByCourseIdPayload
 
 	if ok, err := c.Validator.Validate(&payload, ctx); !ok {
 		return err
 	}
 
-	assignment, err := c.AssignmentUseCase.GetByCourseID(payload.CourseID, -1, -1)
+	assignment, err := c.AssignmentUseCase.GetByCourseId(payload.CourseId, -1, -1)
 
 	if err != nil {
 		return err
@@ -77,7 +77,7 @@ func (c assignmentController) Create(ctx *fiber.Ctx) error {
 		Name:                    payload.Name,
 		Description:             payload.Description,
 		Weight:                  *payload.Weight,
-		CourseLearningOutcomeID: payload.CourseLearningOutcomeID,
+		CourseLearningOutcomeId: payload.CourseLearningOutcomeId,
 	})
 	if err != nil {
 		return err
@@ -100,7 +100,7 @@ func (c assignmentController) CreateMany(ctx *fiber.Ctx) error {
 			Name:                    assignment.Name,
 			Description:             assignment.Description,
 			Weight:                  *assignment.Weight,
-			CourseLearningOutcomeID: assignment.CourseLearningOutcomeID,
+			CourseLearningOutcomeId: assignment.CourseLearningOutcomeId,
 		})
 	}
 
@@ -119,11 +119,11 @@ func (c assignmentController) Update(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	err := c.AssignmentUseCase.Update(payload.ID, &entity.Assignment{
+	err := c.AssignmentUseCase.Update(payload.Id, &entity.Assignment{
 		Name:                    payload.Name,
 		Description:             payload.Description,
 		Weight:                  payload.Weight,
-		CourseLearningOutcomeID: payload.CourseLearningOutcomeID,
+		CourseLearningOutcomeId: payload.CourseLearningOutcomeId,
 	})
 
 	if err != nil {
@@ -140,7 +140,7 @@ func (c assignmentController) Delete(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	err := c.AssignmentUseCase.Delete(payload.ID)
+	err := c.AssignmentUseCase.Delete(payload.Id)
 
 	if err != nil {
 		return err

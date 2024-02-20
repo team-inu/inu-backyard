@@ -22,8 +22,8 @@ func (u *semesterUseCase) GetAll() ([]entity.Semester, error) {
 	return semesters, nil
 }
 
-func (u *semesterUseCase) GetByID(id string) (*entity.Semester, error) {
-	semester, err := u.semesterRepository.GetByID(id)
+func (u *semesterUseCase) GetById(id string) (*entity.Semester, error) {
+	semester, err := u.semesterRepository.GetById(id)
 	if err != nil {
 		return nil, errs.New(errs.ErrQuerySemester, "cannot get semester by id %s", id, err)
 	}
@@ -33,7 +33,7 @@ func (u *semesterUseCase) GetByID(id string) (*entity.Semester, error) {
 
 func (u *semesterUseCase) Create(year int, semerterSequence int) error {
 	err := u.semesterRepository.Create(&entity.Semester{
-		ID:               ulid.Make().String(),
+		Id:               ulid.Make().String(),
 		Year:             year,
 		SemesterSequence: semerterSequence,
 	})
@@ -45,28 +45,28 @@ func (u *semesterUseCase) Create(year int, semerterSequence int) error {
 }
 
 func (u *semesterUseCase) Update(semester *entity.Semester) error {
-	existSemester, err := u.semesterRepository.GetByID(semester.ID)
+	existSemester, err := u.semesterRepository.GetById(semester.Id)
 	if err != nil {
-		return errs.New(errs.SameCode, "cannot get semester by id %s", semester.ID, err)
+		return errs.New(errs.SameCode, "cannot get semester by id %s", semester.Id, err)
 	} else if existSemester == nil {
 		return errs.New(errs.ErrUpdateSemester, "semester not found", err)
 	}
 
 	err = u.semesterRepository.Update(&entity.Semester{
-		ID:               semester.ID,
+		Id:               semester.Id,
 		Year:             semester.Year,
 		SemesterSequence: semester.SemesterSequence,
 	})
 
 	if err != nil {
-		return errs.New(errs.ErrUpdateSemester, "cannot update semester by id %s", semester.ID, err)
+		return errs.New(errs.ErrUpdateSemester, "cannot update semester by id %s", semester.Id, err)
 	}
 
 	return nil
 }
 
 func (u *semesterUseCase) Delete(id string) error {
-	existSemester, err := u.semesterRepository.GetByID(id)
+	existSemester, err := u.semesterRepository.GetById(id)
 	if err != nil {
 		return errs.New(errs.SameCode, "cannot get semester by id %s", id, err)
 	} else if existSemester == nil {

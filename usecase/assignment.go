@@ -15,8 +15,8 @@ func NewAssignmentUseCase(assignmentRepo entity.AssignmentRepository) entity.Ass
 	return &assignmentUseCase{assignmentRepo: assignmentRepo}
 }
 
-func (u assignmentUseCase) GetByID(id string) (*entity.Assignment, error) {
-	assignment, err := u.assignmentRepo.GetByID(id)
+func (u assignmentUseCase) GetById(id string) (*entity.Assignment, error) {
+	assignment, err := u.assignmentRepo.GetById(id)
 	if err != nil {
 		return nil, errs.New(errs.ErrQueryAssignment, "cannot get assignment by id %s", id, err)
 	}
@@ -34,8 +34,8 @@ func (u assignmentUseCase) GetByParams(params *entity.Assignment, limit int, off
 	return assignments, nil
 }
 
-func (u assignmentUseCase) GetByCourseID(courseID string, limit int, offset int) ([]entity.Assignment, error) {
-	// clos, err := u.courseLearningOutcomeRepo.GetByCourseID(courseID)
+func (u assignmentUseCase) GetByCourseId(courseId string, limit int, offset int) ([]entity.Assignment, error) {
+	// clos, err := u.courseLearningOutcomeRepo.GetByCourseId(courseId)
 
 	// if err != nil {
 	// 	return nil, errs.New(errs.ErrQueryAssignment, "cannot get assignment by params", err)
@@ -45,7 +45,7 @@ func (u assignmentUseCase) GetByCourseID(courseID string, limit int, offset int)
 }
 
 func (u assignmentUseCase) Create(assignment *entity.Assignment) error {
-	assignment.ID = ulid.Make().String()
+	assignment.Id = ulid.Make().String()
 	err := u.assignmentRepo.Create(assignment)
 	if err != nil {
 		return errs.New(errs.ErrCreateAssignment, "cannot create assignment", err)
@@ -56,7 +56,7 @@ func (u assignmentUseCase) Create(assignment *entity.Assignment) error {
 
 func (u assignmentUseCase) CreateMany(assignments []entity.Assignment) error {
 	for index, _ := range assignments {
-		assignments[index].ID = ulid.Make().String()
+		assignments[index].Id = ulid.Make().String()
 	}
 	err := u.assignmentRepo.CreateMany(assignments)
 	if err != nil {
@@ -67,7 +67,7 @@ func (u assignmentUseCase) CreateMany(assignments []entity.Assignment) error {
 }
 
 func (u assignmentUseCase) Update(id string, assignment *entity.Assignment) error {
-	existAssignment, err := u.GetByID(id)
+	existAssignment, err := u.GetById(id)
 	if err != nil {
 		return errs.New(errs.SameCode, "cannot get assignment id %s to update", id, err)
 	} else if existAssignment == nil {
@@ -77,14 +77,14 @@ func (u assignmentUseCase) Update(id string, assignment *entity.Assignment) erro
 	err = u.assignmentRepo.Update(id, assignment)
 
 	if err != nil {
-		return errs.New(errs.ErrUpdateAssignment, "cannot update assignment by id %s", assignment.ID, err)
+		return errs.New(errs.ErrUpdateAssignment, "cannot update assignment by id %s", assignment.Id, err)
 	}
 
 	return nil
 }
 
 func (u assignmentUseCase) Delete(id string) error {
-	assignment, err := u.assignmentRepo.GetByID(id)
+	assignment, err := u.assignmentRepo.GetById(id)
 	if err != nil {
 		return errs.New(errs.SameCode, "cannot get assignment id %s to delete", id, err)
 	} else if assignment == nil {

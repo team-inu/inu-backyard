@@ -28,7 +28,7 @@ func (r gradeRepositoryGorm) GetAll() ([]entity.Grade, error) {
 	return grades, nil
 }
 
-func (r gradeRepositoryGorm) GetByID(id string) (*entity.Grade, error) {
+func (r gradeRepositoryGorm) GetById(id string) (*entity.Grade, error) {
 	var grade *entity.Grade
 
 	err := r.gorm.Where("id = ?", id).First(&grade).Error
@@ -61,7 +61,7 @@ func (r gradeRepositoryGorm) Update(id string, grade *entity.Grade) error {
 }
 
 func (r gradeRepositoryGorm) Delete(id string) error {
-	err := r.gorm.Delete(&entity.Grade{ID: id}).Error
+	err := r.gorm.Delete(&entity.Grade{Id: id}).Error
 
 	if err != nil {
 		return fmt.Errorf("cannot delete grade: %w", err)

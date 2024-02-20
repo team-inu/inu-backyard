@@ -29,10 +29,10 @@ func (c courseLearningOutcomeController) GetAll(ctx *fiber.Ctx) error {
 	return ctx.JSON(clos)
 }
 
-func (c courseLearningOutcomeController) GetByID(ctx *fiber.Ctx) error {
+func (c courseLearningOutcomeController) GetById(ctx *fiber.Ctx) error {
 	cloId := ctx.Params("cloId")
 
-	clo, err := c.courseLearningOutcomeUsecase.GetByID(cloId)
+	clo, err := c.courseLearningOutcomeUsecase.GetById(cloId)
 	if err != nil {
 		return err
 	}
@@ -40,10 +40,10 @@ func (c courseLearningOutcomeController) GetByID(ctx *fiber.Ctx) error {
 	return response.NewSuccessResponse(ctx, fiber.StatusCreated, clo)
 }
 
-func (c courseLearningOutcomeController) GetByCourseID(ctx *fiber.Ctx) error {
+func (c courseLearningOutcomeController) GetByCourseId(ctx *fiber.Ctx) error {
 	courseId := ctx.Params("courseId")
 
-	clos, err := c.courseLearningOutcomeUsecase.GetByCourseID(courseId)
+	clos, err := c.courseLearningOutcomeUsecase.GetByCourseId(courseId)
 	if err != nil {
 		return err
 	}
@@ -58,7 +58,7 @@ func (c courseLearningOutcomeController) Create(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	err := c.courseLearningOutcomeUsecase.Create(payload.Code, payload.Description, payload.Weight, payload.SubProgramLearningOutcomeID, payload.ProgramOutcomeID, payload.CourseId, payload.Status)
+	err := c.courseLearningOutcomeUsecase.Create(payload.Code, payload.Description, payload.Weight, payload.SubProgramLearningOutcomeId, payload.ProgramOutcomeId, payload.CourseId, payload.Status)
 	if err != nil {
 		return err
 	}
@@ -73,13 +73,13 @@ func (c courseLearningOutcomeController) Update(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	id := ctx.Params("cloID")
+	id := ctx.Params("cloId")
 
 	err := c.courseLearningOutcomeUsecase.Update(id, &entity.CourseLearningOutcome{
 		Code:                        payload.Code,
 		Description:                 payload.Description,
-		SubProgramLearningOutcomeID: payload.SubProgramLearningOutcomeID,
-		ProgramOutcomeID:            payload.ProgramOutcomeID,
+		SubProgramLearningOutcomeId: payload.SubProgramLearningOutcomeId,
+		ProgramOutcomeId:            payload.ProgramOutcomeId,
 		Status:                      payload.Status,
 	})
 
@@ -93,7 +93,7 @@ func (c courseLearningOutcomeController) Update(ctx *fiber.Ctx) error {
 func (c courseLearningOutcomeController) Delete(ctx *fiber.Ctx) error {
 	cloId := ctx.Params("cloId")
 
-	_, err := c.courseLearningOutcomeUsecase.GetByID(cloId)
+	_, err := c.courseLearningOutcomeUsecase.GetById(cloId)
 	if err != nil {
 		return err
 	}

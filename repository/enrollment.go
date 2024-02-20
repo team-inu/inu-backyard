@@ -28,7 +28,7 @@ func (r enrollmentRepositoryGorm) GetAll() ([]entity.Enrollment, error) {
 	return enrollments, nil
 }
 
-func (r enrollmentRepositoryGorm) GetByID(id string) (*entity.Enrollment, error) {
+func (r enrollmentRepositoryGorm) GetById(id string) (*entity.Enrollment, error) {
 	var enrollment *entity.Enrollment
 
 	err := r.gorm.Where("id = ?", id).First(&enrollment).Error

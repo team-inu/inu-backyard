@@ -48,7 +48,7 @@ func (u authUsecase) SignIn(email string, password string, ipAddress string, use
 		return nil, errs.New(errs.ErrLecturerPassword, "password is incorrect", err)
 	}
 
-	cookie, err := u.sessionUsecase.Create(lecturer.ID, ipAddress, userAgent)
+	cookie, err := u.sessionUsecase.Create(lecturer.Id, ipAddress, userAgent)
 	if err != nil {
 		return nil, errs.New(errs.SameCode, "cannot create session to sign in", err)
 	}

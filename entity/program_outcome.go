@@ -1,7 +1,7 @@
 package entity
 
 type ProgramOutcome struct {
-	ID          string `json:"id" gorm:"primaryKey;type:char(255)"`
+	Id          string `json:"id" gorm:"primaryKey;type:char(255)"`
 	Code        string `json:"code"`
 	Name        string `json:"name"`
 	Description string `json:"description"`
@@ -9,7 +9,7 @@ type ProgramOutcome struct {
 
 type ProgramOutcomeRepository interface {
 	GetAll() ([]ProgramOutcome, error)
-	GetByID(id string) (*ProgramOutcome, error)
+	GetById(id string) (*ProgramOutcome, error)
 	Create(programLearningOutcome *ProgramOutcome) error
 	Update(id string, programLearningOutcome *ProgramOutcome) error
 	Delete(id string) error
@@ -17,7 +17,7 @@ type ProgramOutcomeRepository interface {
 
 type ProgramOutcomeUsecase interface {
 	GetAll() ([]ProgramOutcome, error)
-	GetByID(id string) (*ProgramOutcome, error)
+	GetById(id string) (*ProgramOutcome, error)
 	Create(code string, name string, description string) error
 	Update(id string, programLearningOutcome *ProgramOutcome) error
 	Delete(id string) error

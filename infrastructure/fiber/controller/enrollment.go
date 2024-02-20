@@ -28,10 +28,10 @@ func (c enrollmentController) GetAll(ctx *fiber.Ctx) error {
 	return ctx.JSON(enrollments)
 }
 
-func (c enrollmentController) GetByID(ctx *fiber.Ctx) error {
-	enrollmentID := ctx.Params("enrollmentID")
+func (c enrollmentController) GetById(ctx *fiber.Ctx) error {
+	enrollmentId := ctx.Params("enrollmentId")
 
-	enrollment, err := c.EnrollmentUseCase.GetByID(enrollmentID)
+	enrollment, err := c.EnrollmentUseCase.GetById(enrollmentId)
 
 	if err != nil {
 		return err
@@ -47,7 +47,7 @@ func (c enrollmentController) Create(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	createdEnrollment, err := c.EnrollmentUseCase.Create(payload.CourseID, payload.StudentID)
+	createdEnrollment, err := c.EnrollmentUseCase.Create(payload.CourseId, payload.StudentId)
 	if err != nil {
 		return err
 	}
@@ -56,9 +56,9 @@ func (c enrollmentController) Create(ctx *fiber.Ctx) error {
 }
 
 func (c enrollmentController) Update(ctx *fiber.Ctx) error {
-	enrollmentID := ctx.Params("enrollmentID")
+	enrollmentId := ctx.Params("enrollmentId")
 
-	_, err := c.EnrollmentUseCase.GetByID(enrollmentID)
+	_, err := c.EnrollmentUseCase.GetById(enrollmentId)
 	if err != nil {
 		return err
 	}
@@ -68,9 +68,9 @@ func (c enrollmentController) Update(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	err = c.EnrollmentUseCase.Update(enrollmentID, &entity.Enrollment{
-		CourseID:  payload.CourseID,
-		StudentID: payload.StudentID,
+	err = c.EnrollmentUseCase.Update(enrollmentId, &entity.Enrollment{
+		CourseId:  payload.CourseId,
+		StudentId: payload.StudentId,
 	})
 	if err != nil {
 		return err
@@ -80,14 +80,14 @@ func (c enrollmentController) Update(ctx *fiber.Ctx) error {
 }
 
 func (c enrollmentController) Delete(ctx *fiber.Ctx) error {
-	enrollmentID := ctx.Params("enrollmentID")
+	enrollmentId := ctx.Params("enrollmentId")
 
-	_, err := c.EnrollmentUseCase.GetByID(enrollmentID)
+	_, err := c.EnrollmentUseCase.GetById(enrollmentId)
 	if err != nil {
 		return err
 	}
 
-	err = c.EnrollmentUseCase.Delete(enrollmentID)
+	err = c.EnrollmentUseCase.Delete(enrollmentId)
 	if err != nil {
 		return err
 	}

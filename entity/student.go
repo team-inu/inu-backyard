@@ -1,11 +1,11 @@
 package entity
 
 type Student struct {
-	ID             string `gorm:"primaryKey;type:char(255)"`
+	Id             string `gorm:"primaryKey;type:char(255)"`
 	Name           string
 	FirstName      string
 	LastName       string
-	ProgrammeID    string
+	ProgrammeId    string
 	DepartmentName string
 	GPAX           float64
 	MathGPA        float64
@@ -21,7 +21,7 @@ type Student struct {
 }
 
 type StudentRepository interface {
-	GetByID(id string) (*Student, error)
+	GetById(id string) (*Student, error)
 	GetAll() ([]Student, error)
 	GetByParams(params *Student, limit int, offset int) ([]Student, error)
 	Create(student *Student) error
@@ -31,7 +31,7 @@ type StudentRepository interface {
 }
 
 type StudentUseCase interface {
-	GetByID(id string) (*Student, error)
+	GetById(id string) (*Student, error)
 	GetAll() ([]Student, error)
 	GetByParams(params *Student, limit int, offset int) ([]Student, error)
 	Create(student *Student) error

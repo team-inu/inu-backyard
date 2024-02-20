@@ -29,10 +29,10 @@ func (c programOutcomeController) GetAll(ctx *fiber.Ctx) error {
 	return ctx.JSON(pos)
 }
 
-func (c programOutcomeController) GetByID(ctx *fiber.Ctx) error {
+func (c programOutcomeController) GetById(ctx *fiber.Ctx) error {
 	poId := ctx.Params("poId")
 
-	po, err := c.programOutcomeUsecase.GetByID(poId)
+	po, err := c.programOutcomeUsecase.GetById(poId)
 	if err != nil {
 		return err
 	}
@@ -62,7 +62,7 @@ func (c programOutcomeController) Update(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	id := ctx.Params("poID")
+	id := ctx.Params("poId")
 
 	err := c.programOutcomeUsecase.Update(id, &entity.ProgramOutcome{
 		Code:        payload.Code,
@@ -80,7 +80,7 @@ func (c programOutcomeController) Update(ctx *fiber.Ctx) error {
 func (c programOutcomeController) Delete(ctx *fiber.Ctx) error {
 	poId := ctx.Params("poId")
 
-	_, err := c.programOutcomeUsecase.GetByID(poId)
+	_, err := c.programOutcomeUsecase.GetById(poId)
 	if err != nil {
 		return err
 	}

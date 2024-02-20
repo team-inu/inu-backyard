@@ -26,7 +26,7 @@ func (r scoreRepository) GetAll() ([]entity.Score, error) {
 	return scores, nil
 }
 
-func (r scoreRepository) GetByID(id string) (*entity.Score, error) {
+func (r scoreRepository) GetById(id string) (*entity.Score, error) {
 	var score entity.Score
 	err := r.gorm.Where("id = ?", id).First(&score).Error
 
@@ -58,7 +58,7 @@ func (r scoreRepository) Update(id string, score *entity.Score) error {
 }
 
 func (r scoreRepository) Delete(id string) error {
-	err := r.gorm.Delete(&entity.Score{ID: id}).Error
+	err := r.gorm.Delete(&entity.Score{Id: id}).Error
 
 	if err != nil {
 		return fmt.Errorf("cannot delete score: %w", err)

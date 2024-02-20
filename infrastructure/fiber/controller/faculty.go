@@ -28,10 +28,10 @@ func (c FacultyController) GetAll(ctx *fiber.Ctx) error {
 	return ctx.JSON(faculties)
 }
 
-func (c FacultyController) GetByID(ctx *fiber.Ctx) error {
-	facultyID := ctx.Params("facultyID")
+func (c FacultyController) GetById(ctx *fiber.Ctx) error {
+	facultyId := ctx.Params("facultyId")
 
-	faculty, err := c.FacultyUseCase.GetByName(facultyID)
+	faculty, err := c.FacultyUseCase.GetByName(facultyId)
 
 	if err != nil {
 		return err

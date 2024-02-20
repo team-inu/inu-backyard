@@ -42,7 +42,7 @@ func (r lecturerRepositoryGorm) GetBySessionId(sessionId string) (*entity.Lectur
 	return lecturer, nil
 }
 
-func (r lecturerRepositoryGorm) GetByID(id string) (*entity.Lecturer, error) {
+func (r lecturerRepositoryGorm) GetById(id string) (*entity.Lecturer, error) {
 	var lecturer *entity.Lecturer
 
 	err := r.gorm.Where("id = ?", id).First(&lecturer).Error
@@ -101,7 +101,7 @@ func (r lecturerRepositoryGorm) Update(id string, lecturer *entity.Lecturer) err
 }
 
 func (r lecturerRepositoryGorm) Delete(id string) error {
-	err := r.gorm.Delete(&entity.Lecturer{ID: id}).Error
+	err := r.gorm.Delete(&entity.Lecturer{Id: id}).Error
 
 	if err != nil {
 		return fmt.Errorf("cannot delete lecturer: %w", err)

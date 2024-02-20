@@ -15,7 +15,7 @@ func NewStudentRepositoryGorm(gorm *gorm.DB) entity.StudentRepository {
 	return &studentRepositoryGorm{gorm: gorm}
 }
 
-func (r studentRepositoryGorm) GetByID(id string) (*entity.Student, error) {
+func (r studentRepositoryGorm) GetById(id string) (*entity.Student, error) {
 	var student *entity.Student
 
 	err := r.gorm.Where("id = ?", id).First(&student).Error
@@ -83,7 +83,7 @@ func (r studentRepositoryGorm) Update(id string, student *entity.Student) error 
 }
 
 func (r studentRepositoryGorm) Delete(id string) error {
-	err := r.gorm.Delete(&entity.Student{ID: id}).Error
+	err := r.gorm.Delete(&entity.Student{Id: id}).Error
 
 	if err != nil {
 		return fmt.Errorf("cannot delete student: %w", err)
