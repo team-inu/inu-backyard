@@ -7,6 +7,8 @@ services:
       dockerfile: Dockerfile
     volumes:
       - ../:/workspace
+    ports:
+      - 3001:3001
 
   mysql:
     image: mysql:8.1.0
@@ -14,6 +16,8 @@ services:
       - ./.volume/mysql/:/var/lib/mysql/
     environment:
       MYSQL_ROOT_PASSWORD: root
+    ports:
+      - 3306:3306
 
   phpmyadmin:
     image: phpmyadmin:5.2.1
