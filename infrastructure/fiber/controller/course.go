@@ -1,6 +1,8 @@
 package controller
 
 import (
+	"fmt"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/team-inu/inu-backyard/entity"
 	"github.com/team-inu/inu-backyard/infrastructure/fiber/request"
@@ -47,7 +49,16 @@ func (c courseController) Create(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	err := c.courseUsecase.Create(payload.Name, payload.Code, payload.SemesterId, payload.LecturerId)
+	fmt.Println(payload.Description[0])
+	err := c.courseUsecase.Create(
+		payload.SemesterId,
+		payload.LecturerId,
+		payload.Name,
+		payload.Code,
+		payload.Curriculum,
+		payload.Description,
+		*payload.CriteriaGrade,
+	)
 	if err != nil {
 		return err
 	}

@@ -69,18 +69,13 @@ func (f *fiberServer) Run(config config.FiberServerConfig) {
 	if err != nil {
 		panic(err)
 	}
-	err = f.gorm.AutoMigrate(
-		&entity.Student{},
-		&entity.Enrollment{},
-	)
-
-	if err != nil {
-		panic(err)
-	}
 
 	f.initUseCase()
 
-	f.initController()
+	err = f.initController()
+	if err != nil {
+		panic(err)
+	}
 }
 
 func (f *fiberServer) initRepository() (err error) {
@@ -104,11 +99,8 @@ func (f *fiberServer) initRepository() (err error) {
 	f.assignmentRepository = repository.NewAssignmentRepositoryGorm(f.gorm)
 	f.programmeRepository = repository.NewProgrammeRepositoryGorm(f.gorm)
 	f.semesterRepository = repository.NewSemesterRepositoryGorm(f.gorm)
-
 	f.enrollmentRepository = repository.NewEnrollmentRepositoryGorm(f.gorm)
-
 	f.gradeRepository = repository.NewGradeRepositoryGorm(f.gorm)
-
 	f.sessionRepository = repository.NewSessionRepository(f.gorm)
 
 	return nil
@@ -116,7 +108,6 @@ func (f *fiberServer) initRepository() (err error) {
 
 func (f *fiberServer) initUseCase() {
 	f.studentUseCase = usecase.NewStudentUseCase(f.studentRepository)
-	f.courseUseCase = usecase.NewCourseUsecase(f.courseRepository)
 	f.courseLearningOutcomeUsecase = usecase.NewCourseLearningOutcomeUsecase(f.courseLearningOutcomeRepository)
 	f.programLearningOutcomeUsecase = usecase.NewProgramLearningOutcomeUsecase(f.programLearningOutcomeRepository)
 	f.subProgramLearningOutcomeUsecase = usecase.NewSubProgramLearningOutcomeUsecase(f.subProgramLearningOutcomeRepository)
@@ -132,9 +123,10 @@ func (f *fiberServer) initUseCase() {
 	f.gradeUsecase = usecase.NewGradeUseCase(f.gradeRepository)
 	f.sessionUsecase = usecase.NewSessionUsecase(f.sessionRepository, f.config.Client.Auth)
 	f.authUsecase = usecase.NewAuthUsecase(f.sessionUsecase, f.lecturerUsecase)
+	f.courseUseCase = usecase.NewCourseUsecase(f.courseRepository, f.semesterUsecase, f.lecturerUsecase)
 }
 
-func (f *fiberServer) initController() {
+func (f *fiberServer) initController() error {
 	fiberConfig := fiber.Config{
 		AppName:      "inu-backyard",
 		ErrorHandler: errorHandler(logger.NewZapLogger()),
@@ -283,5 +275,7 @@ func (f *fiberServer) initController() {
 		return c.SendStatus(404)
 	})
 
-	app.Listen(":3001")
+	err := app.Listen(":3001")
+
+	return err
 }
