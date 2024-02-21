@@ -107,23 +107,41 @@ func (f *fiberServer) initRepository() (err error) {
 }
 
 func (f *fiberServer) initUseCase() {
-	f.studentUseCase = usecase.NewStudentUseCase(f.studentRepository)
-	f.courseLearningOutcomeUsecase = usecase.NewCourseLearningOutcomeUsecase(f.courseLearningOutcomeRepository)
-	f.programLearningOutcomeUsecase = usecase.NewProgramLearningOutcomeUsecase(f.programLearningOutcomeRepository)
-	f.subProgramLearningOutcomeUsecase = usecase.NewSubProgramLearningOutcomeUsecase(f.subProgramLearningOutcomeRepository)
-	f.facultyUsecase = usecase.NewFacultyUseCase(f.facultyRepository)
-	f.departmentUsecase = usecase.NewDepartmentUseCase(f.departmentRepository)
-	f.scoreUsecase = usecase.NewScoreUseCase(f.scoreRepository)
-	f.lecturerUsecase = usecase.NewLecturerUseCase(f.lecturerRepository)
-	f.assignmentUsecase = usecase.NewAssignmentUseCase(f.assignmentRepository)
-	f.programmeUsecase = usecase.NewProgrammeUseCase(f.programmeRepository)
-	f.courseUseCase = usecase.NewCourseUsecase(f.courseRepository, f.semesterUsecase, f.lecturerUsecase)
-	f.enrollmentUsecase = usecase.NewEnrollmentUseCase(f.enrollmentRepository, f.studentUseCase, f.courseUseCase)
-	f.semesterUsecase = usecase.NewSemesterUseCase(f.semesterRepository)
-	f.gradeUsecase = usecase.NewGradeUseCase(f.gradeRepository)
-	f.sessionUsecase = usecase.NewSessionUsecase(f.sessionRepository, f.config.Client.Auth)
-	f.authUsecase = usecase.NewAuthUsecase(f.sessionUsecase, f.lecturerUsecase)
-	f.programOutcomeUsecase = usecase.NewProgramOutcomeUsecase(f.programOutcomeRepository, f.semesterUsecase)
+	studentUseCase := usecase.NewStudentUseCase(f.studentRepository)
+	courseLearningOutcomeUsecase := usecase.NewCourseLearningOutcomeUsecase(f.courseLearningOutcomeRepository)
+	programLearningOutcomeUsecase := usecase.NewProgramLearningOutcomeUsecase(f.programLearningOutcomeRepository)
+	subProgramLearningOutcomeUsecase := usecase.NewSubProgramLearningOutcomeUsecase(f.subProgramLearningOutcomeRepository)
+	facultyUsecase := usecase.NewFacultyUseCase(f.facultyRepository)
+	departmentUsecase := usecase.NewDepartmentUseCase(f.departmentRepository)
+	scoreUsecase := usecase.NewScoreUseCase(f.scoreRepository)
+	lecturerUsecase := usecase.NewLecturerUseCase(f.lecturerRepository)
+	assignmentUsecase := usecase.NewAssignmentUseCase(f.assignmentRepository)
+	programmeUsecase := usecase.NewProgrammeUseCase(f.programmeRepository)
+	semesterUsecase := usecase.NewSemesterUseCase(f.semesterRepository)
+	courseUseCase := usecase.NewCourseUsecase(f.courseRepository, semesterUsecase, lecturerUsecase)
+	enrollmentUsecase := usecase.NewEnrollmentUseCase(f.enrollmentRepository, studentUseCase, courseUseCase)
+	gradeUsecase := usecase.NewGradeUseCase(f.gradeRepository)
+	sessionUsecase := usecase.NewSessionUsecase(f.sessionRepository, f.config.Client.Auth)
+	authUsecase := usecase.NewAuthUsecase(sessionUsecase, lecturerUsecase)
+	programOutcomeUsecase := usecase.NewProgramOutcomeUsecase(f.programOutcomeRepository, semesterUsecase)
+
+	f.assignmentUsecase = assignmentUsecase
+	f.authUsecase = authUsecase
+	f.courseLearningOutcomeUsecase = courseLearningOutcomeUsecase
+	f.courseUseCase = courseUseCase
+	f.departmentUsecase = departmentUsecase
+	f.enrollmentUsecase = enrollmentUsecase
+	f.facultyUsecase = facultyUsecase
+	f.gradeUsecase = gradeUsecase
+	f.lecturerUsecase = lecturerUsecase
+	f.programLearningOutcomeUsecase = programLearningOutcomeUsecase
+	f.programOutcomeUsecase = programOutcomeUsecase
+	f.programmeUsecase = programmeUsecase
+	f.scoreUsecase = scoreUsecase
+	f.semesterUsecase = semesterUsecase
+	f.sessionUsecase = sessionUsecase
+	f.studentUseCase = studentUseCase
+	f.subProgramLearningOutcomeUsecase = subProgramLearningOutcomeUsecase
 }
 
 func (f *fiberServer) initController() error {
