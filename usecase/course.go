@@ -7,11 +7,13 @@ import (
 )
 
 type courseUsecase struct {
-	courseRepo entity.CourseRepository
+	courseRepo      entity.CourseRepository
+	semesterUseCase entity.SemesterUseCase
+	lecturerUseCase entity.LecturerUseCase
 }
 
-func NewCourseUsecase(courseRepo entity.CourseRepository) entity.CourseUsecase {
-	return &courseUsecase{courseRepo: courseRepo}
+func NewCourseUsecase(courseRepo entity.CourseRepository, semesterUseCase entity.SemesterUseCase, lecturerUseCase entity.LecturerUseCase) entity.CourseUsecase {
+	return &courseUsecase{courseRepo: courseRepo, semesterUseCase: semesterUseCase, lecturerUseCase: lecturerUseCase}
 }
 
 func (c courseUsecase) GetAll() ([]entity.Course, error) {
@@ -32,17 +34,37 @@ func (c courseUsecase) GetById(id string) (*entity.Course, error) {
 	return course, nil
 }
 
-func (c courseUsecase) Create(name string, code string, semesterId string, lecturerId string) error {
-	course := entity.Course{
-		Id:         ulid.Make().String(),
-		Name:       name,
-		Code:       code,
-		SemesterId: semesterId,
-		LecturerId: lecturerId,
+func (c courseUsecase) Create(semesterId string, lecturerId string, name string, code string, curriculum string, description string, criteriaGrade entity.CriteriaGrade) error {
+	semester, err := c.semesterUseCase.GetById(semesterId)
+	if err != nil {
+		return errs.New(errs.SameCode, "cannot get semester id %s while creating course", semesterId, err)
+	} else if semester == nil {
+		return errs.New(errs.ErrSemesterNotFound, "semester id %s not found while creating course", semesterId)
 	}
 
-	err := c.courseRepo.Create(&course)
+	lecturer, err := c.lecturerUseCase.GetById(lecturerId)
+	if err != nil {
+		return errs.New(errs.SameCode, "cannot get lecturer id %s while creating course", lecturerId, err)
+	} else if lecturer == nil {
+		return errs.New(errs.ErrLecturerNotFound, "lecturer id %s not found while creating course", lecturerId)
+	}
 
+	if !criteriaGrade.IsValid() {
+		return errs.New(errs.ErrCreateCourse, "invalid criteria grade")
+	}
+
+	course := entity.Course{
+		Id:            ulid.Make().String(),
+		SemesterId:    semesterId,
+		LecturerId:    lecturerId,
+		Name:          name,
+		Code:          code,
+		Curriculum:    curriculum,
+		Description:   description,
+		CriteriaGrade: criteriaGrade,
+	}
+
+	err = c.courseRepo.Create(&course)
 	if err != nil {
 		return errs.New(errs.ErrCreateCourse, "cannot create course", err)
 	}
