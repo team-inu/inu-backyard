@@ -116,6 +116,7 @@ func (c studentController) CreateMany(ctx *fiber.Ctx) error {
 			Year:           student.Year,
 			Admission:      student.Admission,
 			Remark:         student.Remark,
+			City:           student.City,
 		})
 	}
 

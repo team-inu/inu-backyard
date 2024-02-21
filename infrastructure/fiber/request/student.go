@@ -5,9 +5,9 @@ type CreateStudentPayload struct {
 	FirstName string  `json:"firstName" validate:"required"`
 	LastName  string  `json:"lastName" validate:"required"`
 	GPAX      float64 `json:"gpax" `
-	MathGPA   float64 `json:"mathGpa" `
-	EngGPA    float64 `json:"engGpa" `
-	SciGPA    float64 `json:"sciGpa"`
+	MathGPA   float64 `json:"mathGPA" `
+	EngGPA    float64 `json:"engGPA" `
+	SciGPA    float64 `json:"sciGPA"`
 	School    string  `json:"school"`
 	City      string  `json:"city"`
 	Email     string  `json:"email"`
@@ -35,9 +35,9 @@ type UpdateStudentPayload struct {
 	FirstName string  `json:"firstName"`
 	LastName  string  `json:"lastName"`
 	GPAX      float64 `json:"gpax" `
-	MathGPA   float64 `json:"mathGpa" `
-	EngGPA    float64 `json:"engGpa" `
-	SciGPA    float64 `json:"sciGpa"`
+	MathGPA   float64 `json:"mathGPA" `
+	EngGPA    float64 `json:"engGPA" `
+	SciGPA    float64 `json:"sciGPA"`
 	School    string  `json:"school"`
 	Year      string  `json:"year"`
 	Admission string  `json:"admission"`
