@@ -92,3 +92,14 @@ func (r studentRepositoryGorm) Delete(id string) error {
 
 	return nil
 }
+
+func (r studentRepositoryGorm) FilterExisted(studentIds []string) ([]string, error) {
+	var existedIds []string
+
+	err := r.gorm.Raw("SELECT id FROM `student` WHERE id in ?", studentIds).Scan(&existedIds).Error
+	if err != nil {
+		return nil, fmt.Errorf("cannot query student: %w", err)
+	}
+
+	return existedIds, nil
+}

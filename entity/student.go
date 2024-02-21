@@ -18,7 +18,7 @@ type Student struct {
 	Remark         string  `json:"remark"`
 
 	Programme  *Programme  `json:"programme,omitempty"`
-	Department *Department `json:"deparment,omitempty"`
+	Department *Department `json:"department,omitempty"`
 }
 
 type StudentRepository interface {
@@ -29,6 +29,7 @@ type StudentRepository interface {
 	CreateMany(student []Student) error
 	Update(id string, student *Student) error
 	Delete(id string) error
+	FilterExisted(studentIds []string) ([]string, error)
 }
 
 type StudentUseCase interface {
@@ -39,4 +40,5 @@ type StudentUseCase interface {
 	CreateMany(student []Student) error
 	Update(id string, student *Student) error
 	Delete(id string) error
+	FilterNonExisted(studentIds []string) ([]string, error)
 }

@@ -3,6 +3,7 @@ package usecase
 import (
 	"github.com/team-inu/inu-backyard/entity"
 	errs "github.com/team-inu/inu-backyard/entity/error"
+	slice "github.com/team-inu/inu-backyard/internal/utils"
 )
 
 type studentUseCase struct {
@@ -76,4 +77,15 @@ func (c studentUseCase) Delete(id string) error {
 	}
 
 	return nil
+}
+
+func (c studentUseCase) FilterNonExisted(studentIds []string) ([]string, error) {
+	existedIds, err := c.studentRepo.FilterExisted(studentIds)
+	if err != nil {
+		return nil, errs.New(errs.ErrQueryStudent, "cannot query students", err)
+	}
+
+	nonExistedIds := slice.Subtraction(studentIds, existedIds)
+
+	return nonExistedIds, nil
 }
