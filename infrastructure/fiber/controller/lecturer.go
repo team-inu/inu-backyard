@@ -48,7 +48,7 @@ func (c lecturerController) Create(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	err := c.lecturerUseCase.Create(payload.Name, payload.FirstName, payload.LastName)
+	err := c.lecturerUseCase.Create(payload.FirstName, payload.LastName, payload.Email)
 
 	if err != nil {
 		return err
@@ -67,9 +67,9 @@ func (c lecturerController) Update(ctx *fiber.Ctx) error {
 	id := ctx.Params("lecturerId")
 
 	err := c.lecturerUseCase.Update(id, &entity.Lecturer{
-		Name:      payload.Name,
 		FirstName: payload.FirstName,
 		LastName:  payload.LastName,
+		Email:     payload.Email,
 	})
 
 	if err != nil {

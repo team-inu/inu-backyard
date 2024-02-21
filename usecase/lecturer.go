@@ -60,12 +60,12 @@ func (u lecturerUseCase) GetByParams(params *entity.Lecturer, limit int, offset 
 	return lecturers, nil
 }
 
-func (u lecturerUseCase) Create(name string, firstName string, lastName string) error {
+func (u lecturerUseCase) Create(firstName string, lastName string, email string) error {
 	lecturer := &entity.Lecturer{
 		Id:        ulid.Make().String(),
-		Name:      name,
 		FirstName: firstName,
 		LastName:  lastName,
+		Email:     email,
 	}
 
 	err := u.lecturerRepo.Create(lecturer)

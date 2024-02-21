@@ -2,11 +2,10 @@ package entity
 
 type Lecturer struct {
 	Id        string `json:"id" gorm:"primaryKey;type:char(255)"`
-	Name      string `json:"name"`
 	Email     string `json:"email" gorm:"unique"`
 	Password  string `json:"password"`
-	FirstName string `json:"first_name"`
-	LastName  string `json:"last_name"`
+	FirstName string `json:"firstName"`
+	LastName  string `json:"lastName"`
 	Role      string `json:"role" gorm:"default:'lecturer'"`
 }
 
