@@ -41,18 +41,18 @@ func (c enrollmentController) GetById(ctx *fiber.Ctx) error {
 }
 
 func (c enrollmentController) Create(ctx *fiber.Ctx) error {
-	var payload request.CreateEnrollmentPayload
+	var payload request.CreateEnrollmentsPayload
 
 	if ok, err := c.Validator.Validate(&payload, ctx); !ok {
 		return err
 	}
 
-	createdEnrollment, err := c.EnrollmentUseCase.Create(payload.CourseId, payload.StudentId)
+	err := c.EnrollmentUseCase.CreateMany(payload.CourseId, payload.Status, payload.StudentIds)
 	if err != nil {
 		return err
 	}
 
-	return ctx.JSON(createdEnrollment)
+	return ctx.SendStatus(201)
 }
 
 func (c enrollmentController) Update(ctx *fiber.Ctx) error {

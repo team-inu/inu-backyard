@@ -4,15 +4,21 @@ import (
 	"github.com/oklog/ulid/v2"
 	"github.com/team-inu/inu-backyard/entity"
 	errs "github.com/team-inu/inu-backyard/entity/error"
+	slice "github.com/team-inu/inu-backyard/internal/utils"
 )
 
 type enrollmentUseCase struct {
-	enrollmentRepo            entity.EnrollmentRepository
-	courseLearningOutcomeRepo entity.CourseLearningOutcomeRepository
+	enrollmentRepo entity.EnrollmentRepository
+	studentUseCase entity.StudentUseCase
+	courseUseCase  entity.CourseUsecase
 }
 
-func NewEnrollmentUseCase(enrollmentRepo entity.EnrollmentRepository) entity.EnrollmentUseCase {
-	return &enrollmentUseCase{enrollmentRepo: enrollmentRepo}
+func NewEnrollmentUseCase(enrollmentRepo entity.EnrollmentRepository, studentUseCase entity.StudentUseCase, courseUseCase entity.CourseUsecase) entity.EnrollmentUseCase {
+	return &enrollmentUseCase{
+		enrollmentRepo: enrollmentRepo,
+		studentUseCase: studentUseCase,
+		courseUseCase:  courseUseCase,
+	}
 }
 
 func (u enrollmentUseCase) GetAll() ([]entity.Enrollment, error) {
@@ -33,18 +39,45 @@ func (u enrollmentUseCase) GetById(id string) (*entity.Enrollment, error) {
 	return enrollment, nil
 }
 
-func (u enrollmentUseCase) Create(courseId string, studentId string) (*entity.Enrollment, error) {
-	createdEnrollment := entity.Enrollment{
-		Id:        ulid.Make().String(),
-		CourseId:  courseId,
-		StudentId: studentId,
-	}
-	err := u.enrollmentRepo.Create(&createdEnrollment)
+func (u enrollmentUseCase) CreateMany(courseId string, status entity.EnrollmentStatus, studentIds []string) error {
+	course, err := u.courseUseCase.GetById(courseId)
 	if err != nil {
-		return nil, errs.New(errs.ErrCreateEnrollment, "cannot create enrollment", err)
+		return errs.New(errs.SameCode, "cannot get course id %s while creating enrollment", courseId, err)
+	} else if course == nil {
+		return errs.New(errs.ErrCourseNotFound, "course id %s not found while creating enrollment", courseId)
 	}
 
-	return &createdEnrollment, nil
+	duplicateStudentIds := slice.GetDuplicateValue(studentIds)
+	if len(duplicateStudentIds) != 0 {
+		return errs.New(errs.ErrCreateEnrollment, "duplicate student ids")
+	}
+
+	nonExistedStudentIds, err := u.studentUseCase.FilterNonExisted(studentIds)
+	if err != nil {
+		return errs.New(errs.SameCode, "cannot get non existed student ids while creating enrollment")
+	} else if len(nonExistedStudentIds) != 0 {
+		return errs.New(errs.ErrCreateEnrollment, "there are non exist student ids")
+	}
+
+	enrollments := []entity.Enrollment{}
+
+	for _, studentId := range studentIds {
+		enrollment := entity.Enrollment{
+			Id:        ulid.Make().String(),
+			CourseId:  courseId,
+			Status:    status,
+			StudentId: studentId,
+		}
+
+		enrollments = append(enrollments, enrollment)
+	}
+
+	err = u.enrollmentRepo.CreateMany(enrollments)
+	if err != nil {
+		return errs.New(errs.ErrCreateEnrollment, "cannot create enrollment", err)
+	}
+
+	return err
 }
 
 func (u enrollmentUseCase) Update(id string, enrollment *entity.Enrollment) error {

@@ -42,6 +42,10 @@ func (r enrollmentRepositoryGorm) GetById(id string) (*entity.Enrollment, error)
 	return enrollment, nil
 }
 
+func (r enrollmentRepositoryGorm) CreateMany(enrollments []entity.Enrollment) error {
+	return r.gorm.Create(&enrollments).Error
+}
+
 func (r enrollmentRepositoryGorm) Create(enrollment *entity.Enrollment) error {
 	return r.gorm.Create(&enrollment).Error
 }
