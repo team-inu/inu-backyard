@@ -70,7 +70,6 @@ func (c studentController) Create(ctx *fiber.Ctx) error {
 
 	err := c.studentUseCase.Create(&entity.Student{
 		Id:             payload.KmuttId,
-		Name:           payload.Name,
 		FirstName:      payload.FirstName,
 		LastName:       payload.LastName,
 		Email:          payload.Email,
@@ -105,7 +104,6 @@ func (c studentController) CreateMany(ctx *fiber.Ctx) error {
 	for _, student := range payload.Students {
 		newStudent = append(newStudent, entity.Student{
 			Id:             student.KmuttId,
-			Name:           student.Name,
 			FirstName:      student.FirstName,
 			LastName:       student.LastName,
 			ProgrammeId:    student.ProgrammeId,
@@ -140,7 +138,6 @@ func (c studentController) Update(ctx *fiber.Ctx) error {
 
 	err := c.studentUseCase.Update(id, &entity.Student{
 		Id:             payload.KmuttId,
-		Name:           payload.Name,
 		FirstName:      payload.FirstName,
 		LastName:       payload.LastName,
 		ProgrammeId:    payload.ProgrammeId,

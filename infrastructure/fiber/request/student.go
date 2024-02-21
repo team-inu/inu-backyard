@@ -1,7 +1,6 @@
 package request
 
 type CreateStudentPayload struct {
-	Name      string  `json:"name" validate:"required"`
 	KmuttId   string  `json:"kmuttId" validate:"required"`
 	FirstName string  `json:"firstName" validate:"required"`
 	LastName  string  `json:"lastName" validate:"required"`
@@ -9,9 +8,9 @@ type CreateStudentPayload struct {
 	MathGPA   float64 `json:"mathGpa" `
 	EngGPA    float64 `json:"engGpa" `
 	SciGPA    float64 `json:"sciGpa"`
-	School    string  `json:"school" validate:"required"`
-	City      string  `json:"city" validate:"required"`
-	Email     string  `json:"email" validate:"required"`
+	School    string  `json:"school"`
+	City      string  `json:"city"`
+	Email     string  `json:"email"`
 	Year      string  `json:"year" validate:"required"`
 	Admission string  `json:"admission"`
 	Remark    string  `json:"remark"`
@@ -27,7 +26,7 @@ type GetStudentsByParamsPayload struct {
 }
 
 type CreateBulkStudentsPayload struct {
-	Students []CreateStudentPayload
+	Students []CreateStudentPayload `json:"students"`
 }
 
 type UpdateStudentPayload struct {
