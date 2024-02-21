@@ -10,6 +10,8 @@ type CreateStudentPayload struct {
 	EngGPA    float64 `json:"engGpa" `
 	SciGPA    float64 `json:"sciGpa"`
 	School    string  `json:"school" validate:"required"`
+	City      string  `json:"city" validate:"required"`
+	Email     string  `json:"email" validate:"required"`
 	Year      string  `json:"year" validate:"required"`
 	Admission string  `json:"admission"`
 	Remark    string  `json:"remark"`
