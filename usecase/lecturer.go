@@ -4,6 +4,7 @@ import (
 	"github.com/oklog/ulid/v2"
 	"github.com/team-inu/inu-backyard/entity"
 	errs "github.com/team-inu/inu-backyard/entity/error"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type lecturerUseCase struct {
@@ -60,15 +61,23 @@ func (u lecturerUseCase) GetByParams(params *entity.Lecturer, limit int, offset 
 	return lecturers, nil
 }
 
-func (u lecturerUseCase) Create(firstName string, lastName string, email string) error {
+func (u lecturerUseCase) Create(firstName string, lastName string, email string, password string) error {
+	bcryptPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	if err != nil {
+		return errs.New(errs.ErrCreateLecturer, "cannot create lecturer", err)
+	}
+
+	hasPassword := string(bcryptPassword)
+
 	lecturer := &entity.Lecturer{
 		Id:        ulid.Make().String(),
 		FirstName: firstName,
 		LastName:  lastName,
 		Email:     email,
+		Password:  hasPassword,
 	}
 
-	err := u.lecturerRepo.Create(lecturer)
+	err = u.lecturerRepo.Create(lecturer)
 	if err != nil {
 		return errs.New(errs.ErrCreateLecturer, "cannot create lecturer", err)
 	}

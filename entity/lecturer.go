@@ -25,7 +25,7 @@ type LecturerUseCase interface {
 	GetById(id string) (*Lecturer, error)
 	GetByParams(params *Lecturer, limit int, offset int) ([]Lecturer, error)
 	GetByEmail(email string) (*Lecturer, error)
-	Create(name string, firstName string, lastName string) error
+	Create(name string, firstName string, lastName string, password string) error
 	Update(id string, lecturer *Lecturer) error
 	Delete(id string) error
 	GetBySessionId(sessionId string) (*Lecturer, error)

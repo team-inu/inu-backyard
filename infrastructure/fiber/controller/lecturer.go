@@ -48,7 +48,7 @@ func (c lecturerController) Create(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	err := c.lecturerUseCase.Create(payload.FirstName, payload.LastName, payload.Email)
+	err := c.lecturerUseCase.Create(payload.FirstName, payload.LastName, payload.Email, payload.Password)
 
 	if err != nil {
 		return err
