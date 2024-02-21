@@ -8,14 +8,17 @@ import (
 
 type programOutcomeUsecase struct {
 	programOutcomeRepo entity.ProgramOutcomeRepository
+	semesterUseCase    entity.SemesterUseCase
 }
 
-func NewProgramOutcomeUsecase(programOutcomeRepo entity.ProgramOutcomeRepository) entity.ProgramOutcomeUsecase {
-	return &programOutcomeUsecase{programOutcomeRepo: programOutcomeRepo}
+func NewProgramOutcomeUsecase(programOutcomeRepo entity.ProgramOutcomeRepository, semesterUseCase entity.SemesterUseCase) entity.ProgramOutcomeUsecase {
+	return &programOutcomeUsecase{
+		programOutcomeRepo: programOutcomeRepo,
+		semesterUseCase:    semesterUseCase,
+	}
 }
 
 func (c programOutcomeUsecase) GetAll() ([]entity.ProgramOutcome, error) {
-
 	pos, err := c.programOutcomeRepo.GetAll()
 	if err != nil {
 		return nil, errs.New(errs.ErrQueryPO, "cannot get all POs", err)
@@ -33,16 +36,23 @@ func (c programOutcomeUsecase) GetById(id string) (*entity.ProgramOutcome, error
 	return po, nil
 }
 
-func (c programOutcomeUsecase) Create(code string, name string, description string) error {
+func (c programOutcomeUsecase) Create(semesterId string, code string, name string, description string) error {
+	semester, err := c.semesterUseCase.GetById(semesterId)
+	if err != nil {
+		return errs.New(errs.SameCode, "cannot get semester id %s while creating course", semesterId, err)
+	} else if semester == nil {
+		return errs.New(errs.ErrSemesterNotFound, "semester id %s not found while creating course", semesterId)
+	}
+
 	po := entity.ProgramOutcome{
 		Id:          ulid.Make().String(),
+		SemesterId:  semesterId,
 		Code:        code,
 		Name:        name,
 		Description: description,
 	}
 
-	err := c.programOutcomeRepo.Create(&po)
-
+	err = c.programOutcomeRepo.Create(&po)
 	if err != nil {
 		return errs.New(errs.ErrCreatePO, "cannot create PO", err)
 	}
