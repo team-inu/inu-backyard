@@ -1,17 +1,18 @@
 package entity
 
 type Grade struct {
-	ID        string `gorm:"primaryKey;type:char(255)"`
-	StudentID string
-	Year      string
-	Grade     string
+	Id         string `gorm:"primaryKey;type:char(255)"`
+	StudentId  string
+	SemesterId string
+	Grade      string
 
-	Student Student
+	Semester Semester
+	Student  Student
 }
 
 type GradeRepository interface {
 	GetAll() ([]Grade, error)
-	GetByID(id string) (*Grade, error)
+	GetById(id string) (*Grade, error)
 	Create(grade *Grade) error
 	Update(id string, grade *Grade) error
 	Delete(id string) error
@@ -19,8 +20,8 @@ type GradeRepository interface {
 
 type GradeUseCase interface {
 	GetAll() ([]Grade, error)
-	GetByID(id string) (*Grade, error)
-	Create(studentID string, year string, grade string) error
+	GetById(id string) (*Grade, error)
+	Create(studentId string, year string, grade string) error
 	Update(id string, grade *Grade) error
 	Delete(id string) error
 }

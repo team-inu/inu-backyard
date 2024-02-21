@@ -32,7 +32,7 @@ type fiberServer struct {
 	departmentRepository                entity.DepartmentRepository
 	scoreRepository                     entity.ScoreRepository
 	lecturerRepository                  entity.LecturerRepository
-	assessmentRepository                entity.AssessmentRepository
+	assignmentRepository                entity.AssignmentRepository
 	programmeRepository                 entity.ProgrammeRepository
 	semesterRepository                  entity.SemesterRepository
 	enrollmentRepository                entity.EnrollmentRepository
@@ -49,7 +49,7 @@ type fiberServer struct {
 	departmentUsecase                entity.DepartmentUseCase
 	scoreUsecase                     entity.ScoreUsecase
 	lecturerUsecase                  entity.LecturerUseCase
-	assessmentUsecase                entity.AssessmentUseCase
+	assignmentUsecase                entity.AssignmentUseCase
 	programmeUsecase                 entity.ProgrammeUseCase
 	semesterUsecase                  entity.SemesterUseCase
 	enrollmentUsecase                entity.EnrollmentUseCase
@@ -101,7 +101,7 @@ func (f *fiberServer) initRepository() (err error) {
 	f.departmentRepository = repository.NewDepartmentRepositoryGorm(f.gorm)
 	f.scoreRepository = repository.NewScoreRepositoryGorm(f.gorm)
 	f.lecturerRepository = repository.NewLecturerRepositoryGorm(f.gorm)
-	f.assessmentRepository = repository.NewAssessmentRepositoryGorm(f.gorm)
+	f.assignmentRepository = repository.NewAssignmentRepositoryGorm(f.gorm)
 	f.programmeRepository = repository.NewProgrammeRepositoryGorm(f.gorm)
 	f.semesterRepository = repository.NewSemesterRepositoryGorm(f.gorm)
 
@@ -125,7 +125,7 @@ func (f *fiberServer) initUseCase() {
 	f.departmentUsecase = usecase.NewDepartmentUseCase(f.departmentRepository)
 	f.scoreUsecase = usecase.NewScoreUseCase(f.scoreRepository)
 	f.lecturerUsecase = usecase.NewLecturerUseCase(f.lecturerRepository)
-	f.assessmentUsecase = usecase.NewAssessmentUseCase(f.assessmentRepository)
+	f.assignmentUsecase = usecase.NewAssignmentUseCase(f.assignmentRepository)
 	f.programmeUsecase = usecase.NewProgrammeUseCase(f.programmeRepository)
 	f.enrollmentUsecase = usecase.NewEnrollmentUseCase(f.enrollmentRepository)
 	f.semesterUsecase = usecase.NewSemesterUseCase(f.semesterRepository)
@@ -167,7 +167,7 @@ func (f *fiberServer) initController() {
 
 	lecturerController := controller.NewLecturerController(validator, f.lecturerUsecase)
 
-	assessmentController := controller.NewAssessmentController(validator, f.assessmentUsecase)
+	assignmentController := controller.NewAssignmentController(validator, f.assignmentUsecase)
 	programmeController := controller.NewProgrammeController(validator, f.programmeUsecase)
 	semesterController := controller.NewSemesterController(validator, f.semesterUsecase)
 
@@ -180,7 +180,7 @@ func (f *fiberServer) initController() {
 		Logger: logger.NewZapLogger(),
 	}))
 
-	app.Get("/students/:studentId", studentController.GetByID)
+	app.Get("/students/:studentId", studentController.GetById)
 	app.Get("/students", studentController.GetStudents)
 	app.Post("/students", studentController.Create)
 	app.Post("/students/bulk", studentController.CreateMany)
@@ -188,38 +188,38 @@ func (f *fiberServer) initController() {
 	app.Delete("/students/:studentId", studentController.Delete)
 
 	app.Get("/courses", courseController.GetAll)
-	app.Get("/courses/:courseId", courseController.GetByID)
+	app.Get("/courses/:courseId", courseController.GetById)
 	app.Post("/courses", courseController.Create)
 	app.Patch("/courses/:courseId", courseController.Update)
 	app.Delete("/courses/:courseId", courseController.Delete)
 
 	app.Get("/clos", courseLearningOutcomeController.GetAll)
-	app.Get("/clos/:cloId", courseLearningOutcomeController.GetByID)
-	app.Get("/courses/:courseId/clos", courseLearningOutcomeController.GetByCourseID)
+	app.Get("/clos/:cloId", courseLearningOutcomeController.GetById)
+	app.Get("/courses/:courseId/clos", courseLearningOutcomeController.GetByCourseId)
 	app.Post("/clos", courseLearningOutcomeController.Create)
 	app.Patch("/clos/:cloId", courseLearningOutcomeController.Update)
 	app.Delete("/clos/:cloId", courseLearningOutcomeController.Delete)
 
 	app.Get("/plos", programLearningOutcomeController.GetAll)
-	app.Get("/plos/:ploId", programLearningOutcomeController.GetByID)
+	app.Get("/plos/:ploId", programLearningOutcomeController.GetById)
 	app.Post("/plos", programLearningOutcomeController.Create)
 	app.Patch("/plos/:ploId", programLearningOutcomeController.Update)
 	app.Delete("/plos/:ploId", programLearningOutcomeController.Delete)
 
 	app.Get("/splos", subProgramLearningOutcomeController.GetAll)
-	app.Get("/splos/:sploId", subProgramLearningOutcomeController.GetByID)
+	app.Get("/splos/:sploId", subProgramLearningOutcomeController.GetById)
 	app.Post("/splos", subProgramLearningOutcomeController.Create)
 	app.Patch("/splos/:sploId", subProgramLearningOutcomeController.Update)
 	app.Delete("/splos/:sploId", subProgramLearningOutcomeController.Delete)
 
 	app.Get("/pos", programOutcomeController.GetAll)
-	app.Get("/pos/:poId", programOutcomeController.GetByID)
+	app.Get("/pos/:poId", programOutcomeController.GetById)
 	app.Post("/pos", programOutcomeController.Create)
 	app.Patch("/pos/:poId", programOutcomeController.Update)
 	app.Delete("/pos/:poId", programOutcomeController.Delete)
 
 	app.Get("/faculties", facultyController.GetAll)
-	app.Get("/faculties/:facultyName", facultyController.GetByID)
+	app.Get("/faculties/:facultyName", facultyController.GetById)
 	app.Post("/faculties", facultyController.Create)
 	app.Patch("/faculties/:facultyName", facultyController.Update)
 	app.Delete("/faculties/:facultyName", facultyController.Delete)
@@ -231,23 +231,23 @@ func (f *fiberServer) initController() {
 	app.Delete("/departments/:departmentName", departmentController.Delete)
 
 	app.Get("/scores", scoreController.GetAll)
-	app.Get("/scores/:scoreID", scoreController.GetByID)
+	app.Get("/scores/:scoreId", scoreController.GetById)
 	app.Post("/scores", scoreController.Create)
-	app.Patch("/scores/:scoreID", scoreController.Update)
-	app.Delete("/scores/:scoreID", scoreController.Delete)
+	app.Patch("/scores/:scoreId", scoreController.Update)
+	app.Delete("/scores/:scoreId", scoreController.Delete)
 
 	app.Get("/lecturers", lecturerController.GetAll)
-	app.Get("/lecturers/:lecturerID", lecturerController.GetByID)
+	app.Get("/lecturers/:lecturerId", lecturerController.GetById)
 	app.Post("/lecturers", lecturerController.Create)
-	app.Patch("/lecturers/:lecturerID", lecturerController.Update)
-	app.Delete("/lecturers/:lecturerID", lecturerController.Delete)
+	app.Patch("/lecturers/:lecturerId", lecturerController.Update)
+	app.Delete("/lecturers/:lecturerId", lecturerController.Delete)
 
-	app.Get("/assessments", assessmentController.GetAssessments)
-	app.Get("/assessments/:assessmentID", assessmentController.GetByID)
-	app.Post("/assessments", assessmentController.Create)
-	app.Post("/assessments/bulk", assessmentController.CreateMany)
-	app.Patch("/assessments/:assessmentID", assessmentController.Update)
-	app.Delete("/assessments/:assessmentID", assessmentController.Delete)
+	app.Get("/assignments", assignmentController.GetAssignments)
+	app.Get("/assignments/:assignmentId", assignmentController.GetById)
+	app.Post("/assignments", assignmentController.Create)
+	app.Post("/assignments/bulk", assignmentController.CreateMany)
+	app.Patch("/assignments/:assignmentId", assignmentController.Update)
+	app.Delete("/assignments/:assignmentId", assignmentController.Delete)
 
 	app.Get("/programmes", programmeController.GetAll)
 	app.Get("/programmes/:programmeName", programmeController.GetByName)
@@ -256,22 +256,22 @@ func (f *fiberServer) initController() {
 	app.Delete("/programmes/:programmeName", programmeController.Delete)
 
 	app.Get("/enrollments", enrollmentController.GetAll)
-	app.Get("/enrollments/:enrollmentID", enrollmentController.GetByID)
+	app.Get("/enrollments/:enrollmentId", enrollmentController.GetById)
 	app.Post("/enrollments", enrollmentController.Create)
-	app.Patch("/enrollments/:enrollmentID", enrollmentController.Update)
-	app.Delete("/enrollments/:enrollmentID", enrollmentController.Delete)
+	app.Patch("/enrollments/:enrollmentId", enrollmentController.Update)
+	app.Delete("/enrollments/:enrollmentId", enrollmentController.Delete)
 
 	app.Get("/semesters", semesterController.GetAll)
-	app.Get("/semesters/:semesterID", semesterController.GetByID)
+	app.Get("/semesters/:semesterId", semesterController.GetById)
 	app.Post("/semesters", semesterController.Create)
-	app.Patch("/semesters/:semesterID", semesterController.Update)
-	app.Delete("/semesters/:semesterID", semesterController.Delete)
+	app.Patch("/semesters/:semesterId", semesterController.Update)
+	app.Delete("/semesters/:semesterId", semesterController.Delete)
 
 	app.Get("/grades", gradeController.GetAll)
-	app.Get("/grades/:gradeID", gradeController.GetByID)
+	app.Get("/grades/:gradeId", gradeController.GetById)
 	app.Post("/grades", gradeController.Create)
-	app.Patch("/grades/:gradeID", gradeController.Update)
-	app.Delete("/grades/:gradeID", gradeController.Delete)
+	app.Patch("/grades/:gradeId", gradeController.Update)
+	app.Delete("/grades/:gradeId", gradeController.Delete)
 
 	app.Post("/auth/login", authController.SignIn)
 	app.Get("/auth/logout", authController.SignOut)

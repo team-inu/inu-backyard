@@ -23,7 +23,7 @@ func (r *SemesterRepository) GetAll() ([]entity.Semester, error) {
 	return semesters, nil
 }
 
-func (r *SemesterRepository) GetByID(id string) (*entity.Semester, error) {
+func (r *SemesterRepository) GetById(id string) (*entity.Semester, error) {
 	var semester entity.Semester
 	if err := r.gorm.First(&semester, "id = ?", id).Error; err != nil {
 		return nil, fmt.Errorf("cannot query to get semester by id: %w", err)

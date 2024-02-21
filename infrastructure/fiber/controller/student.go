@@ -29,10 +29,10 @@ func (c studentController) GetAll(ctx *fiber.Ctx) error {
 	return ctx.JSON(students)
 }
 
-func (c studentController) GetByID(ctx *fiber.Ctx) error {
-	studentID := ctx.Params("studentID")
+func (c studentController) GetById(ctx *fiber.Ctx) error {
+	studentId := ctx.Params("studentId")
 
-	student, err := c.studentUseCase.GetByID(studentID)
+	student, err := c.studentUseCase.GetById(studentId)
 
 	if err != nil {
 		return err
@@ -49,7 +49,7 @@ func (c studentController) GetStudents(ctx *fiber.Ctx) error {
 	}
 
 	student, err := c.studentUseCase.GetByParams(&entity.Student{
-		ProgrammeID:    payload.ProgrammeID,
+		ProgrammeId:    payload.ProgrammeId,
 		DepartmentName: payload.DepartmentName,
 		Year:           payload.Year,
 	}, -1, -1)
@@ -69,12 +69,12 @@ func (c studentController) Create(ctx *fiber.Ctx) error {
 	}
 
 	err := c.studentUseCase.Create(&entity.Student{
-		ID:             payload.KmuttID,
+		Id:             payload.KmuttId,
 		Name:           payload.Name,
 		FirstName:      payload.FirstName,
 		LastName:       payload.LastName,
 		Email:          payload.Email,
-		ProgrammeID:    payload.ProgrammeID,
+		ProgrammeId:    payload.ProgrammeId,
 		DepartmentName: payload.DepartmentName,
 		GPAX:           payload.GPAX,
 		MathGPA:        payload.MathGPA,
@@ -104,11 +104,11 @@ func (c studentController) CreateMany(ctx *fiber.Ctx) error {
 
 	for _, student := range payload.Students {
 		newStudent = append(newStudent, entity.Student{
-			ID:             student.KmuttID,
+			Id:             student.KmuttId,
 			Name:           student.Name,
 			FirstName:      student.FirstName,
 			LastName:       student.LastName,
-			ProgrammeID:    student.ProgrammeID,
+			ProgrammeId:    student.ProgrammeId,
 			DepartmentName: student.DepartmentName,
 			GPAX:           student.GPAX,
 			MathGPA:        student.MathGPA,
@@ -136,14 +136,14 @@ func (c studentController) Update(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	id := ctx.Params("studentID")
+	id := ctx.Params("studentId")
 
 	err := c.studentUseCase.Update(id, &entity.Student{
-		ID:             payload.KmuttID,
+		Id:             payload.KmuttId,
 		Name:           payload.Name,
 		FirstName:      payload.FirstName,
 		LastName:       payload.LastName,
-		ProgrammeID:    payload.ProgrammeID,
+		ProgrammeId:    payload.ProgrammeId,
 		DepartmentName: payload.DepartmentName,
 		GPAX:           payload.GPAX,
 		MathGPA:        payload.MathGPA,
@@ -163,7 +163,7 @@ func (c studentController) Update(ctx *fiber.Ctx) error {
 }
 
 func (c studentController) Delete(ctx *fiber.Ctx) error {
-	id := ctx.Params("studentID")
+	id := ctx.Params("studentId")
 
 	err := c.studentUseCase.Delete(id)
 

@@ -13,8 +13,8 @@ func NewStudentUseCase(studentRepo entity.StudentRepository) entity.StudentUseCa
 	return &studentUseCase{studentRepo: studentRepo}
 }
 
-func (u studentUseCase) GetByID(id string) (*entity.Student, error) {
-	student, err := u.studentRepo.GetByID(id)
+func (u studentUseCase) GetById(id string) (*entity.Student, error) {
+	student, err := u.studentRepo.GetById(id)
 	if err != nil {
 		return nil, errs.New(errs.ErrQueryStudent, "cannot get student by id %s", id, err)
 	}
@@ -63,7 +63,7 @@ func (u studentUseCase) Update(id string, student *entity.Student) error {
 	err := u.studentRepo.Update(id, student)
 
 	if err != nil {
-		return errs.New(errs.ErrUpdateStudent, "cannot update student by id %s", student.ID, err)
+		return errs.New(errs.ErrUpdateStudent, "cannot update student by id %s", student.Id, err)
 	}
 
 	return nil

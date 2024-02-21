@@ -28,10 +28,10 @@ func (c scoreController) GetAll(ctx *fiber.Ctx) error {
 	return ctx.JSON(scores)
 }
 
-func (c scoreController) GetByID(ctx *fiber.Ctx) error {
-	scoreID := ctx.Params("scoreID")
+func (c scoreController) GetById(ctx *fiber.Ctx) error {
+	scoreId := ctx.Params("scoreId")
 
-	score, err := c.ScoreUsecase.GetByID(scoreID)
+	score, err := c.ScoreUsecase.GetById(scoreId)
 	if err != nil {
 		return err
 	}
@@ -46,7 +46,7 @@ func (c scoreController) Create(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	createdScore, err := c.ScoreUsecase.Create(payload.Score, payload.StudentID, payload.AssessmentID, payload.LecturerID)
+	createdScore, err := c.ScoreUsecase.Create(payload.Score, payload.StudentId, payload.AssignmentId, payload.LecturerId)
 	if err != nil {
 		return err
 	}
@@ -55,14 +55,14 @@ func (c scoreController) Create(ctx *fiber.Ctx) error {
 }
 
 func (c scoreController) Delete(ctx *fiber.Ctx) error {
-	scoreID := ctx.Params("scoreID")
+	scoreId := ctx.Params("scoreId")
 
-	_, err := c.ScoreUsecase.GetByID(scoreID)
+	_, err := c.ScoreUsecase.GetById(scoreId)
 	if err != nil {
 		return err
 	}
 
-	err = c.ScoreUsecase.Delete(scoreID)
+	err = c.ScoreUsecase.Delete(scoreId)
 	if err != nil {
 		return err
 	}
@@ -71,9 +71,9 @@ func (c scoreController) Delete(ctx *fiber.Ctx) error {
 }
 
 func (c scoreController) Update(ctx *fiber.Ctx) error {
-	scoreID := ctx.Params("scoreID")
+	scoreId := ctx.Params("scoreId")
 
-	_, err := c.ScoreUsecase.GetByID(scoreID)
+	_, err := c.ScoreUsecase.GetById(scoreId)
 	if err != nil {
 		return err
 	}
@@ -83,7 +83,7 @@ func (c scoreController) Update(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	err = c.ScoreUsecase.Update(scoreID, payload.Score)
+	err = c.ScoreUsecase.Update(scoreId, payload.Score)
 	if err != nil {
 		return err
 	}

@@ -1,29 +1,29 @@
 package entity
 
 type Student struct {
-	ID             string  `gorm:"primaryKey;type:char(255)" json:"id"`
-	Name           string  `json:"name"`
-	FirstName      string  `json:"firstName"`
-	LastName       string  `json:"lastName"`
-	Email          string  `json:"email"`
-	ProgrammeID    string  `json:"programmeID"`
-	DepartmentName string  `json:"departmentName"`
-	GPAX           float64 `json:"GPAX"`
-	MathGPA        float64 `json:"mathGPA"`
-	EngGPA         float64 `json:"englishGPA"`
-	SciGPA         float64 `json:"scienceGPA"`
-	School         string  `json:"school"`
-	Year           string  `json:"year"`
-	Admission      string  `json:"admission"`
-	City           string  `json:"city"`
-	Remark         string  `json:"remark"`
+	Id             string `gorm:"primaryKey;type:char(255)"`
+	Name           string
+	FirstName      string
+	LastName       string
+	Email          string
+	ProgrammeId    string
+	DepartmentName string
+	GPAX           float64
+	MathGPA        float64
+	EngGPA         float64
+	SciGPA         float64
+	School         string
+	Year           string
+	Admission      string
+	Remark         string
+	City           string
 
 	Programme  *Programme  `json:"programme,omitempty"`
 	Department *Department `json:"deparment,omitempty"`
 }
 
 type StudentRepository interface {
-	GetByID(id string) (*Student, error)
+	GetById(id string) (*Student, error)
 	GetAll() ([]Student, error)
 	GetByParams(params *Student, limit int, offset int) ([]Student, error)
 	Create(student *Student) error
@@ -33,7 +33,7 @@ type StudentRepository interface {
 }
 
 type StudentUseCase interface {
-	GetByID(id string) (*Student, error)
+	GetById(id string) (*Student, error)
 	GetAll() ([]Student, error)
 	GetByParams(params *Student, limit int, offset int) ([]Student, error)
 	Create(student *Student) error

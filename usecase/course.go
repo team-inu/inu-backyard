@@ -23,8 +23,8 @@ func (c courseUsecase) GetAll() ([]entity.Course, error) {
 	return courses, nil
 }
 
-func (c courseUsecase) GetByID(id string) (*entity.Course, error) {
-	course, err := c.courseRepo.GetByID(id)
+func (c courseUsecase) GetById(id string) (*entity.Course, error) {
+	course, err := c.courseRepo.GetById(id)
 	if err != nil {
 		return nil, errs.New(errs.ErrQueryStudent, "cannot get course by id %s", id, err)
 	}
@@ -34,11 +34,11 @@ func (c courseUsecase) GetByID(id string) (*entity.Course, error) {
 
 func (c courseUsecase) Create(name string, code string, semesterId string, lecturerId string) error {
 	course := entity.Course{
-		ID:         ulid.Make().String(),
+		Id:         ulid.Make().String(),
 		Name:       name,
 		Code:       code,
-		SemesterID: semesterId,
-		LecturerID: lecturerId,
+		SemesterId: semesterId,
+		LecturerId: lecturerId,
 	}
 
 	err := c.courseRepo.Create(&course)
@@ -51,7 +51,7 @@ func (c courseUsecase) Create(name string, code string, semesterId string, lectu
 }
 
 func (u courseUsecase) Update(id string, course *entity.Course) error {
-	existCourse, err := u.GetByID(id)
+	existCourse, err := u.GetById(id)
 	if err != nil {
 		return errs.New(errs.SameCode, "cannot get course id %s to update", id, err)
 	} else if existCourse == nil {
@@ -60,7 +60,7 @@ func (u courseUsecase) Update(id string, course *entity.Course) error {
 
 	err = u.courseRepo.Update(id, course)
 	if err != nil {
-		return errs.New(errs.ErrUpdateCourse, "cannot update course by id %s", course.ID, err)
+		return errs.New(errs.ErrUpdateCourse, "cannot update course by id %s", course.Id, err)
 	}
 
 	return nil

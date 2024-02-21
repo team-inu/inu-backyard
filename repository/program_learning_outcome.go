@@ -28,7 +28,7 @@ func (r programLearningOutcomeRepositoryGorm) GetAll() ([]entity.ProgramLearning
 	return plos, err
 }
 
-func (r programLearningOutcomeRepositoryGorm) GetByID(id string) (*entity.ProgramLearningOutcome, error) {
+func (r programLearningOutcomeRepositoryGorm) GetById(id string) (*entity.ProgramLearningOutcome, error) {
 	var plo entity.ProgramLearningOutcome
 	err := r.gorm.Where("id = ?", id).First(&plo).Error
 
@@ -60,7 +60,7 @@ func (r programLearningOutcomeRepositoryGorm) Update(id string, programLearningO
 }
 
 func (r programLearningOutcomeRepositoryGorm) Delete(id string) error {
-	err := r.gorm.Delete(&entity.ProgramLearningOutcome{ID: id}).Error
+	err := r.gorm.Delete(&entity.ProgramLearningOutcome{Id: id}).Error
 
 	if err != nil {
 		return fmt.Errorf("cannot delete programLearningOutcome: %w", err)

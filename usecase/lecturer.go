@@ -32,8 +32,8 @@ func (u lecturerUseCase) GetByEmail(email string) (*entity.Lecturer, error) {
 	return lecturer, nil
 }
 
-func (u lecturerUseCase) GetByID(id string) (*entity.Lecturer, error) {
-	lecturer, err := u.lecturerRepo.GetByID(id)
+func (u lecturerUseCase) GetById(id string) (*entity.Lecturer, error) {
+	lecturer, err := u.lecturerRepo.GetById(id)
 	if err != nil {
 		return nil, errs.New(errs.ErrQueryLecturer, "cannot get lecturer by id %s", id, err)
 	}
@@ -62,7 +62,7 @@ func (u lecturerUseCase) GetByParams(params *entity.Lecturer, limit int, offset 
 
 func (u lecturerUseCase) Create(name string, firstName string, lastName string) error {
 	lecturer := &entity.Lecturer{
-		ID:        ulid.Make().String(),
+		Id:        ulid.Make().String(),
 		Name:      name,
 		FirstName: firstName,
 		LastName:  lastName,
@@ -77,7 +77,7 @@ func (u lecturerUseCase) Create(name string, firstName string, lastName string) 
 }
 
 func (u lecturerUseCase) Update(id string, lecturer *entity.Lecturer) error {
-	existLecturer, err := u.GetByID(id)
+	existLecturer, err := u.GetById(id)
 	if err != nil {
 		return errs.New(errs.SameCode, "cannot get lecturer id %s to update", id, err)
 	} else if existLecturer == nil {
@@ -86,14 +86,14 @@ func (u lecturerUseCase) Update(id string, lecturer *entity.Lecturer) error {
 
 	err = u.lecturerRepo.Update(id, lecturer)
 	if err != nil {
-		return errs.New(errs.ErrUpdateLecturer, "cannot update lecturer by id %s", lecturer.ID, err)
+		return errs.New(errs.ErrUpdateLecturer, "cannot update lecturer by id %s", lecturer.Id, err)
 	}
 
 	return nil
 }
 
 func (u lecturerUseCase) Delete(id string) error {
-	lecturer, err := u.GetByID(id)
+	lecturer, err := u.GetById(id)
 	if err != nil {
 		return errs.New(errs.SameCode, "cannot get lecturer id %s to delete", id, err)
 	} else if lecturer == nil {

@@ -29,10 +29,10 @@ func (c lecturerController) GetAll(ctx *fiber.Ctx) error {
 	return ctx.JSON(lecturers)
 }
 
-func (c lecturerController) GetByID(ctx *fiber.Ctx) error {
-	lecturerID := ctx.Params("lecturerID")
+func (c lecturerController) GetById(ctx *fiber.Ctx) error {
+	lecturerId := ctx.Params("lecturerId")
 
-	lecturer, err := c.lecturerUseCase.GetByID(lecturerID)
+	lecturer, err := c.lecturerUseCase.GetById(lecturerId)
 
 	if err != nil {
 		return err
@@ -64,7 +64,7 @@ func (c lecturerController) Update(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	id := ctx.Params("lecturerID")
+	id := ctx.Params("lecturerId")
 
 	err := c.lecturerUseCase.Update(id, &entity.Lecturer{
 		Name:      payload.Name,
@@ -80,7 +80,7 @@ func (c lecturerController) Update(ctx *fiber.Ctx) error {
 }
 
 func (c lecturerController) Delete(ctx *fiber.Ctx) error {
-	id := ctx.Params("lecturerID")
+	id := ctx.Params("lecturerId")
 
 	err := c.lecturerUseCase.Delete(id)
 

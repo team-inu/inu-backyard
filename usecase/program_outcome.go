@@ -24,8 +24,8 @@ func (c programOutcomeUsecase) GetAll() ([]entity.ProgramOutcome, error) {
 	return pos, nil
 }
 
-func (c programOutcomeUsecase) GetByID(id string) (*entity.ProgramOutcome, error) {
-	po, err := c.programOutcomeRepo.GetByID(id)
+func (c programOutcomeUsecase) GetById(id string) (*entity.ProgramOutcome, error) {
+	po, err := c.programOutcomeRepo.GetById(id)
 	if err != nil {
 		return nil, errs.New(errs.ErrQueryPO, "cannot get PO by id %s", id, err)
 	}
@@ -35,7 +35,7 @@ func (c programOutcomeUsecase) GetByID(id string) (*entity.ProgramOutcome, error
 
 func (c programOutcomeUsecase) Create(code string, name string, description string) error {
 	po := entity.ProgramOutcome{
-		ID:          ulid.Make().String(),
+		Id:          ulid.Make().String(),
 		Code:        code,
 		Name:        name,
 		Description: description,
@@ -51,7 +51,7 @@ func (c programOutcomeUsecase) Create(code string, name string, description stri
 }
 
 func (u programOutcomeUsecase) Update(id string, programOutcome *entity.ProgramOutcome) error {
-	existProgramOutcome, err := u.GetByID(id)
+	existProgramOutcome, err := u.GetById(id)
 	if err != nil {
 		return errs.New(errs.SameCode, "cannot get programOutcome id %s to update", id, err)
 	} else if existProgramOutcome == nil {
@@ -60,7 +60,7 @@ func (u programOutcomeUsecase) Update(id string, programOutcome *entity.ProgramO
 
 	err = u.programOutcomeRepo.Update(id, programOutcome)
 	if err != nil {
-		return errs.New(errs.ErrUpdatePO, "cannot update programOutcome by id %s", programOutcome.ID, err)
+		return errs.New(errs.ErrUpdatePO, "cannot update programOutcome by id %s", programOutcome.Id, err)
 	}
 
 	return nil

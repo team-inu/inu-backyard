@@ -29,10 +29,10 @@ func (c subProgramLearningOutcomeController) GetAll(ctx *fiber.Ctx) error {
 	return ctx.JSON(splos)
 }
 
-func (c subProgramLearningOutcomeController) GetByID(ctx *fiber.Ctx) error {
+func (c subProgramLearningOutcomeController) GetById(ctx *fiber.Ctx) error {
 	sploId := ctx.Params("sploId")
 
-	splo, err := c.subProgramLearningOutcomeUsecase.GetByID(sploId)
+	splo, err := c.subProgramLearningOutcomeUsecase.GetById(sploId)
 	if err != nil {
 		return err
 	}
@@ -47,7 +47,7 @@ func (c subProgramLearningOutcomeController) Create(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	err := c.subProgramLearningOutcomeUsecase.Create(payload.Code, payload.DescriptionThai, payload.DescriptionEng, payload.ProgramLearningOutcomeID)
+	err := c.subProgramLearningOutcomeUsecase.Create(payload.Code, payload.DescriptionThai, payload.DescriptionEng, payload.ProgramLearningOutcomeId)
 	if err != nil {
 		return err
 	}
@@ -62,13 +62,13 @@ func (c subProgramLearningOutcomeController) Update(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	id := ctx.Params("sploID")
+	id := ctx.Params("sploId")
 
 	err := c.subProgramLearningOutcomeUsecase.Update(id, &entity.SubProgramLearningOutcome{
 		Code:                     payload.Code,
 		DescriptionThai:          payload.DescriptionThai,
 		DescriptionEng:           payload.DescriptionEng,
-		ProgramLearningOutcomeID: payload.ProgramLearningOutcomeID,
+		ProgramLearningOutcomeId: payload.ProgramLearningOutcomeId,
 	})
 
 	if err != nil {
@@ -81,7 +81,7 @@ func (c subProgramLearningOutcomeController) Update(ctx *fiber.Ctx) error {
 func (c subProgramLearningOutcomeController) Delete(ctx *fiber.Ctx) error {
 	sploId := ctx.Params("sploId")
 
-	_, err := c.subProgramLearningOutcomeUsecase.GetByID(sploId)
+	_, err := c.subProgramLearningOutcomeUsecase.GetById(sploId)
 	if err != nil {
 		return err
 	}

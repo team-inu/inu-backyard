@@ -29,10 +29,10 @@ func (c programLearningOutcomeController) GetAll(ctx *fiber.Ctx) error {
 	return ctx.JSON(plos)
 }
 
-func (c programLearningOutcomeController) GetByID(ctx *fiber.Ctx) error {
+func (c programLearningOutcomeController) GetById(ctx *fiber.Ctx) error {
 	ploId := ctx.Params("ploId")
 
-	plo, err := c.programLearningOutcomeUsecase.GetByID(ploId)
+	plo, err := c.programLearningOutcomeUsecase.GetById(ploId)
 	if err != nil {
 		return err
 	}
@@ -62,7 +62,7 @@ func (c programLearningOutcomeController) Update(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	id := ctx.Params("ploID")
+	id := ctx.Params("ploId")
 
 	err := c.programLearningOutcomeUsecase.Update(id, &entity.ProgramLearningOutcome{
 		Code:            payload.Code,
@@ -81,7 +81,7 @@ func (c programLearningOutcomeController) Update(ctx *fiber.Ctx) error {
 func (c programLearningOutcomeController) Delete(ctx *fiber.Ctx) error {
 	ploId := ctx.Params("ploId")
 
-	_, err := c.programLearningOutcomeUsecase.GetByID(ploId)
+	_, err := c.programLearningOutcomeUsecase.GetById(ploId)
 	if err != nil {
 		return err
 	}

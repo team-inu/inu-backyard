@@ -23,8 +23,8 @@ func (c programLearningOutcomeUsecase) GetAll() ([]entity.ProgramLearningOutcome
 	return plos, nil
 }
 
-func (c programLearningOutcomeUsecase) GetByID(id string) (*entity.ProgramLearningOutcome, error) {
-	plo, err := c.programLearningOutcomeRepo.GetByID(id)
+func (c programLearningOutcomeUsecase) GetById(id string) (*entity.ProgramLearningOutcome, error) {
+	plo, err := c.programLearningOutcomeRepo.GetById(id)
 	if err != nil {
 		return nil, errs.New(errs.ErrQueryPLO, "cannot get PLO by id %s", id, err)
 	}
@@ -34,7 +34,7 @@ func (c programLearningOutcomeUsecase) GetByID(id string) (*entity.ProgramLearni
 
 func (c programLearningOutcomeUsecase) Create(code string, descriptionThai string, descriptionEng string, programYear int) error {
 	plo := entity.ProgramLearningOutcome{
-		ID:              ulid.Make().String(),
+		Id:              ulid.Make().String(),
 		Code:            code,
 		DescriptionThai: descriptionThai,
 		DescriptionEng:  descriptionEng,
@@ -51,7 +51,7 @@ func (c programLearningOutcomeUsecase) Create(code string, descriptionThai strin
 }
 
 func (u programLearningOutcomeUsecase) Update(id string, programLearningOutcome *entity.ProgramLearningOutcome) error {
-	existProgramLearningOutcome, err := u.GetByID(id)
+	existProgramLearningOutcome, err := u.GetById(id)
 	if err != nil {
 		return errs.New(errs.SameCode, "cannot get programLearningOutcome id %s to update", id, err)
 	} else if existProgramLearningOutcome == nil {
@@ -60,7 +60,7 @@ func (u programLearningOutcomeUsecase) Update(id string, programLearningOutcome 
 
 	err = u.programLearningOutcomeRepo.Update(id, programLearningOutcome)
 	if err != nil {
-		return errs.New(errs.ErrUpdatePLO, "cannot update programLearningOutcome by id %s", programLearningOutcome.ID, err)
+		return errs.New(errs.ErrUpdatePLO, "cannot update programLearningOutcome by id %s", programLearningOutcome.Id, err)
 	}
 
 	return nil

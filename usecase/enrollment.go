@@ -24,8 +24,8 @@ func (u enrollmentUseCase) GetAll() ([]entity.Enrollment, error) {
 	return enrollments, nil
 }
 
-func (u enrollmentUseCase) GetByID(id string) (*entity.Enrollment, error) {
-	enrollment, err := u.enrollmentRepo.GetByID(id)
+func (u enrollmentUseCase) GetById(id string) (*entity.Enrollment, error) {
+	enrollment, err := u.enrollmentRepo.GetById(id)
 	if err != nil {
 		return nil, errs.New(errs.ErrQueryEnrollment, "cannot get enrollment by id %s", id, err)
 	}
@@ -33,11 +33,11 @@ func (u enrollmentUseCase) GetByID(id string) (*entity.Enrollment, error) {
 	return enrollment, nil
 }
 
-func (u enrollmentUseCase) Create(courseID string, studentID string) (*entity.Enrollment, error) {
+func (u enrollmentUseCase) Create(courseId string, studentId string) (*entity.Enrollment, error) {
 	createdEnrollment := entity.Enrollment{
-		ID:        ulid.Make().String(),
-		CourseID:  courseID,
-		StudentID: studentID,
+		Id:        ulid.Make().String(),
+		CourseId:  courseId,
+		StudentId: studentId,
 	}
 	err := u.enrollmentRepo.Create(&createdEnrollment)
 	if err != nil {
@@ -48,7 +48,7 @@ func (u enrollmentUseCase) Create(courseID string, studentID string) (*entity.En
 }
 
 func (u enrollmentUseCase) Update(id string, enrollment *entity.Enrollment) error {
-	existEnrollment, err := u.GetByID(id)
+	existEnrollment, err := u.GetById(id)
 	if err != nil {
 		return errs.New(errs.SameCode, "cannot get enrollment id %s to update", id, err)
 	} else if existEnrollment == nil {
@@ -58,14 +58,14 @@ func (u enrollmentUseCase) Update(id string, enrollment *entity.Enrollment) erro
 	err = u.enrollmentRepo.Update(id, enrollment)
 
 	if err != nil {
-		return errs.New(errs.ErrUpdateEnrollment, "cannot update enrollment by id %s", enrollment.ID, err)
+		return errs.New(errs.ErrUpdateEnrollment, "cannot update enrollment by id %s", enrollment.Id, err)
 	}
 
 	return nil
 }
 
 func (u enrollmentUseCase) Delete(id string) error {
-	enrollment, err := u.enrollmentRepo.GetByID(id)
+	enrollment, err := u.enrollmentRepo.GetById(id)
 	if err != nil {
 		return errs.New(errs.SameCode, "cannot get enrollment id %s to delete", id, err)
 	} else if enrollment == nil {
@@ -81,10 +81,10 @@ func (u enrollmentUseCase) Delete(id string) error {
 	return nil
 }
 
-func (u enrollmentUseCase) Enroll(studentID string, courseID string) error {
+func (u enrollmentUseCase) Enroll(studentId string, courseId string) error {
 	return nil //TODO
 }
 
-func (u enrollmentUseCase) Withdraw(studentID string, courseID string) error {
+func (u enrollmentUseCase) Withdraw(studentId string, courseId string) error {
 	return nil //TODO
 }

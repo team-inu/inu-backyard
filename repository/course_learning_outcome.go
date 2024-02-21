@@ -28,7 +28,7 @@ func (r courseLearningOutcomeRepositoryGorm) GetAll() ([]entity.CourseLearningOu
 	return clos, err
 }
 
-func (r courseLearningOutcomeRepositoryGorm) GetByID(id string) (*entity.CourseLearningOutcome, error) {
+func (r courseLearningOutcomeRepositoryGorm) GetById(id string) (*entity.CourseLearningOutcome, error) {
 	var clo entity.CourseLearningOutcome
 	err := r.gorm.Preload("SubProgramLearningOutcome").Preload("SubProgramLearningOutcome.ProgramLearningOutcome").Preload("ProgramOutcome").Where("id = ?", id).First(&clo).Error
 
@@ -41,7 +41,7 @@ func (r courseLearningOutcomeRepositoryGorm) GetByID(id string) (*entity.CourseL
 	return &clo, nil
 }
 
-func (r courseLearningOutcomeRepositoryGorm) GetByCourseID(courseId string) ([]entity.CourseLearningOutcome, error) {
+func (r courseLearningOutcomeRepositoryGorm) GetByCourseId(courseId string) ([]entity.CourseLearningOutcome, error) {
 	var clos []entity.CourseLearningOutcome
 	err := r.gorm.Where("course_id = ?", courseId).Find(&clos).Error
 
@@ -68,7 +68,7 @@ func (r courseLearningOutcomeRepositoryGorm) Update(id string, courseLearningOut
 }
 
 func (r courseLearningOutcomeRepositoryGorm) Delete(id string) error {
-	err := r.gorm.Delete(&entity.CourseLearningOutcome{ID: id}).Error
+	err := r.gorm.Delete(&entity.CourseLearningOutcome{Id: id}).Error
 
 	if err != nil {
 		return fmt.Errorf("cannot delete courseLearningOutcome: %w", err)

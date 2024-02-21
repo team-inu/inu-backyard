@@ -29,10 +29,10 @@ func (c semesterController) GetAll(ctx *fiber.Ctx) error {
 	return response.NewSuccessResponse(ctx, fiber.StatusOK, semesters)
 }
 
-func (c semesterController) GetByID(ctx *fiber.Ctx) error {
-	semesterID := ctx.Params("semesterID")
+func (c semesterController) GetById(ctx *fiber.Ctx) error {
+	semesterId := ctx.Params("semesterId")
 
-	semester, err := c.SemesterUseCase.GetByID(semesterID)
+	semester, err := c.SemesterUseCase.GetById(semesterId)
 	if err != nil {
 		return err
 	}
@@ -56,7 +56,7 @@ func (c semesterController) Create(ctx *fiber.Ctx) error {
 }
 
 func (c semesterController) Update(ctx *fiber.Ctx) error {
-	semesterID := ctx.Params("semesterID")
+	semesterId := ctx.Params("semesterId")
 	var payload request.UpdateSemesterPayload
 
 	if ok, err := c.Validator.Validate(&payload, ctx); !ok {
@@ -64,7 +64,7 @@ func (c semesterController) Update(ctx *fiber.Ctx) error {
 	}
 
 	err := c.SemesterUseCase.Update(&entity.Semester{
-		ID:               semesterID,
+		Id:               semesterId,
 		Year:             payload.Year,
 		SemesterSequence: payload.SemesterSequence,
 	})
@@ -76,9 +76,9 @@ func (c semesterController) Update(ctx *fiber.Ctx) error {
 }
 
 func (c semesterController) Delete(ctx *fiber.Ctx) error {
-	semesterID := ctx.Params("semesterID")
+	semesterId := ctx.Params("semesterId")
 
-	err := c.SemesterUseCase.Delete(semesterID)
+	err := c.SemesterUseCase.Delete(semesterId)
 	if err != nil {
 		return err
 	}

@@ -23,8 +23,8 @@ func (u gradeUseCase) GetAll() ([]entity.Grade, error) {
 	return grades, nil
 }
 
-func (u gradeUseCase) GetByID(id string) (*entity.Grade, error) {
-	grade, err := u.gradeRepo.GetByID(id)
+func (u gradeUseCase) GetById(id string) (*entity.Grade, error) {
+	grade, err := u.gradeRepo.GetById(id)
 	if err != nil {
 		return nil, errs.New(errs.ErrQueryGrade, "cannot get grade by id %s", id, err)
 	}
@@ -32,11 +32,10 @@ func (u gradeUseCase) GetByID(id string) (*entity.Grade, error) {
 	return grade, nil
 }
 
-func (u gradeUseCase) Create(studentID string, year string, grade string) error {
+func (u gradeUseCase) Create(studentId string, year string, grade string) error {
 	createdGrade := &entity.Grade{
-		ID:        ulid.Make().String(),
-		StudentID: studentID,
-		Year:      year,
+		Id:        ulid.Make().String(),
+		StudentId: studentId,
 		Grade:     grade,
 	}
 
@@ -49,7 +48,7 @@ func (u gradeUseCase) Create(studentID string, year string, grade string) error 
 }
 
 func (u gradeUseCase) Update(id string, grade *entity.Grade) error {
-	existGrade, err := u.GetByID(id)
+	existGrade, err := u.GetById(id)
 	if err != nil {
 		return errs.New(errs.SameCode, "cannot get grade id %s to update", id, err)
 	} else if existGrade == nil {
@@ -58,14 +57,14 @@ func (u gradeUseCase) Update(id string, grade *entity.Grade) error {
 
 	err = u.gradeRepo.Update(id, grade)
 	if err != nil {
-		return errs.New(errs.ErrUpdateGrade, "cannot update grade by id %s", grade.ID, err)
+		return errs.New(errs.ErrUpdateGrade, "cannot update grade by id %s", grade.Id, err)
 	}
 
 	return nil
 }
 
 func (u gradeUseCase) Delete(id string) error {
-	grade, err := u.GetByID(id)
+	grade, err := u.GetById(id)
 	if err != nil {
 		return errs.New(errs.SameCode, "cannot get grade id %s to delete", id, err)
 	} else if grade == nil {

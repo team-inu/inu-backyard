@@ -29,10 +29,10 @@ func (c courseController) GetAll(ctx *fiber.Ctx) error {
 	return ctx.JSON(courses)
 }
 
-func (c courseController) GetByID(ctx *fiber.Ctx) error {
-	courseID := ctx.Params("courseID")
+func (c courseController) GetById(ctx *fiber.Ctx) error {
+	courseId := ctx.Params("courseId")
 
-	course, err := c.courseUsecase.GetByID(courseID)
+	course, err := c.courseUsecase.GetById(courseId)
 	if err != nil {
 		return err
 	}
@@ -47,7 +47,7 @@ func (c courseController) Create(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	err := c.courseUsecase.Create(payload.Name, payload.Code, payload.SemesterID, payload.LecturerID)
+	err := c.courseUsecase.Create(payload.Name, payload.Code, payload.SemesterId, payload.LecturerId)
 	if err != nil {
 		return err
 	}
@@ -62,13 +62,13 @@ func (c courseController) Update(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	id := ctx.Params("courseID")
+	id := ctx.Params("courseId")
 
 	err := c.courseUsecase.Update(id, &entity.Course{
 		Name:       payload.Name,
 		Code:       payload.Code,
-		SemesterID: payload.SemesterID,
-		LecturerID: payload.LecturerID,
+		SemesterId: payload.SemesterId,
+		LecturerId: payload.LecturerId,
 	})
 
 	if err != nil {
@@ -79,7 +79,7 @@ func (c courseController) Update(ctx *fiber.Ctx) error {
 }
 
 func (c courseController) Delete(ctx *fiber.Ctx) error {
-	id := ctx.Params("courseID")
+	id := ctx.Params("courseId")
 
 	err := c.courseUsecase.Delete(id)
 
