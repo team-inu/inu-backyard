@@ -1,6 +1,8 @@
 package repository
 
 import (
+	"fmt"
+
 	"github.com/team-inu/inu-backyard/entity"
 	errs "github.com/team-inu/inu-backyard/entity/error"
 	"gorm.io/gorm"
@@ -46,8 +48,10 @@ func (r *FacultyRepositoryGorm) GetByName(name string) (*entity.Faculty, error) 
 	var faculty *entity.Faculty
 
 	err := r.gorm.Where("name = ?", name).First(&faculty).Error
-	if err != nil {
-		return nil, errs.New(errs.ErrQueryFaculty, "cannot get faculty by name %s", name, err)
+	if err == gorm.ErrRecordNotFound {
+		return nil, nil
+	} else if err != nil {
+		return nil, fmt.Errorf("cannot query to get faculty: %w", err)
 	}
 
 	return faculty, nil
