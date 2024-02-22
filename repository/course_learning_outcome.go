@@ -80,3 +80,14 @@ func (r courseLearningOutcomeRepositoryGorm) Delete(id string) error {
 
 	return nil
 }
+
+func (r courseLearningOutcomeRepositoryGorm) FilterExisted(ids []string) ([]string, error) {
+	var existedIds []string
+
+	err := r.gorm.Raw("SELECT id FROM `course_learning_outcome` WHERE id in ?", ids).Scan(&existedIds).Error
+	if err != nil {
+		return nil, fmt.Errorf("cannot query clo: %w", err)
+	}
+
+	return existedIds, nil
+}

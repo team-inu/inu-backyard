@@ -4,6 +4,7 @@ import (
 	"github.com/oklog/ulid/v2"
 	"github.com/team-inu/inu-backyard/entity"
 	errs "github.com/team-inu/inu-backyard/entity/error"
+	slice "github.com/team-inu/inu-backyard/internal/utils"
 )
 
 type courseLearningOutcomeUsecase struct {
@@ -127,4 +128,15 @@ func (c courseLearningOutcomeUsecase) Delete(id string) error {
 	}
 
 	return nil
+}
+
+func (c courseLearningOutcomeUsecase) FilterNonExisted(ids []string) ([]string, error) {
+	existedIds, err := c.courseLearningOutcomeRepo.FilterExisted(ids)
+	if err != nil {
+		return nil, errs.New(errs.ErrQueryCLO, "cannot query clo", err)
+	}
+
+	nonExistedIds := slice.Subtraction(ids, existedIds)
+
+	return nonExistedIds, nil
 }

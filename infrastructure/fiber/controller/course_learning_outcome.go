@@ -85,11 +85,10 @@ func (c courseLearningOutcomeController) Update(ctx *fiber.Ctx) error {
 	id := ctx.Params("cloId")
 
 	err := c.courseLearningOutcomeUsecase.Update(id, &entity.CourseLearningOutcome{
-		Code:                        payload.Code,
-		Description:                 payload.Description,
-		SubProgramLearningOutcomeId: payload.SubProgramLearningOutcomeId,
-		ProgramOutcomeId:            payload.ProgramOutcomeId,
-		Status:                      payload.Status,
+		Code:             payload.Code,
+		Description:      payload.Description,
+		ProgramOutcomeId: payload.ProgramOutcomeId,
+		Status:           payload.Status,
 	})
 
 	if err != nil {

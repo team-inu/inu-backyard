@@ -8,7 +8,6 @@ type CourseLearningOutcome struct {
 	ExpectedScorePercentage             float64 `json:"expectedScorePercentage"`
 	ExpectedPassingStudentPercentage    float64 `json:"expectedPassingStudentPercentage"`
 	Status                              string  `json:"status"`
-	SubProgramLearningOutcomeId         string  `json:"subProgramLearningOutcomeId"`
 	ProgramOutcomeId                    string  `json:"programOutcomeId"`
 	CourseId                            string  `json:"courseId"`
 
@@ -37,6 +36,7 @@ type CourseLearningOutcomeRepository interface {
 	Create(courseLearningOutcome *CourseLearningOutcome) error
 	Update(id string, courseLearningOutcome *CourseLearningOutcome) error
 	Delete(id string) error
+	FilterExisted(ids []string) ([]string, error)
 }
 
 type CourseLearningOutcomeUsecase interface {
@@ -46,4 +46,5 @@ type CourseLearningOutcomeUsecase interface {
 	Create(dto CreateCourseLearningOutcomeDto) error
 	Update(id string, courseLearningOutcome *CourseLearningOutcome) error
 	Delete(id string) error
+	FilterNonExisted(ids []string) ([]string, error)
 }
