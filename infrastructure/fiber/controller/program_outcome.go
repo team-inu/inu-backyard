@@ -47,7 +47,7 @@ func (c programOutcomeController) Create(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	err := c.programOutcomeUsecase.Create(payload.SemesterId, payload.Code, payload.Name, payload.Description)
+	err := c.programOutcomeUsecase.Create(payload.Code, payload.Name, payload.Description)
 	if err != nil {
 		return err
 	}

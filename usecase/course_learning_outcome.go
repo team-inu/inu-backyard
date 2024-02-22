@@ -69,10 +69,6 @@ func (c courseLearningOutcomeUsecase) Create(dto entity.CreateCourseLearningOutc
 		return errs.New(errs.ErrCourseNotFound, "program outcome id %s not found while creating clo", dto.ProgramOutcomeId)
 	}
 
-	if course.SemesterId != po.SemesterId {
-		return errs.New(errs.ErrCreateCourse, "course and semester must be in the same semester")
-	}
-
 	nonExistedSubPloIds, err := c.subProgramLearningOutcomeUseCase.FilterNonExisted(dto.SubProgramLearningOutcomeIds)
 	if err != nil {
 		return errs.New(errs.SameCode, "cannot get non existed sub plo ids while creating clo")

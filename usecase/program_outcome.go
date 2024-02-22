@@ -36,23 +36,15 @@ func (c programOutcomeUsecase) GetById(id string) (*entity.ProgramOutcome, error
 	return po, nil
 }
 
-func (c programOutcomeUsecase) Create(semesterId string, code string, name string, description string) error {
-	semester, err := c.semesterUseCase.GetById(semesterId)
-	if err != nil {
-		return errs.New(errs.SameCode, "cannot get semester id %s while creating course", semesterId, err)
-	} else if semester == nil {
-		return errs.New(errs.ErrSemesterNotFound, "semester id %s not found while creating course", semesterId)
-	}
-
+func (c programOutcomeUsecase) Create(code string, name string, description string) error {
 	po := entity.ProgramOutcome{
 		Id:          ulid.Make().String(),
-		SemesterId:  semesterId,
 		Code:        code,
 		Name:        name,
 		Description: description,
 	}
 
-	err = c.programOutcomeRepo.Create(&po)
+	err := c.programOutcomeRepo.Create(&po)
 	if err != nil {
 		return errs.New(errs.ErrCreatePO, "cannot create PO", err)
 	}
