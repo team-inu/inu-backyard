@@ -40,7 +40,7 @@ func (c assignmentController) GetAssignments(ctx *fiber.Ctx) error {
 	}
 
 	assignments, err := c.AssignmentUseCase.GetByParams(&entity.Assignment{
-		CourseLearningOutcomeId: payload.CourseLearningOutcomeId,
+		// CourseLearningOutcomeId: payload.CourseLearningOutcomeId,
 	}, -1, -1)
 
 	if err != nil {
@@ -73,12 +73,15 @@ func (c assignmentController) Create(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	err := c.AssignmentUseCase.Create(&entity.Assignment{
-		Name:                    payload.Name,
-		Description:             payload.Description,
-		Weight:                  *payload.Weight,
-		CourseLearningOutcomeId: payload.CourseLearningOutcomeId,
-	})
+	err := c.AssignmentUseCase.Create(
+		payload.Name,
+		payload.Description,
+		*payload.MaxScore,
+		*payload.Weight,
+		*payload.ExpectedScorePercentage,
+		*payload.ExpectedPassingStudentPercentage,
+		payload.CourseLearningOutcomeIds,
+	)
 	if err != nil {
 		return err
 	}
@@ -97,10 +100,10 @@ func (c assignmentController) CreateMany(ctx *fiber.Ctx) error {
 
 	for _, assignment := range payload.Assignments {
 		newAssignments = append(newAssignments, entity.Assignment{
-			Name:                    assignment.Name,
-			Description:             assignment.Description,
-			Weight:                  *assignment.Weight,
-			CourseLearningOutcomeId: assignment.CourseLearningOutcomeId,
+			Name:        assignment.Name,
+			Description: assignment.Description,
+			Weight:      *assignment.Weight,
+			// CourseLearningOutcomeId: assignment.CourseLearningOutcomeId,
 		})
 	}
 
@@ -120,10 +123,10 @@ func (c assignmentController) Update(ctx *fiber.Ctx) error {
 	}
 
 	err := c.AssignmentUseCase.Update(payload.Id, &entity.Assignment{
-		Name:                    payload.Name,
-		Description:             payload.Description,
-		Weight:                  payload.Weight,
-		CourseLearningOutcomeId: payload.CourseLearningOutcomeId,
+		Name:        payload.Name,
+		Description: payload.Description,
+		Weight:      payload.Weight,
+		// CourseLearningOutcomeId: payload.CourseLearningOutcomeId,
 	})
 
 	if err != nil {

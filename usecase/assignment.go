@@ -4,15 +4,22 @@ import (
 	"github.com/oklog/ulid/v2"
 	"github.com/team-inu/inu-backyard/entity"
 	errs "github.com/team-inu/inu-backyard/entity/error"
+	slice "github.com/team-inu/inu-backyard/internal/utils"
 )
 
 type assignmentUseCase struct {
-	assignmentRepo            entity.AssignmentRepository
-	courseLearningOutcomeRepo entity.CourseLearningOutcomeRepository
+	assignmentRepo               entity.AssignmentRepository
+	courseLearningOutcomeUseCase entity.CourseLearningOutcomeUsecase
 }
 
-func NewAssignmentUseCase(assignmentRepo entity.AssignmentRepository) entity.AssignmentUseCase {
-	return &assignmentUseCase{assignmentRepo: assignmentRepo}
+func NewAssignmentUseCase(
+	assignmentRepo entity.AssignmentRepository,
+	courseLearningOutcomeUseCase entity.CourseLearningOutcomeUsecase,
+) entity.AssignmentUseCase {
+	return &assignmentUseCase{
+		assignmentRepo:               assignmentRepo,
+		courseLearningOutcomeUseCase: courseLearningOutcomeUseCase,
+	}
 }
 
 func (u assignmentUseCase) GetById(id string) (*entity.Assignment, error) {
@@ -44,9 +51,42 @@ func (u assignmentUseCase) GetByCourseId(courseId string, limit int, offset int)
 	return nil, nil
 }
 
-func (u assignmentUseCase) Create(assignment *entity.Assignment) error {
-	assignment.Id = ulid.Make().String()
-	err := u.assignmentRepo.Create(assignment)
+func (u assignmentUseCase) Create(name string, description string, maxScore int, weight int, expectedScorePercentage float64, expectedPassingStudentPercentage float64, courseLearningOutcomeIds []string) error {
+	if len(courseLearningOutcomeIds) == 0 {
+		return errs.New(errs.ErrCreateAssignment, "assignment must have at least one clo")
+	}
+
+	duplicateCloIds := slice.GetDuplicateValue(courseLearningOutcomeIds)
+	if len(duplicateCloIds) != 0 {
+		return errs.New(errs.ErrCreateAssignment, "duplicate clo ids")
+	}
+
+	nonExistedCloIds, err := u.courseLearningOutcomeUseCase.FilterNonExisted(courseLearningOutcomeIds)
+	if err != nil {
+		return errs.New(errs.SameCode, "cannot get non existed clo ids while creating assignment")
+	} else if len(nonExistedCloIds) != 0 {
+		return errs.New(errs.ErrCreateAssignment, "there are non exist clo ids")
+	}
+
+	courseLeaningOutcomes := []*entity.CourseLearningOutcome{}
+	for _, id := range courseLearningOutcomeIds {
+		courseLeaningOutcomes = append(courseLeaningOutcomes, &entity.CourseLearningOutcome{
+			Id: id,
+		})
+	}
+
+	assignment := entity.Assignment{
+		Id:                               ulid.Make().String(),
+		Name:                             name,
+		Description:                      description,
+		MaxScore:                         maxScore,
+		Weight:                           weight,
+		ExpectedScorePercentage:          expectedScorePercentage,
+		ExpectedPassingStudentPercentage: expectedPassingStudentPercentage,
+		CourseLearningOutcomes:           courseLeaningOutcomes,
+	}
+
+	err = u.assignmentRepo.Create(&assignment)
 	if err != nil {
 		return errs.New(errs.ErrCreateAssignment, "cannot create assignment", err)
 	}
