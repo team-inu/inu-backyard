@@ -4,6 +4,7 @@ import (
 	"github.com/oklog/ulid/v2"
 	"github.com/team-inu/inu-backyard/entity"
 	errs "github.com/team-inu/inu-backyard/entity/error"
+	slice "github.com/team-inu/inu-backyard/internal/utils"
 )
 
 type subProgramLearningOutcomeUsecase struct {
@@ -73,4 +74,15 @@ func (c subProgramLearningOutcomeUsecase) Delete(id string) error {
 	}
 
 	return nil
+}
+
+func (c subProgramLearningOutcomeUsecase) FilterNonExisted(ids []string) ([]string, error) {
+	existedIds, err := c.subProgramLearningOutcomeRepo.FilterExisted(ids)
+	if err != nil {
+		return nil, errs.New(errs.ErrQueryStudent, "cannot query sub plo", err)
+	}
+
+	nonExistedIds := slice.Subtraction(ids, existedIds)
+
+	return nonExistedIds, nil
 }

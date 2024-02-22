@@ -17,6 +17,7 @@ type SubProgramLearningOutcomeRepository interface {
 	Create(programLearningOutcome *SubProgramLearningOutcome) error
 	Update(id string, programLearningOutcome *SubProgramLearningOutcome) error
 	Delete(id string) error
+	FilterExisted(ids []string) ([]string, error)
 }
 
 type SubProgramLearningOutcomeUsecase interface {
@@ -25,4 +26,5 @@ type SubProgramLearningOutcomeUsecase interface {
 	Create(code string, descriptionThai string, descriptionEng string, programLearningOutcomeId string) error
 	Update(id string, programLearningOutcome *SubProgramLearningOutcome) error
 	Delete(id string) error
+	FilterNonExisted(ids []string) ([]string, error)
 }
