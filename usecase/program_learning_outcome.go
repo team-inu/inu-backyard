@@ -32,13 +32,14 @@ func (c programLearningOutcomeUsecase) GetById(id string) (*entity.ProgramLearni
 	return plo, nil
 }
 
-func (c programLearningOutcomeUsecase) Create(code string, descriptionThai string, descriptionEng string, programYear int) error {
+func (c programLearningOutcomeUsecase) Create(code string, descriptionThai string, descriptionEng string, programYear int, programmeId string) error {
 	plo := entity.ProgramLearningOutcome{
 		Id:              ulid.Make().String(),
 		Code:            code,
 		DescriptionThai: descriptionThai,
 		DescriptionEng:  descriptionEng,
 		ProgramYear:     programYear,
+		ProgrammeId:     programmeId,
 	}
 
 	err := c.programLearningOutcomeRepo.Create(&plo)

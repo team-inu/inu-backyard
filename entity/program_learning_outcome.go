@@ -22,7 +22,7 @@ type ProgramLearningOutcomeRepository interface {
 type ProgramLearningOutcomeUsecase interface {
 	GetAll() ([]ProgramLearningOutcome, error)
 	GetById(id string) (*ProgramLearningOutcome, error)
-	Create(code string, descriptionThai string, descriptionEng string, programYear int) error
+	Create(code string, descriptionThai string, descriptionEng string, programYear int, programmeId string) error
 	Update(id string, programLearningOutcome *ProgramLearningOutcome) error
 	Delete(id string) error
 }
