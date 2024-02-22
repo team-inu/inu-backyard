@@ -7,15 +7,27 @@ type CourseLearningOutcome struct {
 	ExpectedPassingAssignmentPercentage float64 `json:"expectedPassingAssignment"`
 	ExpectedScorePercentage             float64 `json:"expectedScorePercentage"`
 	ExpectedPassingStudentPercentage    float64 `json:"expectedPassingStudentPercentage"`
+	Status                              string  `json:"status"`
 	SubProgramLearningOutcomeId         string  `json:"subProgramLearningOutcomeId"`
 	ProgramOutcomeId                    string  `json:"programOutcomeId"`
 	CourseId                            string  `json:"courseId"`
-	Status                              string  `json:"status"`
 
 	SubProgramLearningOutcomes []*SubProgramLearningOutcome `gorm:"many2many:clo_subplo"`
 	Assignments                []*Assignment                `gorm:"many2many:clo_assignment"`
 	ProgramOutcome             ProgramOutcome
 	Course                     Course
+}
+
+type CreateCourseLearningOutcomeDto struct {
+	Code                                string
+	Description                         string
+	ExpectedPassingAssignmentPercentage float64
+	ExpectedScorePercentage             float64
+	ExpectedPassingStudentPercentage    float64
+	Status                              string
+	SubProgramLearningOutcomeIds        []string
+	ProgramOutcomeId                    string
+	CourseId                            string
 }
 
 type CourseLearningOutcomeRepository interface {
@@ -31,7 +43,7 @@ type CourseLearningOutcomeUsecase interface {
 	GetAll() ([]CourseLearningOutcome, error)
 	GetById(id string) (*CourseLearningOutcome, error)
 	GetByCourseId(courseId string) ([]CourseLearningOutcome, error)
-	Create(code string, description string, weight int, subProgramLearningOutcomeId string, programOutcomeId string, courseId string, status string) error
+	Create(dto CreateCourseLearningOutcomeDto) error
 	Update(id string, courseLearningOutcome *CourseLearningOutcome) error
 	Delete(id string) error
 }

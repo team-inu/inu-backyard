@@ -53,12 +53,21 @@ func (c courseLearningOutcomeController) GetByCourseId(ctx *fiber.Ctx) error {
 
 func (c courseLearningOutcomeController) Create(ctx *fiber.Ctx) error {
 	var payload request.CreateCourseLearningOutcomePayload
-
 	if ok, err := c.Validator.Validate(&payload, ctx); !ok {
 		return err
 	}
 
-	err := c.courseLearningOutcomeUsecase.Create(payload.Code, payload.Description, payload.Weight, payload.SubProgramLearningOutcomeId, payload.ProgramOutcomeId, payload.CourseId, payload.Status)
+	err := c.courseLearningOutcomeUsecase.Create(entity.CreateCourseLearningOutcomeDto{
+		Code:                                payload.Code,
+		Description:                         payload.Description,
+		Status:                              payload.Status,
+		ExpectedPassingAssignmentPercentage: payload.ExpectedPassingAssignmentPercentage,
+		ExpectedScorePercentage:             payload.ExpectedScorePercentage,
+		ExpectedPassingStudentPercentage:    payload.ExpectedPassingStudentPercentage,
+		CourseId:                            payload.CourseId,
+		ProgramOutcomeId:                    payload.ProgramOutcomeId,
+		SubProgramLearningOutcomeIds:        payload.SubProgramLearningOutcomeIds,
+	})
 	if err != nil {
 		return err
 	}

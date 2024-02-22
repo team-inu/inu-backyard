@@ -7,11 +7,24 @@ import (
 )
 
 type courseLearningOutcomeUsecase struct {
-	courseLearningOutcomeRepo entity.CourseLearningOutcomeRepository
+	courseLearningOutcomeRepo        entity.CourseLearningOutcomeRepository
+	courseUseCase                    entity.CourseUsecase
+	programOutcomeUseCase            entity.ProgramOutcomeUsecase
+	subProgramLearningOutcomeUseCase entity.SubProgramLearningOutcomeUsecase
 }
 
-func NewCourseLearningOutcomeUsecase(courseLearningOutcomeRepo entity.CourseLearningOutcomeRepository) entity.CourseLearningOutcomeUsecase {
-	return &courseLearningOutcomeUsecase{courseLearningOutcomeRepo: courseLearningOutcomeRepo}
+func NewCourseLearningOutcomeUsecase(
+	courseLearningOutcomeRepo entity.CourseLearningOutcomeRepository,
+	courseUseCase entity.CourseUsecase,
+	programOutcomeUseCase entity.ProgramOutcomeUsecase,
+	subProgramLearningOutcomeUseCase entity.SubProgramLearningOutcomeUsecase,
+) entity.CourseLearningOutcomeUsecase {
+	return &courseLearningOutcomeUsecase{
+		courseLearningOutcomeRepo:        courseLearningOutcomeRepo,
+		courseUseCase:                    courseUseCase,
+		programOutcomeUseCase:            programOutcomeUseCase,
+		subProgramLearningOutcomeUseCase: subProgramLearningOutcomeUseCase,
+	}
 }
 
 func (c courseLearningOutcomeUsecase) GetAll() ([]entity.CourseLearningOutcome, error) {
@@ -41,18 +54,53 @@ func (c courseLearningOutcomeUsecase) GetByCourseId(courseId string) ([]entity.C
 	return clo, nil
 }
 
-func (c courseLearningOutcomeUsecase) Create(code string, description string, weight int, subProgramLearningOutcomeId string, programOutcomeId string, courseId string, status string) error {
-	clo := entity.CourseLearningOutcome{
-		Id:                          ulid.Make().String(),
-		Code:                        code,
-		Description:                 description,
-		SubProgramLearningOutcomeId: subProgramLearningOutcomeId,
-		ProgramOutcomeId:            programOutcomeId,
-		Status:                      status,
+func (c courseLearningOutcomeUsecase) Create(dto entity.CreateCourseLearningOutcomeDto) error {
+	course, err := c.courseUseCase.GetById(dto.CourseId)
+	if err != nil {
+		return errs.New(errs.SameCode, "cannot get course id %s while creating clo", dto.CourseId, err)
+	} else if course == nil {
+		return errs.New(errs.ErrCourseNotFound, "course id %s not found while creating clo", dto.CourseId)
 	}
 
-	err := c.courseLearningOutcomeRepo.Create(&clo)
+	po, err := c.programOutcomeUseCase.GetById(dto.ProgramOutcomeId)
+	if err != nil {
+		return errs.New(errs.SameCode, "cannot get program outcome id %s while creating clo", dto.ProgramOutcomeId, err)
+	} else if po == nil {
+		return errs.New(errs.ErrCourseNotFound, "program outcome id %s not found while creating clo", dto.ProgramOutcomeId)
+	}
 
+	if course.SemesterId != po.SemesterId {
+		return errs.New(errs.ErrCreateCourse, "course and semester must be in the same semester")
+	}
+
+	nonExistedSubPloIds, err := c.subProgramLearningOutcomeUseCase.FilterNonExisted(dto.SubProgramLearningOutcomeIds)
+	if err != nil {
+		return errs.New(errs.SameCode, "cannot get non existed sub plo ids while creating clo")
+	} else if len(nonExistedSubPloIds) != 0 {
+		return errs.New(errs.ErrCreateEnrollment, "there are non exist sub plo")
+	}
+
+	subPlos := []*entity.SubProgramLearningOutcome{}
+	for _, ploId := range dto.SubProgramLearningOutcomeIds {
+		subPlos = append(subPlos, &entity.SubProgramLearningOutcome{
+			Id: ploId,
+		})
+	}
+
+	clo := entity.CourseLearningOutcome{
+		Id:                                  ulid.Make().String(),
+		Code:                                dto.Code,
+		Description:                         dto.Description,
+		Status:                              dto.Status,
+		ExpectedPassingAssignmentPercentage: dto.ExpectedPassingAssignmentPercentage,
+		ExpectedScorePercentage:             dto.ExpectedScorePercentage,
+		ExpectedPassingStudentPercentage:    dto.ExpectedPassingStudentPercentage,
+		ProgramOutcomeId:                    dto.ProgramOutcomeId,
+		CourseId:                            dto.CourseId,
+		SubProgramLearningOutcomes:          subPlos,
+	}
+
+	err = c.courseLearningOutcomeRepo.Create(&clo)
 	if err != nil {
 		return errs.New(errs.ErrCreateCLO, "cannot create CLO", err)
 	}

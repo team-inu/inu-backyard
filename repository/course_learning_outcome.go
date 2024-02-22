@@ -58,6 +58,10 @@ func (r courseLearningOutcomeRepositoryGorm) Create(courseLearningOutcome *entit
 	return r.gorm.Create(&courseLearningOutcome).Error
 }
 
+func (r courseLearningOutcomeRepositoryGorm) CreateMany(courseLeaningOutcome []entity.CourseLearningOutcome) error {
+	return nil
+}
+
 func (r courseLearningOutcomeRepositoryGorm) Update(id string, courseLearningOutcome *entity.CourseLearningOutcome) error {
 	err := r.gorm.Model(&entity.CourseLearningOutcome{}).Where("id = ?", id).Updates(courseLearningOutcome).Error
 	if err != nil {
