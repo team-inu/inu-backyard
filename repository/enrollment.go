@@ -75,3 +75,23 @@ func (r enrollmentRepositoryGorm) Delete(id string) error {
 
 	return nil
 }
+
+func (r enrollmentRepositoryGorm) FilterJoinedStudent(studentIds []string, status *entity.EnrollmentStatus) ([]string, error) {
+	// fmt.Println(*status)
+	var existedIds []string
+
+	query := "SELECT id FROM `enrollment` WHERE id in ?"
+	args := []interface{}{studentIds}
+
+	if status != nil {
+		query += " AND status = ?"
+		args = append(args, *status)
+	}
+
+	err := r.gorm.Raw(query, args...).Scan(&existedIds).Error
+	if err != nil {
+		return nil, fmt.Errorf("cannot query student: %w", err)
+	}
+
+	return existedIds, nil
+}

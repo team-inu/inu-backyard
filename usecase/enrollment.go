@@ -121,3 +121,12 @@ func (u enrollmentUseCase) Enroll(studentId string, courseId string) error {
 func (u enrollmentUseCase) Withdraw(studentId string, courseId string) error {
 	return nil //TODO
 }
+
+func (u enrollmentUseCase) FilterJoinedStudent(studentIds []string, status *entity.EnrollmentStatus) ([]string, error) {
+	joinedIds, err := u.enrollmentRepo.FilterJoinedStudent(studentIds, status)
+	if err != nil {
+		return nil, errs.New(errs.ErrQueryStudent, "cannot query enrollment", err)
+	}
+
+	return joinedIds, nil
+}
