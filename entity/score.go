@@ -12,10 +12,16 @@ type Score struct {
 	Assignment Assignment
 }
 
+type StudentScore struct {
+	StudentId string
+	Score     float64
+}
+
 type ScoreRepository interface {
 	GetAll() ([]Score, error)
 	GetById(id string) (*Score, error)
 	Create(score *Score) error
+	CreateMany(score []Score) error
 	Update(id string, score *Score) error
 	Delete(id string) error
 }
@@ -24,6 +30,7 @@ type ScoreUsecase interface {
 	GetAll() ([]Score, error)
 	GetById(id string) (*Score, error)
 	Create(score float64, studentId string, assignmentId string, lecturerId string) (*Score, error)
+	CreateMany(lecturerId string, assignmentId string, studentScores []StudentScore) error
 	Update(scoreId string, score float64) error
 	Delete(id string) error
 }

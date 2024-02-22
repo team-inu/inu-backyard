@@ -4,14 +4,28 @@ import (
 	"github.com/oklog/ulid/v2"
 	"github.com/team-inu/inu-backyard/entity"
 	errs "github.com/team-inu/inu-backyard/entity/error"
+	slice "github.com/team-inu/inu-backyard/internal/utils"
 )
 
 type scoreUseCase struct {
-	scoreRepo entity.ScoreRepository
+	scoreRepo         entity.ScoreRepository
+	enrollmentUseCase entity.EnrollmentUseCase
+	assignmentUseCase entity.AssignmentUseCase
+	LecturerUseCase   entity.LecturerUseCase
 }
 
-func NewScoreUseCase(scoreRepo entity.ScoreRepository) entity.ScoreUsecase {
-	return &scoreUseCase{scoreRepo: scoreRepo}
+func NewScoreUseCase(
+	scoreRepo entity.ScoreRepository,
+	enrollmentUseCase entity.EnrollmentUseCase,
+	assignmentUseCase entity.AssignmentUseCase,
+	lecturerUseCase entity.LecturerUseCase,
+) entity.ScoreUsecase {
+	return &scoreUseCase{
+		scoreRepo:         scoreRepo,
+		enrollmentUseCase: enrollmentUseCase,
+		assignmentUseCase: assignmentUseCase,
+		LecturerUseCase:   lecturerUseCase,
+	}
 }
 
 func (u scoreUseCase) GetAll() ([]entity.Score, error) {
@@ -48,6 +62,62 @@ func (u scoreUseCase) Create(score float64, studentId string, assignmentId strin
 	}
 
 	return &createdScore, nil
+}
+
+func (u scoreUseCase) CreateMany(lecturerId string, assignmentId string, studentScores []entity.StudentScore) error {
+	lecturer, err := u.LecturerUseCase.GetById(lecturerId)
+	if err != nil {
+		return errs.New(errs.SameCode, "cannot get lecturer id %s to create score", lecturerId, err)
+	} else if lecturer == nil {
+		return errs.New(errs.ErrLecturerNotFound, "cannot get lecturer id %s to create score", lecturerId)
+	}
+
+	assignment, err := u.assignmentUseCase.GetById(assignmentId)
+	if err != nil {
+		return errs.New(errs.SameCode, "cannot get assignment id %s to create score", assignmentId, err)
+	} else if assignment == nil {
+		return errs.New(errs.ErrAssignmentNotFound, "cannot get assignment id %s to create score", assignmentId)
+	}
+
+	for _, studentScore := range studentScores {
+		if studentScore.Score > float64(assignment.MaxScore) {
+			return errs.New(errs.ErrCreateScore, "score %f of student id %s is more than max score of assignment (score: %d)", studentScore.Score, studentScore.StudentId, assignment.MaxScore)
+		}
+	}
+
+	studentIds := []string{}
+	for _, studentScore := range studentScores {
+		studentIds = append(studentIds, studentScore.StudentId)
+	}
+
+	withStatus := entity.EnrollmentStatusEnroll
+	joinedStudentIds, err := u.enrollmentUseCase.FilterJoinedStudent(studentIds, &withStatus)
+	if err != nil {
+		return errs.New(errs.SameCode, "cannot get existed student ids while creating score")
+	}
+
+	nonJoinedStudentIds := slice.Subtraction(studentIds, joinedStudentIds)
+	if len(nonJoinedStudentIds) != 0 {
+		return errs.New(errs.ErrCreateAssignment, "there are non joined student ids")
+	}
+
+	scores := []entity.Score{}
+	for _, studentScore := range studentScores {
+		scores = append(scores, entity.Score{
+			Id:           ulid.Make().String(),
+			Score:        studentScore.Score,
+			StudentId:    studentScore.StudentId,
+			LecturerId:   lecturerId,
+			AssignmentId: assignmentId,
+		})
+	}
+
+	err = u.scoreRepo.CreateMany(scores)
+	if err != nil {
+		return errs.New(errs.ErrCreateScore, "cannot create score", err)
+	}
+
+	return nil
 }
 
 func (u scoreUseCase) Update(scoreId string, score float64) error {

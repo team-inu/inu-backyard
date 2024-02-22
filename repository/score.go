@@ -48,6 +48,15 @@ func (r scoreRepository) Create(score *entity.Score) error {
 	return nil
 }
 
+func (r scoreRepository) CreateMany(scores []entity.Score) error {
+	err := r.gorm.Create(&scores).Error
+	if err != nil {
+		return fmt.Errorf("cannot create scores: %w", err)
+	}
+
+	return nil
+}
+
 func (r scoreRepository) Update(id string, score *entity.Score) error {
 	err := r.gorm.Model(&entity.Score{}).Where("id = ?", id).Updates(score).Error
 	if err != nil {

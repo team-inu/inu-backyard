@@ -54,6 +54,25 @@ func (c scoreController) Create(ctx *fiber.Ctx) error {
 	return ctx.JSON(createdScore)
 }
 
+func (c scoreController) CreateMany(ctx *fiber.Ctx) error {
+	var payload request.BulkCreateScoreRequestPayload
+
+	if ok, err := c.Validator.Validate(&payload, ctx); !ok {
+		return err
+	}
+
+	err := c.ScoreUsecase.CreateMany(
+		payload.LecturerId,
+		payload.AssignmentId,
+		payload.StudentScores,
+	)
+	if err != nil {
+		return err
+	}
+
+	return ctx.SendStatus(201)
+}
+
 func (c scoreController) Delete(ctx *fiber.Ctx) error {
 	scoreId := ctx.Params("scoreId")
 

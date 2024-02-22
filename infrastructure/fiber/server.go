@@ -112,9 +112,7 @@ func (f *fiberServer) initUseCase() {
 	subProgramLearningOutcomeUsecase := usecase.NewSubProgramLearningOutcomeUsecase(f.subProgramLearningOutcomeRepository, programLearningOutcomeUsecase)
 	facultyUsecase := usecase.NewFacultyUseCase(f.facultyRepository)
 	departmentUsecase := usecase.NewDepartmentUseCase(f.departmentRepository)
-	scoreUsecase := usecase.NewScoreUseCase(f.scoreRepository)
 	lecturerUsecase := usecase.NewLecturerUseCase(f.lecturerRepository)
-	assignmentUsecase := usecase.NewAssignmentUseCase(f.assignmentRepository)
 	programmeUsecase := usecase.NewProgrammeUseCase(f.programmeRepository)
 	semesterUsecase := usecase.NewSemesterUseCase(f.semesterRepository)
 	courseUseCase := usecase.NewCourseUsecase(f.courseRepository, semesterUsecase, lecturerUsecase)
@@ -124,6 +122,8 @@ func (f *fiberServer) initUseCase() {
 	authUsecase := usecase.NewAuthUsecase(sessionUsecase, lecturerUsecase)
 	programOutcomeUsecase := usecase.NewProgramOutcomeUsecase(f.programOutcomeRepository, semesterUsecase)
 	courseLearningOutcomeUsecase := usecase.NewCourseLearningOutcomeUsecase(f.courseLearningOutcomeRepository, courseUseCase, programOutcomeUsecase, subProgramLearningOutcomeUsecase)
+	assignmentUsecase := usecase.NewAssignmentUseCase(f.assignmentRepository, courseLearningOutcomeUsecase)
+	scoreUsecase := usecase.NewScoreUseCase(f.scoreRepository, enrollmentUsecase, assignmentUsecase, lecturerUsecase)
 
 	f.assignmentUsecase = assignmentUsecase
 	f.authUsecase = authUsecase
@@ -242,7 +242,7 @@ func (f *fiberServer) initController() error {
 
 	app.Get("/scores", scoreController.GetAll)
 	app.Get("/scores/:scoreId", scoreController.GetById)
-	app.Post("/scores", scoreController.Create)
+	app.Post("/scores", scoreController.CreateMany)
 	app.Patch("/scores/:scoreId", scoreController.Update)
 	app.Delete("/scores/:scoreId", scoreController.Delete)
 
