@@ -9,10 +9,17 @@ import (
 
 type subProgramLearningOutcomeUsecase struct {
 	subProgramLearningOutcomeRepo entity.SubProgramLearningOutcomeRepository
+	programLearningOutcomeUseCase entity.ProgramLearningOutcomeUsecase
 }
 
-func NewSubProgramLearningOutcomeUsecase(subProgramLearningOutcomeRepo entity.SubProgramLearningOutcomeRepository) entity.SubProgramLearningOutcomeUsecase {
-	return &subProgramLearningOutcomeUsecase{subProgramLearningOutcomeRepo: subProgramLearningOutcomeRepo}
+func NewSubProgramLearningOutcomeUsecase(
+	subProgramLearningOutcomeRepo entity.SubProgramLearningOutcomeRepository,
+	programLearningOutcomeUseCase entity.ProgramLearningOutcomeUsecase,
+) entity.SubProgramLearningOutcomeUsecase {
+	return &subProgramLearningOutcomeUsecase{
+		subProgramLearningOutcomeRepo: subProgramLearningOutcomeRepo,
+		programLearningOutcomeUseCase: programLearningOutcomeUseCase,
+	}
 }
 
 func (c subProgramLearningOutcomeUsecase) GetAll() ([]entity.SubProgramLearningOutcome, error) {
@@ -34,6 +41,13 @@ func (c subProgramLearningOutcomeUsecase) GetById(id string) (*entity.SubProgram
 }
 
 func (c subProgramLearningOutcomeUsecase) Create(code string, descriptionThai string, descriptionEng string, programLearningOutcomeId string) error {
+	plo, err := c.programLearningOutcomeUseCase.GetById(programLearningOutcomeId)
+	if err != nil {
+		return errs.New(errs.SameCode, "cannot get plo id %s while creating sub plo", programLearningOutcomeId, err)
+	} else if plo == nil {
+		return errs.New(errs.ErrSemesterNotFound, "plo id %s not found while creating sub plo", programLearningOutcomeId)
+	}
+
 	splo := entity.SubProgramLearningOutcome{
 		Id:                       ulid.Make().String(),
 		Code:                     code,
@@ -42,8 +56,7 @@ func (c subProgramLearningOutcomeUsecase) Create(code string, descriptionThai st
 		ProgramLearningOutcomeId: programLearningOutcomeId,
 	}
 
-	err := c.subProgramLearningOutcomeRepo.Create(&splo)
-
+	err = c.subProgramLearningOutcomeRepo.Create(&splo)
 	if err != nil {
 		return errs.New(errs.ErrCreateSubPLO, "cannot create sub plo", err)
 	}
