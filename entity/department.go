@@ -13,6 +13,7 @@ type DepartmentRepository interface {
 	Create(department *Department) error
 	Update(department *Department, newName string) error
 	Delete(name string) error
+	FilterExisted(names []string) ([]string, error)
 }
 
 type DepartmentUseCase interface {
@@ -21,4 +22,5 @@ type DepartmentUseCase interface {
 	Create(department *Department) error
 	Update(department *Department, newName string) error
 	Delete(id string) error
+	FilterNonExisted(names []string) ([]string, error)
 }

@@ -72,3 +72,14 @@ func (r *DepartmentRepositoryGorm) Update(department *entity.Department, newName
 
 	return nil
 }
+
+func (r *DepartmentRepositoryGorm) FilterExisted(names []string) ([]string, error) {
+	var existedNames []string
+
+	err := r.gorm.Raw("SELECT name FROM `department` WHERE name in ?", names).Scan(&existedNames).Error
+	if err != nil {
+		return nil, fmt.Errorf("cannot query department: %w", err)
+	}
+
+	return existedNames, nil
+}
