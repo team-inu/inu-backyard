@@ -10,7 +10,7 @@ type CreateScoreRequestPayload struct {
 }
 
 type BulkCreateScoreRequestPayload struct {
-	StudentScores []entity.StudentScore `json:"studentScores" validate:"required"`
+	StudentScores []entity.StudentScore `json:"studentScores" validate:"dive"`
 	LecturerId    string                `json:"lecturerId" validate:"required"`
 	AssignmentId  string                `json:"assignmentId" validate:"required"`
 }
