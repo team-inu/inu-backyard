@@ -9,19 +9,19 @@ import (
 )
 
 type courseLearningOutcomeController struct {
-	courseLearningOutcomeUsecase entity.CourseLearningOutcomeUsecase
+	courseLearningOutcomeUseCase entity.CourseLearningOutcomeUseCase
 	Validator                    validator.PayloadValidator
 }
 
-func NewCourseLearningOutcomeController(validator validator.PayloadValidator, courseLearningOutcomeUsecase entity.CourseLearningOutcomeUsecase) *courseLearningOutcomeController {
+func NewCourseLearningOutcomeController(validator validator.PayloadValidator, courseLearningOutcomeUseCase entity.CourseLearningOutcomeUseCase) *courseLearningOutcomeController {
 	return &courseLearningOutcomeController{
-		courseLearningOutcomeUsecase: courseLearningOutcomeUsecase,
+		courseLearningOutcomeUseCase: courseLearningOutcomeUseCase,
 		Validator:                    validator,
 	}
 }
 
 func (c courseLearningOutcomeController) GetAll(ctx *fiber.Ctx) error {
-	clos, err := c.courseLearningOutcomeUsecase.GetAll()
+	clos, err := c.courseLearningOutcomeUseCase.GetAll()
 	if err != nil {
 		return err
 	}
@@ -32,7 +32,7 @@ func (c courseLearningOutcomeController) GetAll(ctx *fiber.Ctx) error {
 func (c courseLearningOutcomeController) GetById(ctx *fiber.Ctx) error {
 	cloId := ctx.Params("cloId")
 
-	clo, err := c.courseLearningOutcomeUsecase.GetById(cloId)
+	clo, err := c.courseLearningOutcomeUseCase.GetById(cloId)
 	if err != nil {
 		return err
 	}
@@ -43,7 +43,7 @@ func (c courseLearningOutcomeController) GetById(ctx *fiber.Ctx) error {
 func (c courseLearningOutcomeController) GetByCourseId(ctx *fiber.Ctx) error {
 	courseId := ctx.Params("courseId")
 
-	clos, err := c.courseLearningOutcomeUsecase.GetByCourseId(courseId)
+	clos, err := c.courseLearningOutcomeUseCase.GetByCourseId(courseId)
 	if err != nil {
 		return err
 	}
@@ -57,7 +57,7 @@ func (c courseLearningOutcomeController) Create(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	err := c.courseLearningOutcomeUsecase.Create(entity.CreateCourseLearningOutcomeDto{
+	err := c.courseLearningOutcomeUseCase.Create(entity.CreateCourseLearningOutcomeDto{
 		Code:                                payload.Code,
 		Description:                         payload.Description,
 		Status:                              payload.Status,
@@ -84,7 +84,7 @@ func (c courseLearningOutcomeController) Update(ctx *fiber.Ctx) error {
 
 	id := ctx.Params("cloId")
 
-	err := c.courseLearningOutcomeUsecase.Update(id, &entity.CourseLearningOutcome{
+	err := c.courseLearningOutcomeUseCase.Update(id, &entity.CourseLearningOutcome{
 		Code:             payload.Code,
 		Description:      payload.Description,
 		ProgramOutcomeId: payload.ProgramOutcomeId,
@@ -101,12 +101,12 @@ func (c courseLearningOutcomeController) Update(ctx *fiber.Ctx) error {
 func (c courseLearningOutcomeController) Delete(ctx *fiber.Ctx) error {
 	cloId := ctx.Params("cloId")
 
-	_, err := c.courseLearningOutcomeUsecase.GetById(cloId)
+	_, err := c.courseLearningOutcomeUseCase.GetById(cloId)
 	if err != nil {
 		return err
 	}
 
-	err = c.courseLearningOutcomeUsecase.Delete(cloId)
+	err = c.courseLearningOutcomeUseCase.Delete(cloId)
 	if err != nil {
 		return err
 	}

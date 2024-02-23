@@ -8,7 +8,7 @@ import (
 
 func NewAuthMiddleware(
 	validator validator.PayloadValidator,
-	authUsecase entity.AuthUseCase,
+	authUseCase entity.AuthUseCase,
 ) fiber.Handler {
 	return func(ctx *fiber.Ctx) error {
 		sid, err := validator.ValidateAuth(ctx)
@@ -16,7 +16,7 @@ func NewAuthMiddleware(
 			return err
 		}
 
-		user, err := authUsecase.Authenticate(sid)
+		user, err := authUseCase.Authenticate(sid)
 		if err != nil {
 			return err
 		}

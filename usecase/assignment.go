@@ -9,12 +9,12 @@ import (
 
 type assignmentUseCase struct {
 	assignmentRepo               entity.AssignmentRepository
-	courseLearningOutcomeUseCase entity.CourseLearningOutcomeUsecase
+	courseLearningOutcomeUseCase entity.CourseLearningOutcomeUseCase
 }
 
 func NewAssignmentUseCase(
 	assignmentRepo entity.AssignmentRepository,
-	courseLearningOutcomeUseCase entity.CourseLearningOutcomeUsecase,
+	courseLearningOutcomeUseCase entity.CourseLearningOutcomeUseCase,
 ) entity.AssignmentUseCase {
 	return &assignmentUseCase{
 		assignmentRepo:               assignmentRepo,

@@ -19,7 +19,7 @@ type ProgramLearningOutcomeRepository interface {
 	Delete(id string) error
 }
 
-type ProgramLearningOutcomeUsecase interface {
+type ProgramLearningOutcomeUseCase interface {
 	GetAll() ([]ProgramLearningOutcome, error)
 	GetById(id string) (*ProgramLearningOutcome, error)
 	Create(code string, descriptionThai string, descriptionEng string, programYear int, programmeId string) error

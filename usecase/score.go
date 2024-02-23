@@ -19,7 +19,7 @@ func NewScoreUseCase(
 	enrollmentUseCase entity.EnrollmentUseCase,
 	assignmentUseCase entity.AssignmentUseCase,
 	lecturerUseCase entity.LecturerUseCase,
-) entity.ScoreUsecase {
+) entity.ScoreUseCase {
 	return &scoreUseCase{
 		scoreRepo:         scoreRepo,
 		enrollmentUseCase: enrollmentUseCase,

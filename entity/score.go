@@ -26,7 +26,7 @@ type ScoreRepository interface {
 	Delete(id string) error
 }
 
-type ScoreUsecase interface {
+type ScoreUseCase interface {
 	GetAll() ([]Score, error)
 	GetById(id string) (*Score, error)
 	Create(score float64, studentId string, assignmentId string, lecturerId string) (*Score, error)

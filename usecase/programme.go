@@ -5,15 +5,15 @@ import (
 	errs "github.com/team-inu/inu-backyard/entity/error"
 )
 
-type programmeUsecase struct {
+type programmeUseCase struct {
 	programmeRepo entity.ProgrammeRepository
 }
 
 func NewProgrammeUseCase(programmeRepo entity.ProgrammeRepository) entity.ProgrammeUseCase {
-	return &programmeUsecase{programmeRepo: programmeRepo}
+	return &programmeUseCase{programmeRepo: programmeRepo}
 }
 
-func (u programmeUsecase) GetAll() ([]entity.Programme, error) {
+func (u programmeUseCase) GetAll() ([]entity.Programme, error) {
 	programme, err := u.programmeRepo.GetAll()
 	if err != nil {
 		return nil, errs.New(errs.ErrQueryProgramme, "cannot get all programme", err)
@@ -22,7 +22,7 @@ func (u programmeUsecase) GetAll() ([]entity.Programme, error) {
 	return programme, nil
 }
 
-func (u programmeUsecase) Get(name string) (*entity.Programme, error) {
+func (u programmeUseCase) Get(name string) (*entity.Programme, error) {
 	programme, err := u.programmeRepo.Get(name)
 	if err != nil {
 		return nil, errs.New(errs.ErrQueryProgramme, "cannot get programme by name %s", name, err)
@@ -31,7 +31,7 @@ func (u programmeUsecase) Get(name string) (*entity.Programme, error) {
 	return programme, nil
 }
 
-func (u programmeUsecase) Create(name string) error {
+func (u programmeUseCase) Create(name string) error {
 	existProgramme, err := u.Get(name)
 	if err != nil {
 		return errs.New(errs.SameCode, "cannot get programme name %s to update", name, err)
@@ -49,7 +49,7 @@ func (u programmeUsecase) Create(name string) error {
 	return nil
 }
 
-func (u programmeUsecase) Update(name string, programme *entity.Programme) error {
+func (u programmeUseCase) Update(name string, programme *entity.Programme) error {
 	existProgramme, err := u.Get(name)
 	if err != nil {
 		return errs.New(errs.SameCode, "cannot get programme name %s to update", name, err)
@@ -65,7 +65,7 @@ func (u programmeUsecase) Update(name string, programme *entity.Programme) error
 	return nil
 }
 
-func (u programmeUsecase) Delete(name string) error {
+func (u programmeUseCase) Delete(name string) error {
 	programme, err := u.Get(name)
 	if err != nil {
 		return errs.New(errs.SameCode, "cannot get programme id %s name delete", name, err)

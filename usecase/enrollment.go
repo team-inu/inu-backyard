@@ -10,10 +10,10 @@ import (
 type enrollmentUseCase struct {
 	enrollmentRepo entity.EnrollmentRepository
 	studentUseCase entity.StudentUseCase
-	courseUseCase  entity.CourseUsecase
+	courseUseCase  entity.CourseUseCase
 }
 
-func NewEnrollmentUseCase(enrollmentRepo entity.EnrollmentRepository, studentUseCase entity.StudentUseCase, courseUseCase entity.CourseUsecase) entity.EnrollmentUseCase {
+func NewEnrollmentUseCase(enrollmentRepo entity.EnrollmentRepository, studentUseCase entity.StudentUseCase, courseUseCase entity.CourseUseCase) entity.EnrollmentUseCase {
 	return &enrollmentUseCase{
 		enrollmentRepo: enrollmentRepo,
 		studentUseCase: studentUseCase,

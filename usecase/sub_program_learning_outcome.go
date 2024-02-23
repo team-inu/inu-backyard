@@ -7,22 +7,22 @@ import (
 	slice "github.com/team-inu/inu-backyard/internal/utils"
 )
 
-type subProgramLearningOutcomeUsecase struct {
+type subProgramLearningOutcomeUseCase struct {
 	subProgramLearningOutcomeRepo entity.SubProgramLearningOutcomeRepository
-	programLearningOutcomeUseCase entity.ProgramLearningOutcomeUsecase
+	programLearningOutcomeUseCase entity.ProgramLearningOutcomeUseCase
 }
 
-func NewSubProgramLearningOutcomeUsecase(
+func NewSubProgramLearningOutcomeUseCase(
 	subProgramLearningOutcomeRepo entity.SubProgramLearningOutcomeRepository,
-	programLearningOutcomeUseCase entity.ProgramLearningOutcomeUsecase,
-) entity.SubProgramLearningOutcomeUsecase {
-	return &subProgramLearningOutcomeUsecase{
+	programLearningOutcomeUseCase entity.ProgramLearningOutcomeUseCase,
+) entity.SubProgramLearningOutcomeUseCase {
+	return &subProgramLearningOutcomeUseCase{
 		subProgramLearningOutcomeRepo: subProgramLearningOutcomeRepo,
 		programLearningOutcomeUseCase: programLearningOutcomeUseCase,
 	}
 }
 
-func (u subProgramLearningOutcomeUsecase) GetAll() ([]entity.SubProgramLearningOutcome, error) {
+func (u subProgramLearningOutcomeUseCase) GetAll() ([]entity.SubProgramLearningOutcome, error) {
 	splos, err := u.subProgramLearningOutcomeRepo.GetAll()
 	if err != nil {
 		return nil, errs.New(errs.ErrQuerySubPLO, "cannot get all sub plos", err)
@@ -31,7 +31,7 @@ func (u subProgramLearningOutcomeUsecase) GetAll() ([]entity.SubProgramLearningO
 	return splos, nil
 }
 
-func (u subProgramLearningOutcomeUsecase) GetById(id string) (*entity.SubProgramLearningOutcome, error) {
+func (u subProgramLearningOutcomeUseCase) GetById(id string) (*entity.SubProgramLearningOutcome, error) {
 	splo, err := u.subProgramLearningOutcomeRepo.GetById(id)
 	if err != nil {
 		return nil, errs.New(errs.ErrQuerySubPLO, "cannot get sub plo by id %s", id, err)
@@ -40,7 +40,7 @@ func (u subProgramLearningOutcomeUsecase) GetById(id string) (*entity.SubProgram
 	return splo, nil
 }
 
-func (u subProgramLearningOutcomeUsecase) Create(code string, descriptionThai string, descriptionEng string, programLearningOutcomeId string) error {
+func (u subProgramLearningOutcomeUseCase) Create(code string, descriptionThai string, descriptionEng string, programLearningOutcomeId string) error {
 	plo, err := u.programLearningOutcomeUseCase.GetById(programLearningOutcomeId)
 	if err != nil {
 		return errs.New(errs.SameCode, "cannot get plo id %s while creating sub plo", programLearningOutcomeId, err)
@@ -64,7 +64,7 @@ func (u subProgramLearningOutcomeUsecase) Create(code string, descriptionThai st
 	return nil
 }
 
-func (u subProgramLearningOutcomeUsecase) Update(id string, subProgramLearningOutcome *entity.SubProgramLearningOutcome) error {
+func (u subProgramLearningOutcomeUseCase) Update(id string, subProgramLearningOutcome *entity.SubProgramLearningOutcome) error {
 	existSubProgramLearningOutcome, err := u.GetById(id)
 	if err != nil {
 		return errs.New(errs.SameCode, "cannot get subProgramLearningOutcome id %s to update", id, err)
@@ -80,7 +80,7 @@ func (u subProgramLearningOutcomeUsecase) Update(id string, subProgramLearningOu
 	return nil
 }
 
-func (u subProgramLearningOutcomeUsecase) Delete(id string) error {
+func (u subProgramLearningOutcomeUseCase) Delete(id string) error {
 	err := u.subProgramLearningOutcomeRepo.Delete(id)
 	if err != nil {
 		return errs.New(errs.ErrDeleteSubPLO, "cannot delete sub plo", err)
@@ -89,7 +89,7 @@ func (u subProgramLearningOutcomeUsecase) Delete(id string) error {
 	return nil
 }
 
-func (u subProgramLearningOutcomeUsecase) FilterNonExisted(ids []string) ([]string, error) {
+func (u subProgramLearningOutcomeUseCase) FilterNonExisted(ids []string) ([]string, error) {
 	existedIds, err := u.subProgramLearningOutcomeRepo.FilterExisted(ids)
 	if err != nil {
 		return nil, errs.New(errs.ErrQueryStudent, "cannot query sub plo", err)

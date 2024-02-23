@@ -39,7 +39,7 @@ type CourseLearningOutcomeRepository interface {
 	FilterExisted(ids []string) ([]string, error)
 }
 
-type CourseLearningOutcomeUsecase interface {
+type CourseLearningOutcomeUseCase interface {
 	GetAll() ([]CourseLearningOutcome, error)
 	GetById(id string) (*CourseLearningOutcome, error)
 	GetByCourseId(courseId string) ([]CourseLearningOutcome, error)

@@ -11,19 +11,19 @@ import (
 )
 
 type courseController struct {
-	courseUsecase entity.CourseUsecase
+	courseUseCase entity.CourseUseCase
 	Validator     validator.PayloadValidator
 }
 
-func NewCourseController(validator validator.PayloadValidator, courseUsecase entity.CourseUsecase) *courseController {
+func NewCourseController(validator validator.PayloadValidator, courseUseCase entity.CourseUseCase) *courseController {
 	return &courseController{
-		courseUsecase: courseUsecase,
+		courseUseCase: courseUseCase,
 		Validator:     validator,
 	}
 }
 
 func (c courseController) GetAll(ctx *fiber.Ctx) error {
-	courses, err := c.courseUsecase.GetAll()
+	courses, err := c.courseUseCase.GetAll()
 	if err != nil {
 		return err
 	}
@@ -34,7 +34,7 @@ func (c courseController) GetAll(ctx *fiber.Ctx) error {
 func (c courseController) GetById(ctx *fiber.Ctx) error {
 	courseId := ctx.Params("courseId")
 
-	course, err := c.courseUsecase.GetById(courseId)
+	course, err := c.courseUseCase.GetById(courseId)
 	if err != nil {
 		return err
 	}
@@ -50,7 +50,7 @@ func (c courseController) Create(ctx *fiber.Ctx) error {
 	}
 
 	fmt.Println(payload.Description[0])
-	err := c.courseUsecase.Create(
+	err := c.courseUseCase.Create(
 		payload.SemesterId,
 		payload.LecturerId,
 		payload.Name,
@@ -75,7 +75,7 @@ func (c courseController) Update(ctx *fiber.Ctx) error {
 
 	id := ctx.Params("courseId")
 
-	err := c.courseUsecase.Update(id, &entity.Course{
+	err := c.courseUseCase.Update(id, &entity.Course{
 		Name:       payload.Name,
 		Code:       payload.Code,
 		SemesterId: payload.SemesterId,
@@ -92,7 +92,7 @@ func (c courseController) Update(ctx *fiber.Ctx) error {
 func (c courseController) Delete(ctx *fiber.Ctx) error {
 	id := ctx.Params("courseId")
 
-	err := c.courseUsecase.Delete(id)
+	err := c.courseUseCase.Delete(id)
 
 	if err != nil {
 		return err

@@ -40,22 +40,22 @@ type fiberServer struct {
 	sessionRepository                   entity.SessionRepository
 
 	studentUseCase                   entity.StudentUseCase
-	courseUseCase                    entity.CourseUsecase
-	courseLearningOutcomeUsecase     entity.CourseLearningOutcomeUsecase
-	programLearningOutcomeUsecase    entity.ProgramLearningOutcomeUsecase
-	subProgramLearningOutcomeUsecase entity.SubProgramLearningOutcomeUsecase
-	programOutcomeUsecase            entity.ProgramOutcomeUsecase
-	facultyUsecase                   entity.FacultyUseCase
-	departmentUsecase                entity.DepartmentUseCase
-	scoreUsecase                     entity.ScoreUsecase
-	lecturerUsecase                  entity.LecturerUseCase
-	assignmentUsecase                entity.AssignmentUseCase
-	programmeUsecase                 entity.ProgrammeUseCase
-	semesterUsecase                  entity.SemesterUseCase
-	enrollmentUsecase                entity.EnrollmentUseCase
-	gradeUsecase                     entity.GradeUseCase
-	sessionUsecase                   entity.SessionUseCase
-	authUsecase                      entity.AuthUseCase
+	courseUseCase                    entity.CourseUseCase
+	courseLearningOutcomeUseCase     entity.CourseLearningOutcomeUseCase
+	programLearningOutcomeUseCase    entity.ProgramLearningOutcomeUseCase
+	subProgramLearningOutcomeUseCase entity.SubProgramLearningOutcomeUseCase
+	programOutcomeUseCase            entity.ProgramOutcomeUseCase
+	facultyUseCase                   entity.FacultyUseCase
+	departmentUseCase                entity.DepartmentUseCase
+	scoreUseCase                     entity.ScoreUseCase
+	lecturerUseCase                  entity.LecturerUseCase
+	assignmentUseCase                entity.AssignmentUseCase
+	programmeUseCase                 entity.ProgrammeUseCase
+	semesterUseCase                  entity.SemesterUseCase
+	enrollmentUseCase                entity.EnrollmentUseCase
+	gradeUseCase                     entity.GradeUseCase
+	sessionUseCase                   entity.SessionUseCase
+	authUseCase                      entity.AuthUseCase
 }
 
 func NewFiberServer() *fiberServer {
@@ -107,41 +107,41 @@ func (f *fiberServer) initRepository() (err error) {
 }
 
 func (f *fiberServer) initUseCase() {
-	programmeUsecase := usecase.NewProgrammeUseCase(f.programmeRepository)
+	programmeUseCase := usecase.NewProgrammeUseCase(f.programmeRepository)
 	studentUseCase := usecase.NewStudentUseCase(f.studentRepository)
-	programLearningOutcomeUsecase := usecase.NewProgramLearningOutcomeUsecase(f.programLearningOutcomeRepository, programmeUsecase)
-	subProgramLearningOutcomeUsecase := usecase.NewSubProgramLearningOutcomeUsecase(f.subProgramLearningOutcomeRepository, programLearningOutcomeUsecase)
-	facultyUsecase := usecase.NewFacultyUseCase(f.facultyRepository)
-	departmentUsecase := usecase.NewDepartmentUseCase(f.departmentRepository)
-	lecturerUsecase := usecase.NewLecturerUseCase(f.lecturerRepository)
-	semesterUsecase := usecase.NewSemesterUseCase(f.semesterRepository)
-	courseUseCase := usecase.NewCourseUsecase(f.courseRepository, semesterUsecase, lecturerUsecase)
-	enrollmentUsecase := usecase.NewEnrollmentUseCase(f.enrollmentRepository, studentUseCase, courseUseCase)
-	gradeUsecase := usecase.NewGradeUseCase(f.gradeRepository)
-	sessionUsecase := usecase.NewSessionUsecase(f.sessionRepository, f.config.Client.Auth)
-	authUsecase := usecase.NewAuthUsecase(sessionUsecase, lecturerUsecase)
-	programOutcomeUsecase := usecase.NewProgramOutcomeUsecase(f.programOutcomeRepository, semesterUsecase)
-	courseLearningOutcomeUsecase := usecase.NewCourseLearningOutcomeUsecase(f.courseLearningOutcomeRepository, courseUseCase, programOutcomeUsecase, subProgramLearningOutcomeUsecase)
-	assignmentUsecase := usecase.NewAssignmentUseCase(f.assignmentRepository, courseLearningOutcomeUsecase)
-	scoreUsecase := usecase.NewScoreUseCase(f.scoreRepository, enrollmentUsecase, assignmentUsecase, lecturerUsecase)
+	programLearningOutcomeUseCase := usecase.NewProgramLearningOutcomeUseCase(f.programLearningOutcomeRepository, programmeUseCase)
+	subProgramLearningOutcomeUseCase := usecase.NewSubProgramLearningOutcomeUseCase(f.subProgramLearningOutcomeRepository, programLearningOutcomeUseCase)
+	facultyUseCase := usecase.NewFacultyUseCase(f.facultyRepository)
+	departmentUseCase := usecase.NewDepartmentUseCase(f.departmentRepository)
+	lecturerUseCase := usecase.NewLecturerUseCase(f.lecturerRepository)
+	semesterUseCase := usecase.NewSemesterUseCase(f.semesterRepository)
+	courseUseCase := usecase.NewCourseUseCase(f.courseRepository, semesterUseCase, lecturerUseCase)
+	enrollmentUseCase := usecase.NewEnrollmentUseCase(f.enrollmentRepository, studentUseCase, courseUseCase)
+	gradeUseCase := usecase.NewGradeUseCase(f.gradeRepository)
+	sessionUseCase := usecase.NewSessionUseCase(f.sessionRepository, f.config.Client.Auth)
+	authUseCase := usecase.NewAuthUseCase(sessionUseCase, lecturerUseCase)
+	programOutcomeUseCase := usecase.NewProgramOutcomeUseCase(f.programOutcomeRepository, semesterUseCase)
+	courseLearningOutcomeUseCase := usecase.NewCourseLearningOutcomeUseCase(f.courseLearningOutcomeRepository, courseUseCase, programOutcomeUseCase, subProgramLearningOutcomeUseCase)
+	assignmentUseCase := usecase.NewAssignmentUseCase(f.assignmentRepository, courseLearningOutcomeUseCase)
+	scoreUseCase := usecase.NewScoreUseCase(f.scoreRepository, enrollmentUseCase, assignmentUseCase, lecturerUseCase)
 
-	f.assignmentUsecase = assignmentUsecase
-	f.authUsecase = authUsecase
-	f.courseLearningOutcomeUsecase = courseLearningOutcomeUsecase
+	f.assignmentUseCase = assignmentUseCase
+	f.authUseCase = authUseCase
+	f.courseLearningOutcomeUseCase = courseLearningOutcomeUseCase
 	f.courseUseCase = courseUseCase
-	f.departmentUsecase = departmentUsecase
-	f.enrollmentUsecase = enrollmentUsecase
-	f.facultyUsecase = facultyUsecase
-	f.gradeUsecase = gradeUsecase
-	f.lecturerUsecase = lecturerUsecase
-	f.programLearningOutcomeUsecase = programLearningOutcomeUsecase
-	f.programOutcomeUsecase = programOutcomeUsecase
-	f.programmeUsecase = programmeUsecase
-	f.scoreUsecase = scoreUsecase
-	f.semesterUsecase = semesterUsecase
-	f.sessionUsecase = sessionUsecase
+	f.departmentUseCase = departmentUseCase
+	f.enrollmentUseCase = enrollmentUseCase
+	f.facultyUseCase = facultyUseCase
+	f.gradeUseCase = gradeUseCase
+	f.lecturerUseCase = lecturerUseCase
+	f.programLearningOutcomeUseCase = programLearningOutcomeUseCase
+	f.programOutcomeUseCase = programOutcomeUseCase
+	f.programmeUseCase = programmeUseCase
+	f.scoreUseCase = scoreUseCase
+	f.semesterUseCase = semesterUseCase
+	f.sessionUseCase = sessionUseCase
 	f.studentUseCase = studentUseCase
-	f.subProgramLearningOutcomeUsecase = subProgramLearningOutcomeUsecase
+	f.subProgramLearningOutcomeUseCase = subProgramLearningOutcomeUseCase
 }
 
 func (f *fiberServer) initController() error {
@@ -155,7 +155,7 @@ func (f *fiberServer) initController() error {
 
 	validator := validator.NewPayloadValidator(&f.config.Client.Auth)
 
-	authMiddleware := middleware.NewAuthMiddleware(validator, f.authUsecase)
+	authMiddleware := middleware.NewAuthMiddleware(validator, f.authUseCase)
 
 	//TODO: change to production url
 	app.Use(cors.New(cors.Config{
@@ -167,24 +167,24 @@ func (f *fiberServer) initController() error {
 
 	studentController := controller.NewStudentController(validator, f.studentUseCase)
 	courseController := controller.NewCourseController(validator, f.courseUseCase)
-	courseLearningOutcomeController := controller.NewCourseLearningOutcomeController(validator, f.courseLearningOutcomeUsecase)
-	programLearningOutcomeController := controller.NewProgramLearningOutcomeController(validator, f.programLearningOutcomeUsecase)
-	subProgramLearningOutcomeController := controller.NewSubProgramLearningOutcomeController(validator, f.subProgramLearningOutcomeUsecase)
-	programOutcomeController := controller.NewProgramOutcomeController(validator, f.programOutcomeUsecase)
-	facultyController := controller.NewFacultyController(validator, f.facultyUsecase)
-	departmentController := controller.NewDepartmentController(validator, f.departmentUsecase)
-	scoreController := controller.NewScoreController(validator, f.scoreUsecase)
+	courseLearningOutcomeController := controller.NewCourseLearningOutcomeController(validator, f.courseLearningOutcomeUseCase)
+	programLearningOutcomeController := controller.NewProgramLearningOutcomeController(validator, f.programLearningOutcomeUseCase)
+	subProgramLearningOutcomeController := controller.NewSubProgramLearningOutcomeController(validator, f.subProgramLearningOutcomeUseCase)
+	programOutcomeController := controller.NewProgramOutcomeController(validator, f.programOutcomeUseCase)
+	facultyController := controller.NewFacultyController(validator, f.facultyUseCase)
+	departmentController := controller.NewDepartmentController(validator, f.departmentUseCase)
+	scoreController := controller.NewScoreController(validator, f.scoreUseCase)
 
-	lecturerController := controller.NewLecturerController(validator, f.lecturerUsecase)
+	lecturerController := controller.NewLecturerController(validator, f.lecturerUseCase)
 
-	assignmentController := controller.NewAssignmentController(validator, f.assignmentUsecase)
-	programmeController := controller.NewProgrammeController(validator, f.programmeUsecase)
-	semesterController := controller.NewSemesterController(validator, f.semesterUsecase)
+	assignmentController := controller.NewAssignmentController(validator, f.assignmentUseCase)
+	programmeController := controller.NewProgrammeController(validator, f.programmeUseCase)
+	semesterController := controller.NewSemesterController(validator, f.semesterUseCase)
 
-	enrollmentController := controller.NewEnrollmentController(validator, f.enrollmentUsecase)
+	enrollmentController := controller.NewEnrollmentController(validator, f.enrollmentUseCase)
 
-	gradeController := controller.NewGradeController(validator, f.gradeUsecase)
-	authController := controller.NewAuthController(validator, f.config.Client.Auth, f.authUsecase, f.lecturerUsecase)
+	gradeController := controller.NewGradeController(validator, f.gradeUseCase)
+	authController := controller.NewAuthController(validator, f.config.Client.Auth, f.authUseCase, f.lecturerUseCase)
 
 	app.Use(fiberzap.New(fiberzap.Config{
 		Logger: logger.NewZapLogger(),

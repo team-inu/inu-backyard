@@ -6,22 +6,22 @@ import (
 	errs "github.com/team-inu/inu-backyard/entity/error"
 )
 
-type programLearningOutcomeUsecase struct {
+type programLearningOutcomeUseCase struct {
 	programLearningOutcomeRepo entity.ProgramLearningOutcomeRepository
 	programmeUseCase           entity.ProgrammeUseCase
 }
 
-func NewProgramLearningOutcomeUsecase(
+func NewProgramLearningOutcomeUseCase(
 	programLearningOutcomeRepo entity.ProgramLearningOutcomeRepository,
 	programmeUseCase entity.ProgrammeUseCase,
-) entity.ProgramLearningOutcomeUsecase {
-	return &programLearningOutcomeUsecase{
+) entity.ProgramLearningOutcomeUseCase {
+	return &programLearningOutcomeUseCase{
 		programLearningOutcomeRepo: programLearningOutcomeRepo,
 		programmeUseCase:           programmeUseCase,
 	}
 }
 
-func (u programLearningOutcomeUsecase) GetAll() ([]entity.ProgramLearningOutcome, error) {
+func (u programLearningOutcomeUseCase) GetAll() ([]entity.ProgramLearningOutcome, error) {
 	plos, err := u.programLearningOutcomeRepo.GetAll()
 	if err != nil {
 		return nil, errs.New(errs.ErrQueryPLO, "cannot get all PLOs", err)
@@ -30,7 +30,7 @@ func (u programLearningOutcomeUsecase) GetAll() ([]entity.ProgramLearningOutcome
 	return plos, nil
 }
 
-func (u programLearningOutcomeUsecase) GetById(id string) (*entity.ProgramLearningOutcome, error) {
+func (u programLearningOutcomeUseCase) GetById(id string) (*entity.ProgramLearningOutcome, error) {
 	plo, err := u.programLearningOutcomeRepo.GetById(id)
 	if err != nil {
 		return nil, errs.New(errs.ErrQueryPLO, "cannot get PLO by id %s", id, err)
@@ -39,7 +39,7 @@ func (u programLearningOutcomeUsecase) GetById(id string) (*entity.ProgramLearni
 	return plo, nil
 }
 
-func (u programLearningOutcomeUsecase) Create(code string, descriptionThai string, descriptionEng string, programYear int, programmeName string) error {
+func (u programLearningOutcomeUseCase) Create(code string, descriptionThai string, descriptionEng string, programYear int, programmeName string) error {
 	programme, err := u.programmeUseCase.Get(programmeName)
 	if err != nil {
 		return errs.New(errs.SameCode, "cannot get programme id %s while creating plo", programmeName, err)
@@ -64,7 +64,7 @@ func (u programLearningOutcomeUsecase) Create(code string, descriptionThai strin
 	return nil
 }
 
-func (u programLearningOutcomeUsecase) Update(id string, programLearningOutcome *entity.ProgramLearningOutcome) error {
+func (u programLearningOutcomeUseCase) Update(id string, programLearningOutcome *entity.ProgramLearningOutcome) error {
 	existProgramLearningOutcome, err := u.GetById(id)
 	if err != nil {
 		return errs.New(errs.SameCode, "cannot get programLearningOutcome id %s to update", id, err)
@@ -80,7 +80,7 @@ func (u programLearningOutcomeUsecase) Update(id string, programLearningOutcome 
 	return nil
 }
 
-func (u programLearningOutcomeUsecase) Delete(id string) error {
+func (u programLearningOutcomeUseCase) Delete(id string) error {
 	err := u.programLearningOutcomeRepo.Delete(id)
 	if err != nil {
 		return errs.New(errs.ErrDeletePLO, "cannot delete PLO", err)

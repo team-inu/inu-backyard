@@ -20,7 +20,7 @@ type SubProgramLearningOutcomeRepository interface {
 	FilterExisted(ids []string) ([]string, error)
 }
 
-type SubProgramLearningOutcomeUsecase interface {
+type SubProgramLearningOutcomeUseCase interface {
 	GetAll() ([]SubProgramLearningOutcome, error)
 	GetById(id string) (*SubProgramLearningOutcome, error)
 	Create(code string, descriptionThai string, descriptionEng string, programLearningOutcomeId string) error

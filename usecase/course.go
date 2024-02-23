@@ -6,17 +6,17 @@ import (
 	errs "github.com/team-inu/inu-backyard/entity/error"
 )
 
-type courseUsecase struct {
+type courseUseCase struct {
 	courseRepo      entity.CourseRepository
 	semesterUseCase entity.SemesterUseCase
 	lecturerUseCase entity.LecturerUseCase
 }
 
-func NewCourseUsecase(courseRepo entity.CourseRepository, semesterUseCase entity.SemesterUseCase, lecturerUseCase entity.LecturerUseCase) entity.CourseUsecase {
-	return &courseUsecase{courseRepo: courseRepo, semesterUseCase: semesterUseCase, lecturerUseCase: lecturerUseCase}
+func NewCourseUseCase(courseRepo entity.CourseRepository, semesterUseCase entity.SemesterUseCase, lecturerUseCase entity.LecturerUseCase) entity.CourseUseCase {
+	return &courseUseCase{courseRepo: courseRepo, semesterUseCase: semesterUseCase, lecturerUseCase: lecturerUseCase}
 }
 
-func (u courseUsecase) GetAll() ([]entity.Course, error) {
+func (u courseUseCase) GetAll() ([]entity.Course, error) {
 	courses, err := u.courseRepo.GetAll()
 	if err != nil {
 		return nil, errs.New(errs.ErrQueryStudent, "cannot get all courses", err)
@@ -25,7 +25,7 @@ func (u courseUsecase) GetAll() ([]entity.Course, error) {
 	return courses, nil
 }
 
-func (u courseUsecase) GetById(id string) (*entity.Course, error) {
+func (u courseUseCase) GetById(id string) (*entity.Course, error) {
 	course, err := u.courseRepo.GetById(id)
 	if err != nil {
 		return nil, errs.New(errs.ErrQueryStudent, "cannot get course by id %s", id, err)
@@ -34,7 +34,7 @@ func (u courseUsecase) GetById(id string) (*entity.Course, error) {
 	return course, nil
 }
 
-func (u courseUsecase) Create(semesterId string, lecturerId string, name string, code string, curriculum string, description string, criteriaGrade entity.CriteriaGrade) error {
+func (u courseUseCase) Create(semesterId string, lecturerId string, name string, code string, curriculum string, description string, criteriaGrade entity.CriteriaGrade) error {
 	semester, err := u.semesterUseCase.GetById(semesterId)
 	if err != nil {
 		return errs.New(errs.SameCode, "cannot get semester id %s while creating course", semesterId, err)
@@ -72,7 +72,7 @@ func (u courseUsecase) Create(semesterId string, lecturerId string, name string,
 	return nil
 }
 
-func (u courseUsecase) Update(id string, course *entity.Course) error {
+func (u courseUseCase) Update(id string, course *entity.Course) error {
 	existCourse, err := u.GetById(id)
 	if err != nil {
 		return errs.New(errs.SameCode, "cannot get course id %s to update", id, err)
@@ -88,7 +88,7 @@ func (u courseUsecase) Update(id string, course *entity.Course) error {
 	return nil
 }
 
-func (u courseUsecase) Delete(id string) error {
+func (u courseUseCase) Delete(id string) error {
 	err := u.courseRepo.Delete(id)
 	if err != nil {
 		return errs.New(errs.ErrDeleteCourse, "cannot delete course", err)

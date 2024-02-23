@@ -6,19 +6,19 @@ import (
 	errs "github.com/team-inu/inu-backyard/entity/error"
 )
 
-type programOutcomeUsecase struct {
+type programOutcomeUseCase struct {
 	programOutcomeRepo entity.ProgramOutcomeRepository
 	semesterUseCase    entity.SemesterUseCase
 }
 
-func NewProgramOutcomeUsecase(programOutcomeRepo entity.ProgramOutcomeRepository, semesterUseCase entity.SemesterUseCase) entity.ProgramOutcomeUsecase {
-	return &programOutcomeUsecase{
+func NewProgramOutcomeUseCase(programOutcomeRepo entity.ProgramOutcomeRepository, semesterUseCase entity.SemesterUseCase) entity.ProgramOutcomeUseCase {
+	return &programOutcomeUseCase{
 		programOutcomeRepo: programOutcomeRepo,
 		semesterUseCase:    semesterUseCase,
 	}
 }
 
-func (u programOutcomeUsecase) GetAll() ([]entity.ProgramOutcome, error) {
+func (u programOutcomeUseCase) GetAll() ([]entity.ProgramOutcome, error) {
 	pos, err := u.programOutcomeRepo.GetAll()
 	if err != nil {
 		return nil, errs.New(errs.ErrQueryPO, "cannot get all POs", err)
@@ -27,7 +27,7 @@ func (u programOutcomeUsecase) GetAll() ([]entity.ProgramOutcome, error) {
 	return pos, nil
 }
 
-func (u programOutcomeUsecase) GetById(id string) (*entity.ProgramOutcome, error) {
+func (u programOutcomeUseCase) GetById(id string) (*entity.ProgramOutcome, error) {
 	po, err := u.programOutcomeRepo.GetById(id)
 	if err != nil {
 		return nil, errs.New(errs.ErrQueryPO, "cannot get PO by id %s", id, err)
@@ -36,7 +36,7 @@ func (u programOutcomeUsecase) GetById(id string) (*entity.ProgramOutcome, error
 	return po, nil
 }
 
-func (u programOutcomeUsecase) Create(code string, name string, description string) error {
+func (u programOutcomeUseCase) Create(code string, name string, description string) error {
 	po := entity.ProgramOutcome{
 		Id:          ulid.Make().String(),
 		Code:        code,
@@ -52,7 +52,7 @@ func (u programOutcomeUsecase) Create(code string, name string, description stri
 	return nil
 }
 
-func (u programOutcomeUsecase) Update(id string, programOutcome *entity.ProgramOutcome) error {
+func (u programOutcomeUseCase) Update(id string, programOutcome *entity.ProgramOutcome) error {
 	existProgramOutcome, err := u.GetById(id)
 	if err != nil {
 		return errs.New(errs.SameCode, "cannot get programOutcome id %s to update", id, err)
@@ -68,7 +68,7 @@ func (u programOutcomeUsecase) Update(id string, programOutcome *entity.ProgramO
 	return nil
 }
 
-func (u programOutcomeUsecase) Delete(id string) error {
+func (u programOutcomeUseCase) Delete(id string) error {
 	err := u.programOutcomeRepo.Delete(id)
 	if err != nil {
 		return errs.New(errs.ErrDeletePO, "cannot delete PO", err)

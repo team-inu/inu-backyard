@@ -9,19 +9,19 @@ import (
 )
 
 type programOutcomeController struct {
-	programOutcomeUsecase entity.ProgramOutcomeUsecase
+	programOutcomeUseCase entity.ProgramOutcomeUseCase
 	Validator             validator.PayloadValidator
 }
 
-func NewProgramOutcomeController(validator validator.PayloadValidator, programOutcomeUsecase entity.ProgramOutcomeUsecase) *programOutcomeController {
+func NewProgramOutcomeController(validator validator.PayloadValidator, programOutcomeUseCase entity.ProgramOutcomeUseCase) *programOutcomeController {
 	return &programOutcomeController{
-		programOutcomeUsecase: programOutcomeUsecase,
+		programOutcomeUseCase: programOutcomeUseCase,
 		Validator:             validator,
 	}
 }
 
 func (c programOutcomeController) GetAll(ctx *fiber.Ctx) error {
-	pos, err := c.programOutcomeUsecase.GetAll()
+	pos, err := c.programOutcomeUseCase.GetAll()
 	if err != nil {
 		return err
 	}
@@ -32,7 +32,7 @@ func (c programOutcomeController) GetAll(ctx *fiber.Ctx) error {
 func (c programOutcomeController) GetById(ctx *fiber.Ctx) error {
 	poId := ctx.Params("poId")
 
-	po, err := c.programOutcomeUsecase.GetById(poId)
+	po, err := c.programOutcomeUseCase.GetById(poId)
 	if err != nil {
 		return err
 	}
@@ -47,7 +47,7 @@ func (c programOutcomeController) Create(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	err := c.programOutcomeUsecase.Create(payload.Code, payload.Name, payload.Description)
+	err := c.programOutcomeUseCase.Create(payload.Code, payload.Name, payload.Description)
 	if err != nil {
 		return err
 	}
@@ -64,7 +64,7 @@ func (c programOutcomeController) Update(ctx *fiber.Ctx) error {
 
 	id := ctx.Params("poId")
 
-	err := c.programOutcomeUsecase.Update(id, &entity.ProgramOutcome{
+	err := c.programOutcomeUseCase.Update(id, &entity.ProgramOutcome{
 		Code:        payload.Code,
 		Name:        payload.Name,
 		Description: payload.Description,
@@ -80,12 +80,12 @@ func (c programOutcomeController) Update(ctx *fiber.Ctx) error {
 func (c programOutcomeController) Delete(ctx *fiber.Ctx) error {
 	poId := ctx.Params("poId")
 
-	_, err := c.programOutcomeUsecase.GetById(poId)
+	_, err := c.programOutcomeUseCase.GetById(poId)
 	if err != nil {
 		return err
 	}
 
-	err = c.programOutcomeUsecase.Delete(poId)
+	err = c.programOutcomeUseCase.Delete(poId)
 	if err != nil {
 		return err
 	}

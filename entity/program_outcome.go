@@ -15,7 +15,7 @@ type ProgramOutcomeRepository interface {
 	Delete(id string) error
 }
 
-type ProgramOutcomeUsecase interface {
+type ProgramOutcomeUseCase interface {
 	GetAll() ([]ProgramOutcome, error)
 	GetById(id string) (*ProgramOutcome, error)
 	Create(code string, name string, description string) error

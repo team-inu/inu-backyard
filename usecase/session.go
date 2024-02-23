@@ -17,22 +17,22 @@ import (
 	"github.com/team-inu/inu-backyard/internal/config"
 )
 
-type sessionUsecase struct {
+type sessionUseCase struct {
 	sessionRepository entity.SessionRepository
 	config            config.AuthConfig
 }
 
-func NewSessionUsecase(
+func NewSessionUseCase(
 	sessionRepository entity.SessionRepository,
 	config config.AuthConfig,
 ) entity.SessionUseCase {
-	return &sessionUsecase{
+	return &sessionUseCase{
 		sessionRepository: sessionRepository,
 		config:            config,
 	}
 }
 
-func (u sessionUsecase) Sign(id string) string {
+func (u sessionUseCase) Sign(id string) string {
 	hmac := hmac.New(sha256.New, []byte(u.config.Session.Secret))
 	hmac.Write([]byte(id))
 	regex := regexp.MustCompile(`=+$`)
@@ -40,7 +40,7 @@ func (u sessionUsecase) Sign(id string) string {
 	return u.config.Session.Prefix + ":" + id + "." + signature
 }
 
-func (u sessionUsecase) Unsign(header string) (string, error) {
+func (u sessionUseCase) Unsign(header string) (string, error) {
 	if !strings.HasPrefix(header, u.config.Session.Prefix+":") {
 		return "", errs.New(errs.ErrSessionPrefix, "prefix mismatch")
 	}
@@ -57,7 +57,7 @@ func (u sessionUsecase) Unsign(header string) (string, error) {
 	return id, nil
 }
 
-func (u sessionUsecase) Create(
+func (u sessionUseCase) Create(
 	userId string, ipAddress string, userAgent string,
 ) (*fiber.Cookie, error) {
 	fmt.Println("=====xxxxx")
@@ -96,7 +96,7 @@ func (u sessionUsecase) Create(
 	return cookie, nil
 }
 
-func (u sessionUsecase) Get(header string) (*entity.Session, error) {
+func (u sessionUseCase) Get(header string) (*entity.Session, error) {
 	id, err := u.Unsign(header)
 	if err != nil {
 		return nil, errs.New(errs.SameCode, "cannot unsign session", err)
@@ -109,7 +109,7 @@ func (u sessionUsecase) Get(header string) (*entity.Session, error) {
 	return session, nil
 }
 
-func (u sessionUsecase) Destroy(id string) (*fiber.Cookie, error) {
+func (u sessionUseCase) Destroy(id string) (*fiber.Cookie, error) {
 	return &fiber.Cookie{
 		Name:     u.config.Session.CookieName,
 		HTTPOnly: true,
@@ -117,7 +117,7 @@ func (u sessionUsecase) Destroy(id string) (*fiber.Cookie, error) {
 	}, u.sessionRepository.Delete(id)
 }
 
-func (u sessionUsecase) DestroyByUserId(userId string) (*fiber.Cookie, error) {
+func (u sessionUseCase) DestroyByUserId(userId string) (*fiber.Cookie, error) {
 	return &fiber.Cookie{
 		Name:     u.config.Session.CookieName,
 		HTTPOnly: true,
@@ -125,7 +125,7 @@ func (u sessionUsecase) DestroyByUserId(userId string) (*fiber.Cookie, error) {
 	}, u.sessionRepository.DeleteByUserId(userId)
 }
 
-func (u sessionUsecase) Validate(header string) (*entity.Session, error) {
+func (u sessionUseCase) Validate(header string) (*entity.Session, error) {
 	session, err := u.Get(header)
 	if err != nil {
 		return nil, errs.New(errs.SameCode, "cannot validate session", err)

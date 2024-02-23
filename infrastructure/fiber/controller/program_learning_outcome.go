@@ -9,19 +9,19 @@ import (
 )
 
 type programLearningOutcomeController struct {
-	programLearningOutcomeUsecase entity.ProgramLearningOutcomeUsecase
+	programLearningOutcomeUseCase entity.ProgramLearningOutcomeUseCase
 	Validator                     validator.PayloadValidator
 }
 
-func NewProgramLearningOutcomeController(validator validator.PayloadValidator, programLearningOutcomeUsecase entity.ProgramLearningOutcomeUsecase) *programLearningOutcomeController {
+func NewProgramLearningOutcomeController(validator validator.PayloadValidator, programLearningOutcomeUseCase entity.ProgramLearningOutcomeUseCase) *programLearningOutcomeController {
 	return &programLearningOutcomeController{
-		programLearningOutcomeUsecase: programLearningOutcomeUsecase,
+		programLearningOutcomeUseCase: programLearningOutcomeUseCase,
 		Validator:                     validator,
 	}
 }
 
 func (c programLearningOutcomeController) GetAll(ctx *fiber.Ctx) error {
-	plos, err := c.programLearningOutcomeUsecase.GetAll()
+	plos, err := c.programLearningOutcomeUseCase.GetAll()
 	if err != nil {
 		return err
 	}
@@ -32,7 +32,7 @@ func (c programLearningOutcomeController) GetAll(ctx *fiber.Ctx) error {
 func (c programLearningOutcomeController) GetById(ctx *fiber.Ctx) error {
 	ploId := ctx.Params("ploId")
 
-	plo, err := c.programLearningOutcomeUsecase.GetById(ploId)
+	plo, err := c.programLearningOutcomeUseCase.GetById(ploId)
 	if err != nil {
 		return err
 	}
@@ -47,7 +47,7 @@ func (c programLearningOutcomeController) Create(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	err := c.programLearningOutcomeUsecase.Create(payload.Code, payload.DescriptionThai, payload.DescriptionEng, payload.ProgramYear, payload.ProgrammeId)
+	err := c.programLearningOutcomeUseCase.Create(payload.Code, payload.DescriptionThai, payload.DescriptionEng, payload.ProgramYear, payload.ProgrammeId)
 	if err != nil {
 		return err
 	}
@@ -64,7 +64,7 @@ func (c programLearningOutcomeController) Update(ctx *fiber.Ctx) error {
 
 	id := ctx.Params("ploId")
 
-	err := c.programLearningOutcomeUsecase.Update(id, &entity.ProgramLearningOutcome{
+	err := c.programLearningOutcomeUseCase.Update(id, &entity.ProgramLearningOutcome{
 		Code:            payload.Code,
 		DescriptionThai: payload.DescriptionThai,
 		DescriptionEng:  payload.DescriptionEng,
@@ -82,12 +82,12 @@ func (c programLearningOutcomeController) Update(ctx *fiber.Ctx) error {
 func (c programLearningOutcomeController) Delete(ctx *fiber.Ctx) error {
 	ploId := ctx.Params("ploId")
 
-	_, err := c.programLearningOutcomeUsecase.GetById(ploId)
+	_, err := c.programLearningOutcomeUseCase.GetById(ploId)
 	if err != nil {
 		return err
 	}
 
-	err = c.programLearningOutcomeUsecase.Delete(ploId)
+	err = c.programLearningOutcomeUseCase.Delete(ploId)
 	if err != nil {
 		return err
 	}

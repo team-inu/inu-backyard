@@ -34,7 +34,7 @@ type CourseRepository interface {
 	Update(id string, course *Course) error
 	Delete(id string) error
 }
-type CourseUsecase interface {
+type CourseUseCase interface {
 	GetAll() ([]Course, error)
 	GetById(id string) (*Course, error)
 	Create(semesterId string, lecturerId string, name string, code string, curriculum string, description string, criteriaGrade CriteriaGrade) error
