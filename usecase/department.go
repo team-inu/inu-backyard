@@ -3,6 +3,7 @@ package usecase
 import (
 	"github.com/team-inu/inu-backyard/entity"
 	errs "github.com/team-inu/inu-backyard/entity/error"
+	slice "github.com/team-inu/inu-backyard/internal/utils"
 )
 
 type DepartmentUseCase struct {
@@ -61,4 +62,15 @@ func (u DepartmentUseCase) Update(department *entity.Department, newName string)
 	}
 
 	return nil
+}
+
+func (u DepartmentUseCase) FilterNonExisted(names []string) ([]string, error) {
+	existedNames, err := u.DepartmentRepo.FilterExisted(names)
+	if err != nil {
+		return nil, errs.New(errs.ErrQueryDepartment, "cannot query departments", err)
+	}
+
+	nonExistedIds := slice.Subtraction(names, existedNames)
+
+	return nonExistedIds, nil
 }

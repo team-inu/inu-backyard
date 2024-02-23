@@ -31,11 +31,18 @@ func (u *semesterUseCase) GetById(id string) (*entity.Semester, error) {
 	return semester, nil
 }
 
-func (u *semesterUseCase) Create(year int, semerterSequence int) error {
-	err := u.semesterRepository.Create(&entity.Semester{
+func (u *semesterUseCase) Create(year int, semesterSequence int) error {
+	semester, err := u.semesterRepository.Get(year, semesterSequence)
+	if err != nil {
+		return errs.New(errs.SameCode, "cannot check existing semester while creating new one")
+	} else if semester != nil {
+		return errs.New(errs.ErrUpdateSemester, "year and semesterSequence already existed")
+	}
+
+	err = u.semesterRepository.Create(&entity.Semester{
 		Id:               ulid.Make().String(),
 		Year:             year,
-		SemesterSequence: semerterSequence,
+		SemesterSequence: semesterSequence,
 	})
 
 	if err != nil {

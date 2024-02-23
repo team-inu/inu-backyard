@@ -8,6 +8,7 @@ type Semester struct {
 
 type SemesterRepository interface {
 	GetAll() ([]Semester, error)
+	Get(year int, semesterSequence int) (*Semester, error)
 	GetById(id string) (*Semester, error)
 	Create(semester *Semester) error
 	Update(semester *Semester) error

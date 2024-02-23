@@ -23,6 +23,19 @@ func (r *SemesterRepository) GetAll() ([]entity.Semester, error) {
 	return semesters, nil
 }
 
+func (r *SemesterRepository) Get(year int, semesterSequence int) (*entity.Semester, error) {
+	var semester entity.Semester
+
+	err := r.gorm.First(&semester, "year = ? AND semester_sequence = ?", year, semesterSequence).Error
+	if err == gorm.ErrRecordNotFound {
+		return nil, nil
+	} else if err != nil {
+		return nil, fmt.Errorf("cannot query to get semester: %w", err)
+	}
+
+	return &semester, nil
+}
+
 func (r *SemesterRepository) GetById(id string) (*entity.Semester, error) {
 	var semester entity.Semester
 

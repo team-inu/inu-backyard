@@ -69,3 +69,14 @@ func (r programmeRepositoryGorm) Delete(name string) error {
 
 	return nil
 }
+
+func (r programmeRepositoryGorm) FilterExisted(names []string) ([]string, error) {
+	var existedNames []string
+
+	err := r.gorm.Raw("SELECT name FROM `programme` WHERE name in ?", names).Scan(&existedNames).Error
+	if err != nil {
+		return nil, fmt.Errorf("cannot query programme: %w", err)
+	}
+
+	return existedNames, nil
+}

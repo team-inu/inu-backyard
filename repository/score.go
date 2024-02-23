@@ -75,3 +75,14 @@ func (r scoreRepository) Delete(id string) error {
 
 	return nil
 }
+
+func (r scoreRepository) FilterSubmittedScoreStudents(assignmentId string, studentIds []string) ([]string, error) {
+	var existedIds []string
+
+	err := r.gorm.Raw("SELECT student_id FROM `score` WHERE student_id in ? AND assignment_id = ?", studentIds, assignmentId).Scan(&existedIds).Error
+	if err != nil {
+		return nil, fmt.Errorf("cannot query student: %w", err)
+	}
+
+	return existedIds, nil
+}

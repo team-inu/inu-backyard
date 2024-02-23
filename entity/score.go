@@ -13,8 +13,8 @@ type Score struct {
 }
 
 type StudentScore struct {
-	StudentId string
-	Score     float64
+	StudentId string  `json:"studentId" validate:"required"`
+	Score     float64 `json:"score" validate:"required"`
 }
 
 type ScoreRepository interface {
@@ -24,6 +24,7 @@ type ScoreRepository interface {
 	CreateMany(score []Score) error
 	Update(id string, score *Score) error
 	Delete(id string) error
+	FilterSubmittedScoreStudents(assignmentId string, studentIds []string) ([]string, error)
 }
 
 type ScoreUseCase interface {
@@ -32,4 +33,5 @@ type ScoreUseCase interface {
 	CreateMany(lecturerId string, assignmentId string, studentScores []StudentScore) error
 	Update(scoreId string, score float64) error
 	Delete(id string) error
+	FilterSubmittedScoreStudents(assignmentId string, studentIds []string) ([]string, error)
 }

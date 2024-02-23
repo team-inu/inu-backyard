@@ -47,6 +47,10 @@ func (u scoreUseCase) GetById(id string) (*entity.Score, error) {
 }
 
 func (u scoreUseCase) CreateMany(lecturerId string, assignmentId string, studentScores []entity.StudentScore) error {
+	if len(studentScores) == 0 {
+		return errs.New(errs.ErrCreateScore, "studentScores must not be empty")
+	}
+
 	lecturer, err := u.LecturerUseCase.GetById(lecturerId)
 	if err != nil {
 		return errs.New(errs.SameCode, "cannot get lecturer id %s to create score", lecturerId, err)
@@ -73,14 +77,21 @@ func (u scoreUseCase) CreateMany(lecturerId string, assignmentId string, student
 	}
 
 	withStatus := entity.EnrollmentStatusEnroll
-	joinedStudentIds, err := u.enrollmentUseCase.FilterJoinedStudent(studentIds, &withStatus)
+	joinedStudentIds, err := u.enrollmentUseCase.FilterJoinedStudent(studentIds, assignment.CourseId, &withStatus)
 	if err != nil {
 		return errs.New(errs.SameCode, "cannot get existed student ids while creating score")
 	}
 
 	nonJoinedStudentIds := slice.Subtraction(studentIds, joinedStudentIds)
-	if len(nonJoinedStudentIds) != 0 {
-		return errs.New(errs.ErrCreateAssignment, "there are non joined student ids")
+	if len(nonJoinedStudentIds) > 0 {
+		return errs.New(errs.ErrCreateAssignment, "there are non joined student ids %v", nonJoinedStudentIds)
+	}
+
+	submittedScoreStudentIds, err := u.FilterSubmittedScoreStudents(assignmentId, studentIds)
+	if err != nil {
+		return errs.New(errs.SameCode, "cannot filter submitted score student while creating score")
+	} else if len(submittedScoreStudentIds) != 0 {
+		return errs.New(errs.ErrCreateAssignment, "there are already submitted score students %v", submittedScoreStudentIds)
 	}
 
 	scores := []entity.Score{}
@@ -134,4 +145,13 @@ func (u scoreUseCase) Delete(id string) error {
 		return errs.New(errs.ErrDeleteScore, "cannot delete score by id %s", id, err)
 	}
 	return nil
+}
+
+func (u scoreUseCase) FilterSubmittedScoreStudents(assignmentId string, studentIds []string) ([]string, error) {
+	submittedScoreStudentIds, err := u.scoreRepo.FilterSubmittedScoreStudents(assignmentId, studentIds)
+	if err != nil {
+		return nil, errs.New(errs.ErrQueryStudent, "cannot query students", err)
+	}
+
+	return submittedScoreStudentIds, nil
 }

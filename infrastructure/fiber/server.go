@@ -108,11 +108,11 @@ func (f *fiberServer) initRepository() (err error) {
 
 func (f *fiberServer) initUseCase() {
 	programmeUseCase := usecase.NewProgrammeUseCase(f.programmeRepository)
-	studentUseCase := usecase.NewStudentUseCase(f.studentRepository)
-	programLearningOutcomeUseCase := usecase.NewProgramLearningOutcomeUseCase(f.programLearningOutcomeRepository, programmeUseCase)
-	subProgramLearningOutcomeUseCase := usecase.NewSubProgramLearningOutcomeUseCase(f.subProgramLearningOutcomeRepository, programLearningOutcomeUseCase)
 	facultyUseCase := usecase.NewFacultyUseCase(f.facultyRepository)
 	departmentUseCase := usecase.NewDepartmentUseCase(f.departmentRepository)
+	studentUseCase := usecase.NewStudentUseCase(f.studentRepository, departmentUseCase, programmeUseCase)
+	programLearningOutcomeUseCase := usecase.NewProgramLearningOutcomeUseCase(f.programLearningOutcomeRepository, programmeUseCase)
+	subProgramLearningOutcomeUseCase := usecase.NewSubProgramLearningOutcomeUseCase(f.subProgramLearningOutcomeRepository, programLearningOutcomeUseCase)
 	lecturerUseCase := usecase.NewLecturerUseCase(f.lecturerRepository)
 	semesterUseCase := usecase.NewSemesterUseCase(f.semesterRepository)
 	courseUseCase := usecase.NewCourseUseCase(f.courseRepository, semesterUseCase, lecturerUseCase)
@@ -255,7 +255,6 @@ func (f *fiberServer) initController() error {
 	app.Get("/assignments", assignmentController.GetAssignments)
 	app.Get("/assignments/:assignmentId", assignmentController.GetById)
 	app.Post("/assignments", assignmentController.Create)
-	app.Post("/assignments/bulk", assignmentController.CreateMany)
 	app.Patch("/assignments/:assignmentId", assignmentController.Update)
 	app.Delete("/assignments/:assignmentId", assignmentController.Delete)
 

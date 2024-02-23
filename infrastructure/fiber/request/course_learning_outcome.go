@@ -7,7 +7,6 @@ type CreateCourseLearningOutcomePayload struct {
 	ExpectedScorePercentage             float64  `json:"expectedScorePercentage" validate:"required"`
 	ExpectedPassingStudentPercentage    float64  `json:"expectedPassingStudentPercentage" validate:"required"`
 	Status                              string   `json:"status" validate:"required"`
-	SubProgramLearningOutcomeId         string   `json:"subProgramLearningOutcomeId" validate:"required"`
 	ProgramOutcomeId                    string   `json:"programOutcomeId" validate:"required"`
 	CourseId                            string   `json:"courseId" validate:"required"`
 	SubProgramLearningOutcomeIds        []string `json:"subProgramLearningOutcomeIds" validate:"required"`

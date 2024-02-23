@@ -21,23 +21,35 @@ func Subtraction(setA []string, setB []string) []string {
 
 func GetDuplicateValue(values []string) []string {
 	duplicatedValues := []string{}
-
-	duplicateCountByValue := make(map[string]int)
+	isDuplicateByValue := make(map[string]bool)
 
 	for _, value := range values {
-		count, found := duplicateCountByValue[value]
+		_, found := isDuplicateByValue[value]
 
 		if !found {
-			duplicateCountByValue[value] = 1
+			isDuplicateByValue[value] = true
 			continue
 		}
 
-		if count == 1 {
-			duplicatedValues = append(duplicatedValues, value)
-		}
-
-		count++
+		duplicatedValues = append(duplicatedValues, value)
 	}
 
 	return duplicatedValues
+}
+
+func DeduplicateValue(values []string) []string {
+	deduplicateValues := []string{}
+	isDuplicateByValue := make(map[string]bool)
+
+	for _, value := range values {
+		_, found := isDuplicateByValue[value]
+
+		if !found {
+			isDuplicateByValue[value] = true
+			deduplicateValues = append(deduplicateValues, value)
+			continue
+		}
+	}
+
+	return deduplicateValues
 }

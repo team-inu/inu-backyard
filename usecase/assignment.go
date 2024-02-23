@@ -58,14 +58,14 @@ func (u assignmentUseCase) Create(name string, description string, maxScore int,
 
 	duplicateCloIds := slice.GetDuplicateValue(courseLearningOutcomeIds)
 	if len(duplicateCloIds) != 0 {
-		return errs.New(errs.ErrCreateAssignment, "duplicate clo ids")
+		return errs.New(errs.ErrCreateAssignment, "duplicate clo ids %v", duplicateCloIds)
 	}
 
 	nonExistedCloIds, err := u.courseLearningOutcomeUseCase.FilterNonExisted(courseLearningOutcomeIds)
 	if err != nil {
 		return errs.New(errs.SameCode, "cannot get non existed clo ids while creating assignment")
 	} else if len(nonExistedCloIds) != 0 {
-		return errs.New(errs.ErrCreateAssignment, "there are non exist clo ids")
+		return errs.New(errs.ErrCreateAssignment, "there are non exist clo ids %v", nonExistedCloIds)
 	}
 
 	courseLeaningOutcomes := []*entity.CourseLearningOutcome{}
@@ -89,18 +89,6 @@ func (u assignmentUseCase) Create(name string, description string, maxScore int,
 	err = u.assignmentRepo.Create(&assignment)
 	if err != nil {
 		return errs.New(errs.ErrCreateAssignment, "cannot create assignment", err)
-	}
-
-	return nil
-}
-
-func (u assignmentUseCase) CreateMany(assignments []entity.Assignment) error {
-	for index, _ := range assignments {
-		assignments[index].Id = ulid.Make().String()
-	}
-	err := u.assignmentRepo.CreateMany(assignments)
-	if err != nil {
-		return errs.New(errs.ErrCreateAssignment, "cannot create assignments", err)
 	}
 
 	return nil
