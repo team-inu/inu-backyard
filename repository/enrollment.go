@@ -76,12 +76,12 @@ func (r enrollmentRepositoryGorm) Delete(id string) error {
 	return nil
 }
 
-func (r enrollmentRepositoryGorm) FilterJoinedStudent(studentIds []string, status *entity.EnrollmentStatus) ([]string, error) {
+func (r enrollmentRepositoryGorm) FilterJoinedStudent(studentIds []string, courseId string, status *entity.EnrollmentStatus) ([]string, error) {
 	// fmt.Println(*status)
 	var existedIds []string
 
-	query := "SELECT id FROM `enrollment` WHERE id in ?"
-	args := []interface{}{studentIds}
+	query := "SELECT student_id FROM `enrollment` WHERE course_id = ? AND student_id in ?"
+	args := []interface{}{courseId, studentIds}
 
 	if status != nil {
 		query += " AND status = ?"

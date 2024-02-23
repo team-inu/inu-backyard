@@ -73,7 +73,7 @@ func (u scoreUseCase) CreateMany(lecturerId string, assignmentId string, student
 	}
 
 	withStatus := entity.EnrollmentStatusEnroll
-	joinedStudentIds, err := u.enrollmentUseCase.FilterJoinedStudent(studentIds, &withStatus)
+	joinedStudentIds, err := u.enrollmentUseCase.FilterJoinedStudent(studentIds, assignment.CourseId, &withStatus)
 	if err != nil {
 		return errs.New(errs.SameCode, "cannot get existed student ids while creating score")
 	}
