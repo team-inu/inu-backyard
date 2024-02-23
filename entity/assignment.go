@@ -9,7 +9,7 @@ type Assignment struct {
 	ExpectedScorePercentage          float64 `json:"expectedScorePercentage"`
 	ExpectedPassingStudentPercentage float64 `json:"expectedPassingStudentPercentage"`
 
-	CourseId string `json:"courseId" gorm:"->"`
+	CourseId string `json:"courseId" gorm:"->;-:migration"`
 
 	CourseLearningOutcomes []*CourseLearningOutcome `gorm:"many2many:clo_assignment"`
 }
