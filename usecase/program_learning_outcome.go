@@ -8,10 +8,17 @@ import (
 
 type programLearningOutcomeUsecase struct {
 	programLearningOutcomeRepo entity.ProgramLearningOutcomeRepository
+	programmeUseCase           entity.ProgrammeUseCase
 }
 
-func NewProgramLearningOutcomeUsecase(programLearningOutcomeRepo entity.ProgramLearningOutcomeRepository) entity.ProgramLearningOutcomeUsecase {
-	return &programLearningOutcomeUsecase{programLearningOutcomeRepo: programLearningOutcomeRepo}
+func NewProgramLearningOutcomeUsecase(
+	programLearningOutcomeRepo entity.ProgramLearningOutcomeRepository,
+	programmeUseCase entity.ProgrammeUseCase,
+) entity.ProgramLearningOutcomeUsecase {
+	return &programLearningOutcomeUsecase{
+		programLearningOutcomeRepo: programLearningOutcomeRepo,
+		programmeUseCase:           programmeUseCase,
+	}
 }
 
 func (c programLearningOutcomeUsecase) GetAll() ([]entity.ProgramLearningOutcome, error) {
@@ -32,18 +39,24 @@ func (c programLearningOutcomeUsecase) GetById(id string) (*entity.ProgramLearni
 	return plo, nil
 }
 
-func (c programLearningOutcomeUsecase) Create(code string, descriptionThai string, descriptionEng string, programYear int, programmeId string) error {
+func (c programLearningOutcomeUsecase) Create(code string, descriptionThai string, descriptionEng string, programYear int, programmeName string) error {
+	programme, err := c.programmeUseCase.Get(programmeName)
+	if err != nil {
+		return errs.New(errs.SameCode, "cannot get programme id %s while creating plo", programmeName, err)
+	} else if programme == nil {
+		return errs.New(errs.ErrProgrammeNotFound, "programme id %s not found while creating plo", programmeName)
+	}
+
 	plo := entity.ProgramLearningOutcome{
 		Id:              ulid.Make().String(),
 		Code:            code,
 		DescriptionThai: descriptionThai,
 		DescriptionEng:  descriptionEng,
 		ProgramYear:     programYear,
-		ProgrammeId:     programmeId,
+		ProgrammeId:     programmeName,
 	}
 
-	err := c.programLearningOutcomeRepo.Create(&plo)
-
+	err = c.programLearningOutcomeRepo.Create(&plo)
 	if err != nil {
 		return errs.New(errs.ErrCreatePLO, "cannot create PLO", err)
 	}

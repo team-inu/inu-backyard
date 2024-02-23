@@ -107,13 +107,13 @@ func (f *fiberServer) initRepository() (err error) {
 }
 
 func (f *fiberServer) initUseCase() {
+	programmeUsecase := usecase.NewProgrammeUseCase(f.programmeRepository)
 	studentUseCase := usecase.NewStudentUseCase(f.studentRepository)
-	programLearningOutcomeUsecase := usecase.NewProgramLearningOutcomeUsecase(f.programLearningOutcomeRepository)
+	programLearningOutcomeUsecase := usecase.NewProgramLearningOutcomeUsecase(f.programLearningOutcomeRepository, programmeUsecase)
 	subProgramLearningOutcomeUsecase := usecase.NewSubProgramLearningOutcomeUsecase(f.subProgramLearningOutcomeRepository, programLearningOutcomeUsecase)
 	facultyUsecase := usecase.NewFacultyUseCase(f.facultyRepository)
 	departmentUsecase := usecase.NewDepartmentUseCase(f.departmentRepository)
 	lecturerUsecase := usecase.NewLecturerUseCase(f.lecturerRepository)
-	programmeUsecase := usecase.NewProgrammeUseCase(f.programmeRepository)
 	semesterUsecase := usecase.NewSemesterUseCase(f.semesterRepository)
 	courseUseCase := usecase.NewCourseUsecase(f.courseRepository, semesterUsecase, lecturerUsecase)
 	enrollmentUsecase := usecase.NewEnrollmentUseCase(f.enrollmentRepository, studentUseCase, courseUseCase)
