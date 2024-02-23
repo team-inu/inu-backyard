@@ -29,7 +29,6 @@ type ScoreRepository interface {
 type ScoreUseCase interface {
 	GetAll() ([]Score, error)
 	GetById(id string) (*Score, error)
-	Create(score float64, studentId string, assignmentId string, lecturerId string) (*Score, error)
 	CreateMany(lecturerId string, assignmentId string, studentScores []StudentScore) error
 	Update(scoreId string, score float64) error
 	Delete(id string) error

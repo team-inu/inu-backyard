@@ -39,21 +39,6 @@ func (c scoreController) GetById(ctx *fiber.Ctx) error {
 	return ctx.JSON(score)
 }
 
-func (c scoreController) Create(ctx *fiber.Ctx) error {
-	var payload request.CreateScoreRequestPayload
-
-	if ok, err := c.Validator.Validate(&payload, ctx); !ok {
-		return err
-	}
-
-	createdScore, err := c.ScoreUseCase.Create(payload.Score, payload.StudentId, payload.AssignmentId, payload.LecturerId)
-	if err != nil {
-		return err
-	}
-
-	return ctx.JSON(createdScore)
-}
-
 func (c scoreController) CreateMany(ctx *fiber.Ctx) error {
 	var payload request.BulkCreateScoreRequestPayload
 

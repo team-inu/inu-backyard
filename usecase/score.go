@@ -46,24 +46,6 @@ func (u scoreUseCase) GetById(id string) (*entity.Score, error) {
 	return score, nil
 }
 
-func (u scoreUseCase) Create(score float64, studentId string, assignmentId string, lecturerId string) (*entity.Score, error) {
-	createdScore := entity.Score{
-		Id:           ulid.Make().String(),
-		Score:        score,
-		StudentId:    studentId,
-		LecturerId:   lecturerId,
-		AssignmentId: assignmentId,
-	}
-
-	err := u.scoreRepo.Create(&createdScore)
-
-	if err != nil {
-		return nil, errs.New(errs.ErrCreateScore, "cannot create score", err)
-	}
-
-	return &createdScore, nil
-}
-
 func (u scoreUseCase) CreateMany(lecturerId string, assignmentId string, studentScores []entity.StudentScore) error {
 	lecturer, err := u.LecturerUseCase.GetById(lecturerId)
 	if err != nil {
