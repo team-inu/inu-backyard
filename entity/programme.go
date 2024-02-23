@@ -10,6 +10,7 @@ type ProgrammeRepository interface {
 	Create(programme *Programme) error
 	Update(name string, programme *Programme) error
 	Delete(name string) error
+	FilterExisted(names []string) ([]string, error)
 }
 
 type ProgrammeUseCase interface {
@@ -18,4 +19,5 @@ type ProgrammeUseCase interface {
 	Create(name string) error
 	Update(name string, programme *Programme) error
 	Delete(name string) error
+	FilterNonExisted(names []string) ([]string, error)
 }

@@ -3,6 +3,7 @@ package usecase
 import (
 	"github.com/team-inu/inu-backyard/entity"
 	errs "github.com/team-inu/inu-backyard/entity/error"
+	slice "github.com/team-inu/inu-backyard/internal/utils"
 )
 
 type programmeUseCase struct {
@@ -80,4 +81,15 @@ func (u programmeUseCase) Delete(name string) error {
 	}
 
 	return nil
+}
+
+func (u programmeUseCase) FilterNonExisted(names []string) ([]string, error) {
+	existedNames, err := u.programmeRepo.FilterExisted(names)
+	if err != nil {
+		return nil, errs.New(errs.ErrQueryProgramme, "cannot query programmes", err)
+	}
+
+	nonExistedIds := slice.Subtraction(names, existedNames)
+
+	return nonExistedIds, nil
 }
