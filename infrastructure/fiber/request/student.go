@@ -26,7 +26,7 @@ type GetStudentsByParamsPayload struct {
 }
 
 type CreateBulkStudentsPayload struct {
-	Students []CreateStudentPayload `json:"students"`
+	Students []CreateStudentPayload `json:"students" validate:"dive"`
 }
 
 type UpdateStudentPayload struct {

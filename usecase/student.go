@@ -7,11 +7,21 @@ import (
 )
 
 type studentUseCase struct {
-	studentRepo entity.StudentRepository
+	studentRepo       entity.StudentRepository
+	departmentUseCase entity.DepartmentUseCase
+	programmeUseCase  entity.ProgrammeUseCase
 }
 
-func NewStudentUseCase(studentRepo entity.StudentRepository) entity.StudentUseCase {
-	return &studentUseCase{studentRepo: studentRepo}
+func NewStudentUseCase(
+	studentRepo entity.StudentRepository,
+	departmentUseCase entity.DepartmentUseCase,
+	programmeUseCase entity.ProgrammeUseCase,
+) entity.StudentUseCase {
+	return &studentUseCase{
+		studentRepo:       studentRepo,
+		departmentUseCase: departmentUseCase,
+		programmeUseCase:  programmeUseCase,
+	}
 }
 
 func (u studentUseCase) GetById(id string) (*entity.Student, error) {
@@ -52,7 +62,44 @@ func (u studentUseCase) Create(student *entity.Student) error {
 }
 
 func (u studentUseCase) CreateMany(students []entity.Student) error {
-	err := u.studentRepo.CreateMany(students)
+	departmentNames := []string{}
+	programmeNames := []string{}
+	studentIds := []string{}
+	for _, student := range students {
+		departmentNames = append(departmentNames, student.DepartmentName)
+		programmeNames = append(programmeNames, student.ProgrammeId)
+		studentIds = append(studentIds, student.Id)
+	}
+
+	duplicateStudentIds := slice.GetDuplicateValue(studentIds)
+	if len(duplicateStudentIds) != 0 {
+		return errs.New(errs.ErrCreateStudent, "there are duplicate student ids in the payload")
+	}
+
+	exitedStudentIds, err := u.FilterExisted(studentIds)
+	if err != nil {
+		return errs.New(errs.SameCode, "cannot get existed student ids while creating students", err)
+	} else if len(exitedStudentIds) > 0 {
+		return errs.New(errs.ErrCreateStudent, "there are existed student id in the database")
+	}
+
+	deduplicateDepartmentNames := slice.DeduplicateValue(departmentNames)
+	nonExistedDepartmentNames, err := u.departmentUseCase.FilterNonExisted(deduplicateDepartmentNames)
+	if err != nil {
+		return errs.New(errs.SameCode, "cannot get non existed department while creating students")
+	} else if len(nonExistedDepartmentNames) != 0 {
+		return errs.New(errs.ErrCreateEnrollment, "there are non exist department")
+	}
+
+	deduplicateProgrammeNames := slice.DeduplicateValue(programmeNames)
+	nonExistedProgrammeNames, err := u.programmeUseCase.FilterNonExisted(deduplicateProgrammeNames)
+	if err != nil {
+		return errs.New(errs.SameCode, "cannot get non existed programme while creating students")
+	} else if len(nonExistedProgrammeNames) != 0 {
+		return errs.New(errs.ErrCreateEnrollment, "there are non exist programme")
+	}
+
+	err = u.studentRepo.CreateMany(students)
 	if err != nil {
 		return errs.New(errs.ErrCreateStudent, "cannot create students", err)
 	}
