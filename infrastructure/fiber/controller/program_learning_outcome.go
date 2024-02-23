@@ -47,7 +47,7 @@ func (c programLearningOutcomeController) Create(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	err := c.programLearningOutcomeUseCase.Create(payload.Code, payload.DescriptionThai, payload.DescriptionEng, payload.ProgramYear, payload.ProgrammeId)
+	err := c.programLearningOutcomeUseCase.Create(payload.Code, payload.DescriptionThai, payload.DescriptionEng, payload.ProgramYear, payload.Programme)
 	if err != nil {
 		return err
 	}
@@ -69,7 +69,7 @@ func (c programLearningOutcomeController) Update(ctx *fiber.Ctx) error {
 		DescriptionThai: payload.DescriptionThai,
 		DescriptionEng:  payload.DescriptionEng,
 		ProgramYear:     payload.ProgramYear,
-		ProgrammeId:     payload.ProgrammeId,
+		ProgrammeId:     payload.Programme,
 	})
 
 	if err != nil {
