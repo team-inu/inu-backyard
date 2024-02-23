@@ -73,14 +73,14 @@ func (u studentUseCase) CreateMany(students []entity.Student) error {
 
 	duplicateStudentIds := slice.GetDuplicateValue(studentIds)
 	if len(duplicateStudentIds) != 0 {
-		return errs.New(errs.ErrCreateStudent, "there are duplicate student ids in the payload")
+		return errs.New(errs.ErrCreateStudent, "there are duplicate student ids in the payload %v", duplicateStudentIds)
 	}
 
 	exitedStudentIds, err := u.FilterExisted(studentIds)
 	if err != nil {
 		return errs.New(errs.SameCode, "cannot get existed student ids while creating students", err)
 	} else if len(exitedStudentIds) > 0 {
-		return errs.New(errs.ErrCreateStudent, "there are existed student id in the database")
+		return errs.New(errs.ErrCreateStudent, "there are existed student id in the database %v", exitedStudentIds)
 	}
 
 	deduplicateDepartmentNames := slice.DeduplicateValue(departmentNames)
@@ -88,7 +88,7 @@ func (u studentUseCase) CreateMany(students []entity.Student) error {
 	if err != nil {
 		return errs.New(errs.SameCode, "cannot get non existed department while creating students")
 	} else if len(nonExistedDepartmentNames) != 0 {
-		return errs.New(errs.ErrCreateEnrollment, "there are non exist department")
+		return errs.New(errs.ErrCreateEnrollment, "there are non exist department %v", nonExistedDepartmentNames)
 	}
 
 	deduplicateProgrammeNames := slice.DeduplicateValue(programmeNames)
@@ -96,7 +96,7 @@ func (u studentUseCase) CreateMany(students []entity.Student) error {
 	if err != nil {
 		return errs.New(errs.SameCode, "cannot get non existed programme while creating students")
 	} else if len(nonExistedProgrammeNames) != 0 {
-		return errs.New(errs.ErrCreateEnrollment, "there are non exist programme")
+		return errs.New(errs.ErrCreateEnrollment, "there are non exist programme %v", nonExistedProgrammeNames)
 	}
 
 	err = u.studentRepo.CreateMany(students)

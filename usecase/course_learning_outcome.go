@@ -78,7 +78,7 @@ func (u courseLearningOutcomeUseCase) Create(dto entity.CreateCourseLearningOutc
 	if err != nil {
 		return errs.New(errs.SameCode, "cannot get non existed sub plo ids while creating clo")
 	} else if len(nonExistedSubPloIds) != 0 {
-		return errs.New(errs.ErrCreateEnrollment, "there are non exist sub plo")
+		return errs.New(errs.ErrCreateEnrollment, "there are non exist sub plo %v", nonExistedSubPloIds)
 	}
 
 	subPlos := []*entity.SubProgramLearningOutcome{}

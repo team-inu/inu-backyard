@@ -83,16 +83,15 @@ func (u scoreUseCase) CreateMany(lecturerId string, assignmentId string, student
 	}
 
 	nonJoinedStudentIds := slice.Subtraction(studentIds, joinedStudentIds)
-
 	if len(nonJoinedStudentIds) > 0 {
-		return errs.New(errs.ErrCreateAssignment, "there are non joined student ids")
+		return errs.New(errs.ErrCreateAssignment, "there are non joined student ids %v", nonJoinedStudentIds)
 	}
 
 	submittedScoreStudentIds, err := u.FilterSubmittedScoreStudents(assignmentId, studentIds)
 	if err != nil {
 		return errs.New(errs.SameCode, "cannot filter submitted score student while creating score")
 	} else if len(submittedScoreStudentIds) != 0 {
-		return errs.New(errs.ErrCreateAssignment, "there are submitted score students")
+		return errs.New(errs.ErrCreateAssignment, "there are already submitted score students %v", submittedScoreStudentIds)
 	}
 
 	scores := []entity.Score{}

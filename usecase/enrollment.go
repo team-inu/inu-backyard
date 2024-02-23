@@ -49,21 +49,21 @@ func (u enrollmentUseCase) CreateMany(courseId string, status entity.EnrollmentS
 
 	duplicateStudentIds := slice.GetDuplicateValue(studentIds)
 	if len(duplicateStudentIds) != 0 {
-		return errs.New(errs.ErrCreateEnrollment, "duplicate student ids")
+		return errs.New(errs.ErrCreateEnrollment, "duplicate student ids %v", duplicateStudentIds)
 	}
 
 	nonExistedStudentIds, err := u.studentUseCase.FilterNonExisted(studentIds)
 	if err != nil {
 		return errs.New(errs.SameCode, "cannot get non existed student ids while creating enrollment")
 	} else if len(nonExistedStudentIds) != 0 {
-		return errs.New(errs.ErrCreateEnrollment, "there are non exist student ids")
+		return errs.New(errs.ErrCreateEnrollment, "there are non exist student ids %v", nonExistedStudentIds)
 	}
 
 	joinedStudentIds, err := u.FilterJoinedStudent(studentIds, courseId, nil)
 	if err != nil {
 		return errs.New(errs.SameCode, "cannot get existed student ids while creating score")
 	} else if len(joinedStudentIds) > 0 {
-		return errs.New(errs.ErrCreateAssignment, "there are already joined student ids")
+		return errs.New(errs.ErrCreateAssignment, "there are already joined student ids, %v", joinedStudentIds)
 	}
 
 	enrollments := []entity.Enrollment{}
