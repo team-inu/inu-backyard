@@ -28,7 +28,7 @@ func (r programmeRepositoryGorm) GetAll() ([]entity.Programme, error) {
 	return programs, nil
 }
 
-func (r programmeRepositoryGorm) GetByName(name string) (*entity.Programme, error) {
+func (r programmeRepositoryGorm) Get(name string) (*entity.Programme, error) {
 	var programme *entity.Programme
 
 	err := r.gorm.Where("name = ?", name).First(&programme).Error

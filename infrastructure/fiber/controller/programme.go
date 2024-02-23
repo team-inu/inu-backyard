@@ -32,7 +32,7 @@ func (c programmeController) GetAll(ctx *fiber.Ctx) error {
 func (c programmeController) GetByName(ctx *fiber.Ctx) error {
 	name := ctx.Params("programmeName")
 
-	programme, err := c.programmeUseCase.GetByName(name)
+	programme, err := c.programmeUseCase.Get(name)
 
 	if err != nil {
 		return err

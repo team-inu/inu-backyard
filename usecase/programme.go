@@ -22,8 +22,8 @@ func (u programmeUsecase) GetAll() ([]entity.Programme, error) {
 	return programme, nil
 }
 
-func (u programmeUsecase) GetByName(name string) (*entity.Programme, error) {
-	programme, err := u.programmeRepo.GetByName(name)
+func (u programmeUsecase) Get(name string) (*entity.Programme, error) {
+	programme, err := u.programmeRepo.Get(name)
 	if err != nil {
 		return nil, errs.New(errs.ErrQueryProgramme, "cannot get programme by name %s", name, err)
 	}
@@ -32,7 +32,7 @@ func (u programmeUsecase) GetByName(name string) (*entity.Programme, error) {
 }
 
 func (u programmeUsecase) Create(name string) error {
-	existProgramme, err := u.GetByName(name)
+	existProgramme, err := u.Get(name)
 	if err != nil {
 		return errs.New(errs.SameCode, "cannot get programme name %s to update", name, err)
 	} else if existProgramme != nil {
@@ -50,7 +50,7 @@ func (u programmeUsecase) Create(name string) error {
 }
 
 func (u programmeUsecase) Update(name string, programme *entity.Programme) error {
-	existProgramme, err := u.GetByName(name)
+	existProgramme, err := u.Get(name)
 	if err != nil {
 		return errs.New(errs.SameCode, "cannot get programme name %s to update", name, err)
 	} else if existProgramme == nil {
@@ -66,7 +66,7 @@ func (u programmeUsecase) Update(name string, programme *entity.Programme) error
 }
 
 func (u programmeUsecase) Delete(name string) error {
-	programme, err := u.GetByName(name)
+	programme, err := u.Get(name)
 	if err != nil {
 		return errs.New(errs.SameCode, "cannot get programme id %s name delete", name, err)
 	} else if programme == nil {
