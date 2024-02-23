@@ -5,7 +5,6 @@ import (
 	"crypto/sha256"
 	"crypto/subtle"
 	"encoding/base64"
-	"fmt"
 	"regexp"
 	"strings"
 	"time"
@@ -60,7 +59,6 @@ func (u sessionUseCase) Unsign(header string) (string, error) {
 func (u sessionUseCase) Create(
 	userId string, ipAddress string, userAgent string,
 ) (*fiber.Cookie, error) {
-	fmt.Println("=====xxxxx")
 	if err := u.sessionRepository.DeleteDuplicates(userId, ipAddress, userAgent); err != nil {
 		return nil, errs.New(
 			errs.ErrDupSession,
@@ -68,7 +66,6 @@ func (u sessionUseCase) Create(
 			err,
 		)
 	}
-	fmt.Println("=====xxxxxsss")
 
 	id := uuid.NewString()
 	signedId := u.Sign(id)
