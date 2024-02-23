@@ -28,8 +28,8 @@ func NewCourseLearningOutcomeUsecase(
 	}
 }
 
-func (c courseLearningOutcomeUsecase) GetAll() ([]entity.CourseLearningOutcome, error) {
-	clos, err := c.courseLearningOutcomeRepo.GetAll()
+func (u courseLearningOutcomeUsecase) GetAll() ([]entity.CourseLearningOutcome, error) {
+	clos, err := u.courseLearningOutcomeRepo.GetAll()
 	if err != nil {
 		return nil, errs.New(errs.ErrQueryCLO, "cannot get all CLOs", err)
 	}
@@ -37,8 +37,8 @@ func (c courseLearningOutcomeUsecase) GetAll() ([]entity.CourseLearningOutcome, 
 	return clos, nil
 }
 
-func (c courseLearningOutcomeUsecase) GetById(id string) (*entity.CourseLearningOutcome, error) {
-	clo, err := c.courseLearningOutcomeRepo.GetById(id)
+func (u courseLearningOutcomeUsecase) GetById(id string) (*entity.CourseLearningOutcome, error) {
+	clo, err := u.courseLearningOutcomeRepo.GetById(id)
 	if err != nil {
 		return nil, errs.New(errs.ErrQueryCLO, "cannot get CLO by id %s", id, err)
 	}
@@ -46,8 +46,8 @@ func (c courseLearningOutcomeUsecase) GetById(id string) (*entity.CourseLearning
 	return clo, nil
 }
 
-func (c courseLearningOutcomeUsecase) GetByCourseId(courseId string) ([]entity.CourseLearningOutcome, error) {
-	clo, err := c.courseLearningOutcomeRepo.GetByCourseId(courseId)
+func (u courseLearningOutcomeUsecase) GetByCourseId(courseId string) ([]entity.CourseLearningOutcome, error) {
+	clo, err := u.courseLearningOutcomeRepo.GetByCourseId(courseId)
 	if err != nil {
 		return nil, errs.New(errs.ErrQueryCLO, "cannot get CLO by course id %s", courseId, err)
 	}
@@ -55,22 +55,22 @@ func (c courseLearningOutcomeUsecase) GetByCourseId(courseId string) ([]entity.C
 	return clo, nil
 }
 
-func (c courseLearningOutcomeUsecase) Create(dto entity.CreateCourseLearningOutcomeDto) error {
-	course, err := c.courseUseCase.GetById(dto.CourseId)
+func (u courseLearningOutcomeUsecase) Create(dto entity.CreateCourseLearningOutcomeDto) error {
+	course, err := u.courseUseCase.GetById(dto.CourseId)
 	if err != nil {
 		return errs.New(errs.SameCode, "cannot get course id %s while creating clo", dto.CourseId, err)
 	} else if course == nil {
 		return errs.New(errs.ErrCourseNotFound, "course id %s not found while creating clo", dto.CourseId)
 	}
 
-	po, err := c.programOutcomeUseCase.GetById(dto.ProgramOutcomeId)
+	po, err := u.programOutcomeUseCase.GetById(dto.ProgramOutcomeId)
 	if err != nil {
 		return errs.New(errs.SameCode, "cannot get program outcome id %s while creating clo", dto.ProgramOutcomeId, err)
 	} else if po == nil {
 		return errs.New(errs.ErrCourseNotFound, "program outcome id %s not found while creating clo", dto.ProgramOutcomeId)
 	}
 
-	nonExistedSubPloIds, err := c.subProgramLearningOutcomeUseCase.FilterNonExisted(dto.SubProgramLearningOutcomeIds)
+	nonExistedSubPloIds, err := u.subProgramLearningOutcomeUseCase.FilterNonExisted(dto.SubProgramLearningOutcomeIds)
 	if err != nil {
 		return errs.New(errs.SameCode, "cannot get non existed sub plo ids while creating clo")
 	} else if len(nonExistedSubPloIds) != 0 {
@@ -97,7 +97,7 @@ func (c courseLearningOutcomeUsecase) Create(dto entity.CreateCourseLearningOutc
 		SubProgramLearningOutcomes:          subPlos,
 	}
 
-	err = c.courseLearningOutcomeRepo.Create(&clo)
+	err = u.courseLearningOutcomeRepo.Create(&clo)
 	if err != nil {
 		return errs.New(errs.ErrCreateCLO, "cannot create CLO", err)
 	}
@@ -121,8 +121,8 @@ func (u courseLearningOutcomeUsecase) Update(id string, courseLearningOutcome *e
 	return nil
 }
 
-func (c courseLearningOutcomeUsecase) Delete(id string) error {
-	err := c.courseLearningOutcomeRepo.Delete(id)
+func (u courseLearningOutcomeUsecase) Delete(id string) error {
+	err := u.courseLearningOutcomeRepo.Delete(id)
 	if err != nil {
 		return errs.New(errs.ErrDeleteCLO, "cannot delete CLO", err)
 	}
@@ -130,8 +130,8 @@ func (c courseLearningOutcomeUsecase) Delete(id string) error {
 	return nil
 }
 
-func (c courseLearningOutcomeUsecase) FilterNonExisted(ids []string) ([]string, error) {
-	existedIds, err := c.courseLearningOutcomeRepo.FilterExisted(ids)
+func (u courseLearningOutcomeUsecase) FilterNonExisted(ids []string) ([]string, error) {
+	existedIds, err := u.courseLearningOutcomeRepo.FilterExisted(ids)
 	if err != nil {
 		return nil, errs.New(errs.ErrQueryCLO, "cannot query clo", err)
 	}

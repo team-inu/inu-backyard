@@ -22,8 +22,8 @@ func NewSubProgramLearningOutcomeUsecase(
 	}
 }
 
-func (c subProgramLearningOutcomeUsecase) GetAll() ([]entity.SubProgramLearningOutcome, error) {
-	splos, err := c.subProgramLearningOutcomeRepo.GetAll()
+func (u subProgramLearningOutcomeUsecase) GetAll() ([]entity.SubProgramLearningOutcome, error) {
+	splos, err := u.subProgramLearningOutcomeRepo.GetAll()
 	if err != nil {
 		return nil, errs.New(errs.ErrQuerySubPLO, "cannot get all sub plos", err)
 	}
@@ -31,8 +31,8 @@ func (c subProgramLearningOutcomeUsecase) GetAll() ([]entity.SubProgramLearningO
 	return splos, nil
 }
 
-func (c subProgramLearningOutcomeUsecase) GetById(id string) (*entity.SubProgramLearningOutcome, error) {
-	splo, err := c.subProgramLearningOutcomeRepo.GetById(id)
+func (u subProgramLearningOutcomeUsecase) GetById(id string) (*entity.SubProgramLearningOutcome, error) {
+	splo, err := u.subProgramLearningOutcomeRepo.GetById(id)
 	if err != nil {
 		return nil, errs.New(errs.ErrQuerySubPLO, "cannot get sub plo by id %s", id, err)
 	}
@@ -40,8 +40,8 @@ func (c subProgramLearningOutcomeUsecase) GetById(id string) (*entity.SubProgram
 	return splo, nil
 }
 
-func (c subProgramLearningOutcomeUsecase) Create(code string, descriptionThai string, descriptionEng string, programLearningOutcomeId string) error {
-	plo, err := c.programLearningOutcomeUseCase.GetById(programLearningOutcomeId)
+func (u subProgramLearningOutcomeUsecase) Create(code string, descriptionThai string, descriptionEng string, programLearningOutcomeId string) error {
+	plo, err := u.programLearningOutcomeUseCase.GetById(programLearningOutcomeId)
 	if err != nil {
 		return errs.New(errs.SameCode, "cannot get plo id %s while creating sub plo", programLearningOutcomeId, err)
 	} else if plo == nil {
@@ -56,7 +56,7 @@ func (c subProgramLearningOutcomeUsecase) Create(code string, descriptionThai st
 		ProgramLearningOutcomeId: programLearningOutcomeId,
 	}
 
-	err = c.subProgramLearningOutcomeRepo.Create(&splo)
+	err = u.subProgramLearningOutcomeRepo.Create(&splo)
 	if err != nil {
 		return errs.New(errs.ErrCreateSubPLO, "cannot create sub plo", err)
 	}
@@ -80,8 +80,8 @@ func (u subProgramLearningOutcomeUsecase) Update(id string, subProgramLearningOu
 	return nil
 }
 
-func (c subProgramLearningOutcomeUsecase) Delete(id string) error {
-	err := c.subProgramLearningOutcomeRepo.Delete(id)
+func (u subProgramLearningOutcomeUsecase) Delete(id string) error {
+	err := u.subProgramLearningOutcomeRepo.Delete(id)
 	if err != nil {
 		return errs.New(errs.ErrDeleteSubPLO, "cannot delete sub plo", err)
 	}
@@ -89,8 +89,8 @@ func (c subProgramLearningOutcomeUsecase) Delete(id string) error {
 	return nil
 }
 
-func (c subProgramLearningOutcomeUsecase) FilterNonExisted(ids []string) ([]string, error) {
-	existedIds, err := c.subProgramLearningOutcomeRepo.FilterExisted(ids)
+func (u subProgramLearningOutcomeUsecase) FilterNonExisted(ids []string) ([]string, error) {
+	existedIds, err := u.subProgramLearningOutcomeRepo.FilterExisted(ids)
 	if err != nil {
 		return nil, errs.New(errs.ErrQueryStudent, "cannot query sub plo", err)
 	}

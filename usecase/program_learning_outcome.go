@@ -21,8 +21,8 @@ func NewProgramLearningOutcomeUsecase(
 	}
 }
 
-func (c programLearningOutcomeUsecase) GetAll() ([]entity.ProgramLearningOutcome, error) {
-	plos, err := c.programLearningOutcomeRepo.GetAll()
+func (u programLearningOutcomeUsecase) GetAll() ([]entity.ProgramLearningOutcome, error) {
+	plos, err := u.programLearningOutcomeRepo.GetAll()
 	if err != nil {
 		return nil, errs.New(errs.ErrQueryPLO, "cannot get all PLOs", err)
 	}
@@ -30,8 +30,8 @@ func (c programLearningOutcomeUsecase) GetAll() ([]entity.ProgramLearningOutcome
 	return plos, nil
 }
 
-func (c programLearningOutcomeUsecase) GetById(id string) (*entity.ProgramLearningOutcome, error) {
-	plo, err := c.programLearningOutcomeRepo.GetById(id)
+func (u programLearningOutcomeUsecase) GetById(id string) (*entity.ProgramLearningOutcome, error) {
+	plo, err := u.programLearningOutcomeRepo.GetById(id)
 	if err != nil {
 		return nil, errs.New(errs.ErrQueryPLO, "cannot get PLO by id %s", id, err)
 	}
@@ -39,8 +39,8 @@ func (c programLearningOutcomeUsecase) GetById(id string) (*entity.ProgramLearni
 	return plo, nil
 }
 
-func (c programLearningOutcomeUsecase) Create(code string, descriptionThai string, descriptionEng string, programYear int, programmeName string) error {
-	programme, err := c.programmeUseCase.Get(programmeName)
+func (u programLearningOutcomeUsecase) Create(code string, descriptionThai string, descriptionEng string, programYear int, programmeName string) error {
+	programme, err := u.programmeUseCase.Get(programmeName)
 	if err != nil {
 		return errs.New(errs.SameCode, "cannot get programme id %s while creating plo", programmeName, err)
 	} else if programme == nil {
@@ -56,7 +56,7 @@ func (c programLearningOutcomeUsecase) Create(code string, descriptionThai strin
 		ProgrammeId:     programmeName,
 	}
 
-	err = c.programLearningOutcomeRepo.Create(&plo)
+	err = u.programLearningOutcomeRepo.Create(&plo)
 	if err != nil {
 		return errs.New(errs.ErrCreatePLO, "cannot create PLO", err)
 	}
@@ -80,8 +80,8 @@ func (u programLearningOutcomeUsecase) Update(id string, programLearningOutcome 
 	return nil
 }
 
-func (c programLearningOutcomeUsecase) Delete(id string) error {
-	err := c.programLearningOutcomeRepo.Delete(id)
+func (u programLearningOutcomeUsecase) Delete(id string) error {
+	err := u.programLearningOutcomeRepo.Delete(id)
 	if err != nil {
 		return errs.New(errs.ErrDeletePLO, "cannot delete PLO", err)
 	}

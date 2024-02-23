@@ -16,8 +16,8 @@ func NewCourseUsecase(courseRepo entity.CourseRepository, semesterUseCase entity
 	return &courseUsecase{courseRepo: courseRepo, semesterUseCase: semesterUseCase, lecturerUseCase: lecturerUseCase}
 }
 
-func (c courseUsecase) GetAll() ([]entity.Course, error) {
-	courses, err := c.courseRepo.GetAll()
+func (u courseUsecase) GetAll() ([]entity.Course, error) {
+	courses, err := u.courseRepo.GetAll()
 	if err != nil {
 		return nil, errs.New(errs.ErrQueryStudent, "cannot get all courses", err)
 	}
@@ -25,8 +25,8 @@ func (c courseUsecase) GetAll() ([]entity.Course, error) {
 	return courses, nil
 }
 
-func (c courseUsecase) GetById(id string) (*entity.Course, error) {
-	course, err := c.courseRepo.GetById(id)
+func (u courseUsecase) GetById(id string) (*entity.Course, error) {
+	course, err := u.courseRepo.GetById(id)
 	if err != nil {
 		return nil, errs.New(errs.ErrQueryStudent, "cannot get course by id %s", id, err)
 	}
@@ -34,15 +34,15 @@ func (c courseUsecase) GetById(id string) (*entity.Course, error) {
 	return course, nil
 }
 
-func (c courseUsecase) Create(semesterId string, lecturerId string, name string, code string, curriculum string, description string, criteriaGrade entity.CriteriaGrade) error {
-	semester, err := c.semesterUseCase.GetById(semesterId)
+func (u courseUsecase) Create(semesterId string, lecturerId string, name string, code string, curriculum string, description string, criteriaGrade entity.CriteriaGrade) error {
+	semester, err := u.semesterUseCase.GetById(semesterId)
 	if err != nil {
 		return errs.New(errs.SameCode, "cannot get semester id %s while creating course", semesterId, err)
 	} else if semester == nil {
 		return errs.New(errs.ErrSemesterNotFound, "semester id %s not found while creating course", semesterId)
 	}
 
-	lecturer, err := c.lecturerUseCase.GetById(lecturerId)
+	lecturer, err := u.lecturerUseCase.GetById(lecturerId)
 	if err != nil {
 		return errs.New(errs.SameCode, "cannot get lecturer id %s while creating course", lecturerId, err)
 	} else if lecturer == nil {
@@ -64,7 +64,7 @@ func (c courseUsecase) Create(semesterId string, lecturerId string, name string,
 		CriteriaGrade: criteriaGrade,
 	}
 
-	err = c.courseRepo.Create(&course)
+	err = u.courseRepo.Create(&course)
 	if err != nil {
 		return errs.New(errs.ErrCreateCourse, "cannot create course", err)
 	}
@@ -88,8 +88,8 @@ func (u courseUsecase) Update(id string, course *entity.Course) error {
 	return nil
 }
 
-func (c courseUsecase) Delete(id string) error {
-	err := c.courseRepo.Delete(id)
+func (u courseUsecase) Delete(id string) error {
+	err := u.courseRepo.Delete(id)
 	if err != nil {
 		return errs.New(errs.ErrDeleteCourse, "cannot delete course", err)
 	}

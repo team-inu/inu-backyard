@@ -70,8 +70,8 @@ func (u studentUseCase) Update(id string, student *entity.Student) error {
 	return nil
 }
 
-func (c studentUseCase) Delete(id string) error {
-	err := c.studentRepo.Delete(id)
+func (u studentUseCase) Delete(id string) error {
+	err := u.studentRepo.Delete(id)
 	if err != nil {
 		return errs.New(errs.ErrDeleteSubPLO, "cannot delete student", err)
 	}
@@ -79,8 +79,8 @@ func (c studentUseCase) Delete(id string) error {
 	return nil
 }
 
-func (c studentUseCase) FilterNonExisted(studentIds []string) ([]string, error) {
-	existedIds, err := c.studentRepo.FilterExisted(studentIds)
+func (u studentUseCase) FilterNonExisted(studentIds []string) ([]string, error) {
+	existedIds, err := u.studentRepo.FilterExisted(studentIds)
 	if err != nil {
 		return nil, errs.New(errs.ErrQueryStudent, "cannot query students", err)
 	}
