@@ -56,6 +56,10 @@ func (u courseLearningOutcomeUseCase) GetByCourseId(courseId string) ([]entity.C
 }
 
 func (u courseLearningOutcomeUseCase) Create(dto entity.CreateCourseLearningOutcomeDto) error {
+	if len(dto.SubProgramLearningOutcomeIds) == 0 {
+		return errs.New(errs.ErrCreateCLO, "sub program learning outcome must not be empty when creating clo")
+	}
+
 	course, err := u.courseUseCase.GetById(dto.CourseId)
 	if err != nil {
 		return errs.New(errs.SameCode, "cannot get course id %s while creating clo", dto.CourseId, err)
