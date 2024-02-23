@@ -255,7 +255,6 @@ func (f *fiberServer) initController() error {
 	app.Get("/assignments", assignmentController.GetAssignments)
 	app.Get("/assignments/:assignmentId", assignmentController.GetById)
 	app.Post("/assignments", assignmentController.Create)
-	app.Post("/assignments/bulk", assignmentController.CreateMany)
 	app.Patch("/assignments/:assignmentId", assignmentController.Update)
 	app.Delete("/assignments/:assignmentId", assignmentController.Delete)
 

@@ -89,32 +89,6 @@ func (c assignmentController) Create(ctx *fiber.Ctx) error {
 	return response.NewSuccessResponse(ctx, fiber.StatusCreated, nil)
 }
 
-func (c assignmentController) CreateMany(ctx *fiber.Ctx) error {
-	var payload request.CreateBulkAssignmentsPayload
-
-	if ok, err := c.Validator.Validate(&payload, ctx); !ok {
-		return err
-	}
-
-	newAssignments := []entity.Assignment{}
-
-	for _, assignment := range payload.Assignments {
-		newAssignments = append(newAssignments, entity.Assignment{
-			Name:        assignment.Name,
-			Description: assignment.Description,
-			Weight:      *assignment.Weight,
-			// CourseLearningOutcomeId: assignment.CourseLearningOutcomeId,
-		})
-	}
-
-	err := c.AssignmentUseCase.CreateMany(newAssignments)
-	if err != nil {
-		return err
-	}
-
-	return response.NewSuccessResponse(ctx, fiber.StatusCreated, nil)
-}
-
 func (c assignmentController) Update(ctx *fiber.Ctx) error {
 	var payload request.UpdateAssignmentRequestPayload
 
