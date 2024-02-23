@@ -40,5 +40,6 @@ type StudentUseCase interface {
 	CreateMany(student []Student) error
 	Update(id string, student *Student) error
 	Delete(id string) error
+	FilterExisted(studentIds []string) ([]string, error)
 	FilterNonExisted(studentIds []string) ([]string, error)
 }
