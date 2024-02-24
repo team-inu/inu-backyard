@@ -32,7 +32,7 @@ func (r programLearningOutcomeRepositoryGorm) GetSubPLO(id string) (*entity.SubP
 	return &splo, nil
 }
 
-func (r programLearningOutcomeRepositoryGorm) CreateSubPLO(subProgramLearningOutcome *entity.SubProgramLearningOutcome) error {
+func (r programLearningOutcomeRepositoryGorm) CreateSubPLO(subProgramLearningOutcome []entity.SubProgramLearningOutcome) error {
 	err := r.gorm.Create(&subProgramLearningOutcome).Error
 	if err != nil {
 		return fmt.Errorf("cannot create subProgramLearningOutcome: %w", err)

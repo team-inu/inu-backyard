@@ -1,10 +1,14 @@
 package request
 
+type CreateSubProgramLeaningOutcome struct {
+	Code                     string `validate:"required"`
+	DescriptionThai          string `validate:"required"`
+	DescriptionEng           string `validate:"required"`
+	ProgramLearningOutcomeId string ``
+}
+
 type CreateSubProgramLearningOutcomePayload struct {
-	Code                     string `json:"code" validate:"required"`
-	DescriptionThai          string `json:"descriptionThai" validate:"required"`
-	DescriptionEng           string `json:"descriptionEng" validate:"required"`
-	ProgramLearningOutcomeId string `json:"programLearningOutcomeId" validate:"required"`
+	SubProgramLeaningOutcomes []CreateSubProgramLeaningOutcome `validate:"required,dive"`
 }
 
 type UpdateSubProgramLearningOutcomePayload struct {

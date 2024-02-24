@@ -99,8 +99,7 @@ func (c studentController) CreateMany(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	newStudent := []entity.Student{}
-
+	newStudent := make([]entity.Student, 0, len(payload.Students))
 	for _, student := range payload.Students {
 		newStudent = append(newStudent, entity.Student{
 			Id:             student.KmuttId,

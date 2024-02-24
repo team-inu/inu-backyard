@@ -43,10 +43,11 @@ type ProgramLearningOutcomeRepository interface {
 	CreateMany(programLearningOutcome []ProgramLearningOutcome) error
 	Update(id string, programLearningOutcome *ProgramLearningOutcome) error
 	Delete(id string) error
+	FilterExisted(ids []string) ([]string, error)
 
 	GetSubPLO(subPloId string) (*SubProgramLearningOutcome, error)
 	GetAllSubPlo() ([]SubProgramLearningOutcome, error)
-	CreateSubPLO(programLearningOutcome *SubProgramLearningOutcome) error
+	CreateSubPLO(programLearningOutcome []SubProgramLearningOutcome) error
 	UpdateSubPLO(id string, programLearningOutcome *SubProgramLearningOutcome) error
 	DeleteSubPLO(id string) error
 	FilterExistedSubPLO(subPloIds []string) ([]string, error)
@@ -58,10 +59,11 @@ type ProgramLearningOutcomeUseCase interface {
 	Create(dto []CrateProgramLearningOutcomeDto) error
 	Update(id string, programLearningOutcome *ProgramLearningOutcome) error
 	Delete(id string) error
+	FilterNonExisted(ids []string) ([]string, error)
 
 	GetSubPLO(subPloId string) (*SubProgramLearningOutcome, error)
 	GetAllSubPlo() ([]SubProgramLearningOutcome, error)
-	CreateSubPLO(code string, descriptionThai string, descriptionEng string, programLearningOutcomeId string) error
+	CreateSubPLO(dto []CreateSubProgramLearningOutcomeDto) error
 	UpdateSubPLO(id string, programLearningOutcome *SubProgramLearningOutcome) error
 	DeleteSubPLO(id string) error
 	FilterNonExistedSubPLO(subPloIds []string) ([]string, error)
