@@ -42,12 +42,22 @@ func (c programLearningOutcomeController) GetById(ctx *fiber.Ctx) error {
 
 func (c programLearningOutcomeController) Create(ctx *fiber.Ctx) error {
 	var payload request.CreateProgramLearningOutcomePayload
-
 	if ok, err := c.Validator.Validate(&payload, ctx); !ok {
 		return err
 	}
 
-	err := c.programLearningOutcomeUseCase.Create(payload.ProgramLearningOutcomes)
+	plos := []entity.CrateProgramLearningOutcomeDto{}
+	for _, plo := range payload.ProgramLearningOutcomes {
+		plos = append(plos, entity.CrateProgramLearningOutcomeDto{
+			Code:            plo.Code,
+			DescriptionThai: plo.DescriptionThai,
+			DescriptionEng:  plo.DescriptionEng,
+			ProgramYear:     plo.ProgramYear,
+			ProgrammeName:   plo.ProgrammeName,
+		})
+	}
+
+	err := c.programLearningOutcomeUseCase.Create(plos)
 	if err != nil {
 		return err
 	}

@@ -12,11 +12,11 @@ type ProgramLearningOutcome struct {
 }
 
 type CrateProgramLearningOutcomeDto struct {
-	Code            string `validate:"required"`
-	DescriptionThai string `validate:"required"`
-	DescriptionEng  string `validate:"required"`
-	ProgramYear     int    `validate:"required"`
-	ProgrammeName   string `validate:"required"`
+	Code            string
+	DescriptionThai string
+	DescriptionEng  string
+	ProgramYear     int
+	ProgrammeName   string
 }
 
 type ProgramLearningOutcomeRepository interface {

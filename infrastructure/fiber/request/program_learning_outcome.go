@@ -1,9 +1,15 @@
 package request
 
-import "github.com/team-inu/inu-backyard/entity"
+type CrateProgramLearningOutcome struct {
+	Code            string `validate:"required"`
+	DescriptionThai string `validate:"required"`
+	DescriptionEng  string `validate:"required"`
+	ProgramYear     int    `validate:"required"`
+	ProgrammeName   string `validate:"required"`
+}
 
 type CreateProgramLearningOutcomePayload struct {
-	ProgramLearningOutcomes []entity.CrateProgramLearningOutcomeDto `json:"programLearningOutcomes" validate:"required,dive"`
+	ProgramLearningOutcomes []CrateProgramLearningOutcome `json:"programLearningOutcomes" validate:"required,dive"`
 }
 
 type UpdateProgramLearningOutcomePayload struct {
