@@ -244,6 +244,7 @@ func (f *fiberServer) initController() error {
 	app.Get("/lecturers", lecturerController.GetAll)
 	app.Get("/lecturers/:lecturerId", lecturerController.GetById)
 	app.Post("/lecturers", lecturerController.Create)
+	app.Post("/lecturers/bulk", lecturerController.CreateMany)
 	app.Patch("/lecturers/:lecturerId", lecturerController.Update)
 	app.Delete("/lecturers/:lecturerId", lecturerController.Delete)
 
