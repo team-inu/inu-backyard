@@ -1,9 +1,9 @@
 package entity
 
 type Semester struct {
-	Id               string `gorm:"primaryKey;type:char(255)"`
-	Year             int
-	SemesterSequence int
+	Id               string `json:"id" gorm:"primaryKey;type:char(255)"`
+	Year             int    `json:"year"`
+	SemesterSequence int    `json:"semesterSequence"`
 }
 
 type SemesterRepository interface {
