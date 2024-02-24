@@ -4,6 +4,7 @@ import (
 	"github.com/oklog/ulid/v2"
 	"github.com/team-inu/inu-backyard/entity"
 	errs "github.com/team-inu/inu-backyard/entity/error"
+	slice "github.com/team-inu/inu-backyard/internal/utils"
 )
 
 type programLearningOutcomeUseCase struct {
@@ -39,24 +40,33 @@ func (u programLearningOutcomeUseCase) GetById(id string) (*entity.ProgramLearni
 	return plo, nil
 }
 
-func (u programLearningOutcomeUseCase) Create(code string, descriptionThai string, descriptionEng string, programYear int, programmeName string) error {
-	programme, err := u.programmeUseCase.Get(programmeName)
+func (u programLearningOutcomeUseCase) Create(dto []entity.CrateProgramLearningOutcomeDto) error {
+	programmeNames := []string{}
+	for _, plo := range dto {
+		programmeNames = append(programmeNames, plo.ProgrammeName)
+	}
+
+	programmeNames = slice.DeduplicateValue(programmeNames)
+	nonExistedProgrammes, err := u.programmeUseCase.FilterNonExisted(programmeNames)
 	if err != nil {
-		return errs.New(errs.SameCode, "cannot get programme id %s while creating plo", programmeName, err)
-	} else if programme == nil {
-		return errs.New(errs.ErrProgrammeNotFound, "programme id %s not found while creating plo", programmeName)
+		return errs.New(errs.SameCode, "cannot validate existed programmes while creating clo")
+	} else if len(nonExistedProgrammes) > 0 {
+		return errs.New(errs.ErrCreateCLO, "there are non existed programme %v while creating clo", nonExistedProgrammes)
 	}
 
-	plo := entity.ProgramLearningOutcome{
-		Id:              ulid.Make().String(),
-		Code:            code,
-		DescriptionThai: descriptionThai,
-		DescriptionEng:  descriptionEng,
-		ProgramYear:     programYear,
-		ProgrammeId:     programmeName,
+	plos := []entity.ProgramLearningOutcome{}
+	for _, plo := range dto {
+		plos = append(plos, entity.ProgramLearningOutcome{
+			Id:              ulid.Make().String(),
+			Code:            plo.Code,
+			DescriptionThai: plo.DescriptionThai,
+			DescriptionEng:  plo.DescriptionEng,
+			ProgramYear:     plo.ProgramYear,
+			ProgrammeId:     plo.ProgrammeName,
+		})
 	}
 
-	err = u.programLearningOutcomeRepo.Create(&plo)
+	err = u.programLearningOutcomeRepo.CreateMany(plos)
 	if err != nil {
 		return errs.New(errs.ErrCreatePLO, "cannot create PLO", err)
 	}

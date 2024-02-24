@@ -50,6 +50,15 @@ func (r programLearningOutcomeRepositoryGorm) Create(programLearningOutcome *ent
 	return nil
 }
 
+func (r programLearningOutcomeRepositoryGorm) CreateMany(programLearningOutcome []entity.ProgramLearningOutcome) error {
+	err := r.gorm.Create(&programLearningOutcome).Error
+	if err != nil {
+		return fmt.Errorf("cannot create programLearningOutcome: %w", err)
+	}
+
+	return nil
+}
+
 func (r programLearningOutcomeRepositoryGorm) Update(id string, programLearningOutcome *entity.ProgramLearningOutcome) error {
 	err := r.gorm.Model(&entity.ProgramLearningOutcome{}).Where("id = ?", id).Updates(programLearningOutcome).Error
 	if err != nil {

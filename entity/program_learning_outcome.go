@@ -11,10 +11,19 @@ type ProgramLearningOutcome struct {
 	Programme Programme
 }
 
+type CrateProgramLearningOutcomeDto struct {
+	Code            string `validate:"required"`
+	DescriptionThai string `validate:"required"`
+	DescriptionEng  string `validate:"required"`
+	ProgramYear     int    `validate:"required"`
+	ProgrammeName   string `validate:"required"`
+}
+
 type ProgramLearningOutcomeRepository interface {
 	GetAll() ([]ProgramLearningOutcome, error)
 	GetById(id string) (*ProgramLearningOutcome, error)
 	Create(programLearningOutcome *ProgramLearningOutcome) error
+	CreateMany(programLearningOutcome []ProgramLearningOutcome) error
 	Update(id string, programLearningOutcome *ProgramLearningOutcome) error
 	Delete(id string) error
 }
@@ -22,7 +31,7 @@ type ProgramLearningOutcomeRepository interface {
 type ProgramLearningOutcomeUseCase interface {
 	GetAll() ([]ProgramLearningOutcome, error)
 	GetById(id string) (*ProgramLearningOutcome, error)
-	Create(code string, descriptionThai string, descriptionEng string, programYear int, programmeId string) error
+	Create(dto []CrateProgramLearningOutcomeDto) error
 	Update(id string, programLearningOutcome *ProgramLearningOutcome) error
 	Delete(id string) error
 }

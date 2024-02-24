@@ -1,11 +1,9 @@
 package request
 
+import "github.com/team-inu/inu-backyard/entity"
+
 type CreateProgramLearningOutcomePayload struct {
-	Code            string `json:"code" validate:"required"`
-	DescriptionThai string `json:"descriptionThai" validate:"required"`
-	DescriptionEng  string `json:"descriptionEng"`
-	ProgramYear     int    `json:"programYear" validate:"required"`
-	Programme       string `json:"programme" validate:"required"`
+	ProgramLearningOutcomes []entity.CrateProgramLearningOutcomeDto `json:"programLearningOutcomes" validate:"required,dive"`
 }
 
 type UpdateProgramLearningOutcomePayload struct {
