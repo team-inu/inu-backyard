@@ -85,6 +85,25 @@ func (u lecturerUseCase) Create(firstName string, lastName string, email string,
 	return nil
 }
 
+func (u lecturerUseCase) CreateMany(lecturers []entity.Lecturer) error {
+	//encrypt password
+	for i := range lecturers {
+		bcryptPassword, err := bcrypt.GenerateFromPassword([]byte((lecturers)[i].Password), bcrypt.DefaultCost)
+		if err != nil {
+			return errs.New(errs.ErrCreateLecturer, "cannot create lecturer", err)
+		}
+		lecturers[i].Id = ulid.Make().String()
+		(lecturers)[i].Password = string(bcryptPassword)
+	}
+
+	err := u.lecturerRepo.CreateMany(lecturers)
+	if err != nil {
+		return errs.New(errs.ErrCreateLecturer, "cannot create lecturer", err)
+	}
+
+	return nil
+}
+
 func (u lecturerUseCase) Update(id string, lecturer *entity.Lecturer) error {
 	existLecturer, err := u.GetById(id)
 	if err != nil {
