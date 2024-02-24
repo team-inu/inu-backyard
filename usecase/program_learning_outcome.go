@@ -41,7 +41,7 @@ func (u programLearningOutcomeUseCase) GetById(id string) (*entity.ProgramLearni
 }
 
 func (u programLearningOutcomeUseCase) Create(dto []entity.CrateProgramLearningOutcomeDto) error {
-	programmeNames := []string{}
+	programmeNames := make([]string, 0, len(dto))
 	for _, plo := range dto {
 		programmeNames = append(programmeNames, plo.ProgrammeName)
 	}
@@ -54,21 +54,40 @@ func (u programLearningOutcomeUseCase) Create(dto []entity.CrateProgramLearningO
 		return errs.New(errs.ErrCreateCLO, "there are non existed programme %v while creating clo", nonExistedProgrammes)
 	}
 
-	plos := []entity.ProgramLearningOutcome{}
+	plos := make([]entity.ProgramLearningOutcome, 0, len(dto))
+	subPlos := make([]entity.SubProgramLearningOutcome, 0)
+
 	for _, plo := range dto {
+		id := ulid.Make().String()
+
 		plos = append(plos, entity.ProgramLearningOutcome{
-			Id:              ulid.Make().String(),
+			Id:              id,
 			Code:            plo.Code,
 			DescriptionThai: plo.DescriptionThai,
 			DescriptionEng:  plo.DescriptionEng,
 			ProgramYear:     plo.ProgramYear,
 			ProgrammeName:   plo.ProgrammeName,
 		})
+
+		for _, subPlo := range plo.SubProgramLearningOutcomes {
+			subPlos = append(subPlos, entity.SubProgramLearningOutcome{
+				Id:                       ulid.Make().String(),
+				Code:                     subPlo.Code,
+				DescriptionThai:          subPlo.DescriptionThai,
+				DescriptionEng:           subPlo.DescriptionEng,
+				ProgramLearningOutcomeId: id,
+			})
+		}
 	}
 
 	err = u.programLearningOutcomeRepo.CreateMany(plos)
 	if err != nil {
 		return errs.New(errs.ErrCreatePLO, "cannot create PLO", err)
+	}
+
+	err = u.programLearningOutcomeRepo.CreateSubPLO(subPlos)
+	if err != nil {
+		return errs.New(errs.ErrCreatePLO, "cannot create sub plo", err)
 	}
 
 	return nil
@@ -97,4 +116,15 @@ func (u programLearningOutcomeUseCase) Delete(id string) error {
 	}
 
 	return nil
+}
+
+func (u programLearningOutcomeUseCase) FilterNonExisted(ids []string) ([]string, error) {
+	existedIds, err := u.programLearningOutcomeRepo.FilterExisted(ids)
+	if err != nil {
+		return nil, errs.New(errs.ErrQueryPLO, "cannot query plo", err)
+	}
+
+	nonExistedIds := slice.Subtraction(ids, existedIds)
+
+	return nonExistedIds, nil
 }

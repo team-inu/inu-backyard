@@ -42,12 +42,16 @@ func (c subProgramLearningOutcomeController) GetById(ctx *fiber.Ctx) error {
 
 func (c subProgramLearningOutcomeController) Create(ctx *fiber.Ctx) error {
 	var payload request.CreateSubProgramLearningOutcomePayload
-
 	if ok, err := c.Validator.Validate(&payload, ctx); !ok {
 		return err
 	}
 
-	err := c.programLearningOutcomeUseCase.CreateSubPLO(payload.Code, payload.DescriptionThai, payload.DescriptionEng, payload.ProgramLearningOutcomeId)
+	subPlos := make([]entity.CreateSubProgramLearningOutcomeDto, 0, len(payload.SubProgramLeaningOutcomes))
+	for _, subPlo := range payload.SubProgramLeaningOutcomes {
+		subPlos = append(subPlos, entity.CreateSubProgramLearningOutcomeDto(subPlo))
+	}
+
+	err := c.programLearningOutcomeUseCase.CreateSubPLO(subPlos)
 	if err != nil {
 		return err
 	}

@@ -46,14 +46,20 @@ func (c programLearningOutcomeController) Create(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	plos := []entity.CrateProgramLearningOutcomeDto{}
+	plos := make([]entity.CrateProgramLearningOutcomeDto, 0, len(payload.ProgramLearningOutcomes))
 	for _, plo := range payload.ProgramLearningOutcomes {
+		subPlos := make([]entity.CreateSubProgramLearningOutcomeDto, 0, len(payload.ProgramLearningOutcomes))
+		for _, subPlo := range plo.SubProgramLearningOutcomes {
+			subPlos = append(subPlos, entity.CreateSubProgramLearningOutcomeDto(subPlo))
+		}
+
 		plos = append(plos, entity.CrateProgramLearningOutcomeDto{
-			Code:            plo.Code,
-			DescriptionThai: plo.DescriptionThai,
-			DescriptionEng:  plo.DescriptionEng,
-			ProgramYear:     plo.ProgramYear,
-			ProgrammeName:   plo.ProgrammeName,
+			Code:                       plo.Code,
+			DescriptionThai:            plo.DescriptionThai,
+			DescriptionEng:             plo.DescriptionEng,
+			ProgramYear:                plo.ProgramYear,
+			ProgrammeName:              plo.ProgrammeName,
+			SubProgramLearningOutcomes: subPlos,
 		})
 	}
 

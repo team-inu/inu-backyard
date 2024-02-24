@@ -77,3 +77,14 @@ func (r programLearningOutcomeRepositoryGorm) Delete(id string) error {
 
 	return nil
 }
+
+func (r programLearningOutcomeRepositoryGorm) FilterExisted(ids []string) ([]string, error) {
+	var existedIds []string
+
+	err := r.gorm.Raw("SELECT id FROM `program_learning_outcome` WHERE id in ?", ids).Scan(&existedIds).Error
+	if err != nil {
+		return nil, fmt.Errorf("cannot query program_leaning_outcome: %w", err)
+	}
+
+	return existedIds, nil
+}
