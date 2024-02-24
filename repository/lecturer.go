@@ -91,6 +91,16 @@ func (r lecturerRepositoryGorm) Create(lecturer *entity.Lecturer) error {
 	return nil
 }
 
+func (r lecturerRepositoryGorm) CreateMany(lecturers []entity.Lecturer) error {
+	err := r.gorm.Create(&lecturers).Error
+	fmt.Println(err)
+	if err != nil {
+		return fmt.Errorf("cannot create lecturers: %w", err)
+	}
+
+	return nil
+}
+
 func (r lecturerRepositoryGorm) Update(id string, lecturer *entity.Lecturer) error {
 	err := r.gorm.Model(&entity.Lecturer{}).Where("id = ?", id).Updates(lecturer).Error
 	if err != nil {
