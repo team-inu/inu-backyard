@@ -57,6 +57,34 @@ func (c lecturerController) Create(ctx *fiber.Ctx) error {
 	return response.NewSuccessResponse(ctx, fiber.StatusCreated, nil)
 }
 
+func (c lecturerController) CreateMany(ctx *fiber.Ctx) error {
+	var payload request.CreateBulkLecturerPayload
+
+	if ok, err := c.Validator.Validate(&payload, ctx); !ok {
+		return err
+	}
+
+	newLectuers := make([]entity.Lecturer, 0, len(payload.Lecturers))
+
+	for _, lecturer := range payload.Lecturers {
+		newLectuers = append(newLectuers, entity.Lecturer{
+			FirstName: lecturer.FirstName,
+			LastName:  lecturer.LastName,
+			Email:     lecturer.Email,
+			Role:      lecturer.Role,
+			Password:  lecturer.Password,
+		})
+	}
+
+	err := c.lecturerUseCase.CreateMany(newLectuers)
+
+	if err != nil {
+		return err
+	}
+
+	return response.NewSuccessResponse(ctx, fiber.StatusCreated, nil)
+}
+
 func (c lecturerController) Update(ctx *fiber.Ctx) error {
 	var payload request.UpdateLecturerPayload
 
