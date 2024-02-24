@@ -62,7 +62,7 @@ func (u programLearningOutcomeUseCase) Create(dto []entity.CrateProgramLearningO
 			DescriptionThai: plo.DescriptionThai,
 			DescriptionEng:  plo.DescriptionEng,
 			ProgramYear:     plo.ProgramYear,
-			ProgrammeId:     plo.ProgrammeName,
+			ProgrammeName:   plo.ProgrammeName,
 		})
 	}
 

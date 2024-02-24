@@ -5,7 +5,7 @@ type Student struct {
 	FirstName      string  `json:"firstName"`
 	LastName       string  `json:"lastName"`
 	Email          string  `json:"email"`
-	ProgrammeId    string  `json:"programmeId"`
+	ProgrammeName  string  `json:"programmeName"`
 	DepartmentName string  `json:"departmentName"`
 	GPAX           float64 `json:"GPAX"`
 	MathGPA        float64 `json:"mathGPA"`

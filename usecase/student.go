@@ -67,7 +67,7 @@ func (u studentUseCase) CreateMany(students []entity.Student) error {
 	studentIds := []string{}
 	for _, student := range students {
 		departmentNames = append(departmentNames, student.DepartmentName)
-		programmeNames = append(programmeNames, student.ProgrammeId)
+		programmeNames = append(programmeNames, student.ProgrammeName)
 		studentIds = append(studentIds, student.Id)
 	}
 

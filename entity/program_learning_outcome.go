@@ -14,10 +14,10 @@ type ProgramLearningOutcome struct {
 	DescriptionThai string `json:"descriptionThai"`
 	DescriptionEng  string `json:"descriptionEng"`
 	ProgramYear     int    `json:"programYear"`
-	ProgrammeId     string `json:"programmeId"`
+	ProgrammeName   string `json:"programmeName"`
 
 	SubProgramLearningOutcomes []SubProgramLearningOutcome
-	Programme                  Programme
+	Programme                  Programme `json:"-"`
 }
 
 type CreateSubProgramLearningOutcomeDto struct {

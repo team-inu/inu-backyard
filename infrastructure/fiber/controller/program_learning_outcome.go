@@ -79,7 +79,7 @@ func (c programLearningOutcomeController) Update(ctx *fiber.Ctx) error {
 		DescriptionThai: payload.DescriptionThai,
 		DescriptionEng:  payload.DescriptionEng,
 		ProgramYear:     payload.ProgramYear,
-		ProgrammeId:     payload.Programme,
+		ProgrammeName:   payload.Programme,
 	})
 
 	if err != nil {

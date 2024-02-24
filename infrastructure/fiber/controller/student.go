@@ -49,7 +49,7 @@ func (c studentController) GetStudents(ctx *fiber.Ctx) error {
 	}
 
 	student, err := c.studentUseCase.GetByParams(&entity.Student{
-		ProgrammeId:    payload.ProgrammeId,
+		ProgrammeName:  payload.ProgrammeName,
 		DepartmentName: payload.DepartmentName,
 		Year:           payload.Year,
 	}, -1, -1)
@@ -73,7 +73,7 @@ func (c studentController) Create(ctx *fiber.Ctx) error {
 		FirstName:      payload.FirstName,
 		LastName:       payload.LastName,
 		Email:          payload.Email,
-		ProgrammeId:    payload.ProgrammeId,
+		ProgrammeName:  payload.ProgrammeName,
 		DepartmentName: payload.DepartmentName,
 		GPAX:           payload.GPAX,
 		MathGPA:        payload.MathGPA,
@@ -106,7 +106,7 @@ func (c studentController) CreateMany(ctx *fiber.Ctx) error {
 			Id:             student.KmuttId,
 			FirstName:      student.FirstName,
 			LastName:       student.LastName,
-			ProgrammeId:    student.ProgrammeId,
+			ProgrammeName:  student.ProgrammeName,
 			DepartmentName: student.DepartmentName,
 			GPAX:           student.GPAX,
 			MathGPA:        student.MathGPA,
@@ -141,7 +141,7 @@ func (c studentController) Update(ctx *fiber.Ctx) error {
 		Id:             payload.KmuttId,
 		FirstName:      payload.FirstName,
 		LastName:       payload.LastName,
-		ProgrammeId:    payload.ProgrammeId,
+		ProgrammeName:  payload.ProgrammeName,
 		DepartmentName: payload.DepartmentName,
 		GPAX:           payload.GPAX,
 		MathGPA:        payload.MathGPA,

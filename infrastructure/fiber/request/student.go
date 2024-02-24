@@ -15,13 +15,13 @@ type CreateStudentPayload struct {
 	Admission string  `json:"admission"`
 	Remark    string  `json:"remark"`
 
-	ProgrammeId    string `json:"programmeId" validate:"required"`
+	ProgrammeName  string `json:"programmeName" validate:"required"`
 	DepartmentName string `json:"departmentName" validate:"required"`
 }
 
 type GetStudentsByParamsPayload struct {
 	Year           string `json:"year"`
-	ProgrammeId    string `json:"programmeId"`
+	ProgrammeName  string `json:"programmeName"`
 	DepartmentName string `json:"departmentId"`
 }
 
@@ -43,6 +43,6 @@ type UpdateStudentPayload struct {
 	Admission string  `json:"admission"`
 	Remark    string  `json:"remark"`
 
-	ProgrammeId    string `json:"programmeId"`
+	ProgrammeName  string `json:"programmeName"`
 	DepartmentName string `json:"departmentName"`
 }
