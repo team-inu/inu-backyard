@@ -28,7 +28,7 @@ func (c courseController) GetAll(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	return ctx.JSON(courses)
+	return response.NewSuccessResponse(ctx, fiber.StatusCreated, courses)
 }
 
 func (c courseController) GetById(ctx *fiber.Ctx) error {

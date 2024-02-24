@@ -26,7 +26,7 @@ func (c programmeController) GetAll(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	return ctx.JSON(programmes)
+	return response.NewSuccessResponse(ctx, fiber.StatusCreated, programmes)
 }
 
 func (c programmeController) GetByName(ctx *fiber.Ctx) error {
