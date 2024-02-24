@@ -8,23 +8,23 @@ import (
 )
 
 type courseLearningOutcomeUseCase struct {
-	courseLearningOutcomeRepo        entity.CourseLearningOutcomeRepository
-	courseUseCase                    entity.CourseUseCase
-	programOutcomeUseCase            entity.ProgramOutcomeUseCase
-	subProgramLearningOutcomeUseCase entity.SubProgramLearningOutcomeUseCase
+	courseLearningOutcomeRepo     entity.CourseLearningOutcomeRepository
+	courseUseCase                 entity.CourseUseCase
+	programOutcomeUseCase         entity.ProgramOutcomeUseCase
+	programLearningOutcomeUseCase entity.ProgramLearningOutcomeUseCase
 }
 
 func NewCourseLearningOutcomeUseCase(
 	courseLearningOutcomeRepo entity.CourseLearningOutcomeRepository,
 	courseUseCase entity.CourseUseCase,
 	programOutcomeUseCase entity.ProgramOutcomeUseCase,
-	subProgramLearningOutcomeUseCase entity.SubProgramLearningOutcomeUseCase,
+	programLearningOutcomeUseCase entity.ProgramLearningOutcomeUseCase,
 ) entity.CourseLearningOutcomeUseCase {
 	return &courseLearningOutcomeUseCase{
-		courseLearningOutcomeRepo:        courseLearningOutcomeRepo,
-		courseUseCase:                    courseUseCase,
-		programOutcomeUseCase:            programOutcomeUseCase,
-		subProgramLearningOutcomeUseCase: subProgramLearningOutcomeUseCase,
+		courseLearningOutcomeRepo:     courseLearningOutcomeRepo,
+		courseUseCase:                 courseUseCase,
+		programOutcomeUseCase:         programOutcomeUseCase,
+		programLearningOutcomeUseCase: programLearningOutcomeUseCase,
 	}
 }
 
@@ -74,7 +74,7 @@ func (u courseLearningOutcomeUseCase) Create(dto entity.CreateCourseLearningOutc
 		return errs.New(errs.ErrCourseNotFound, "program outcome id %s not found while creating clo", dto.ProgramOutcomeId)
 	}
 
-	nonExistedSubPloIds, err := u.subProgramLearningOutcomeUseCase.FilterNonExisted(dto.SubProgramLearningOutcomeIds)
+	nonExistedSubPloIds, err := u.programLearningOutcomeUseCase.FilterNonExistedSubPLO(dto.SubProgramLearningOutcomeIds)
 	if err != nil {
 		return errs.New(errs.SameCode, "cannot get non existed sub plo ids while creating clo")
 	} else if len(nonExistedSubPloIds) != 0 {

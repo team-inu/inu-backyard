@@ -22,40 +22,38 @@ type fiberServer struct {
 
 	gorm *gorm.DB
 
-	studentRepository                   entity.StudentRepository
-	courseRepository                    entity.CourseRepository
-	courseLearningOutcomeRepository     entity.CourseLearningOutcomeRepository
-	programLearningOutcomeRepository    entity.ProgramLearningOutcomeRepository
-	subProgramLearningOutcomeRepository entity.SubProgramLearningOutcomeRepository
-	programOutcomeRepository            entity.ProgramOutcomeRepository
-	facultyRepository                   entity.FacultyRepository
-	departmentRepository                entity.DepartmentRepository
-	scoreRepository                     entity.ScoreRepository
-	lecturerRepository                  entity.LecturerRepository
-	assignmentRepository                entity.AssignmentRepository
-	programmeRepository                 entity.ProgrammeRepository
-	semesterRepository                  entity.SemesterRepository
-	enrollmentRepository                entity.EnrollmentRepository
-	gradeRepository                     entity.GradeRepository
-	sessionRepository                   entity.SessionRepository
+	studentRepository                entity.StudentRepository
+	courseRepository                 entity.CourseRepository
+	courseLearningOutcomeRepository  entity.CourseLearningOutcomeRepository
+	programLearningOutcomeRepository entity.ProgramLearningOutcomeRepository
+	programOutcomeRepository         entity.ProgramOutcomeRepository
+	facultyRepository                entity.FacultyRepository
+	departmentRepository             entity.DepartmentRepository
+	scoreRepository                  entity.ScoreRepository
+	lecturerRepository               entity.LecturerRepository
+	assignmentRepository             entity.AssignmentRepository
+	programmeRepository              entity.ProgrammeRepository
+	semesterRepository               entity.SemesterRepository
+	enrollmentRepository             entity.EnrollmentRepository
+	gradeRepository                  entity.GradeRepository
+	sessionRepository                entity.SessionRepository
 
-	studentUseCase                   entity.StudentUseCase
-	courseUseCase                    entity.CourseUseCase
-	courseLearningOutcomeUseCase     entity.CourseLearningOutcomeUseCase
-	programLearningOutcomeUseCase    entity.ProgramLearningOutcomeUseCase
-	subProgramLearningOutcomeUseCase entity.SubProgramLearningOutcomeUseCase
-	programOutcomeUseCase            entity.ProgramOutcomeUseCase
-	facultyUseCase                   entity.FacultyUseCase
-	departmentUseCase                entity.DepartmentUseCase
-	scoreUseCase                     entity.ScoreUseCase
-	lecturerUseCase                  entity.LecturerUseCase
-	assignmentUseCase                entity.AssignmentUseCase
-	programmeUseCase                 entity.ProgrammeUseCase
-	semesterUseCase                  entity.SemesterUseCase
-	enrollmentUseCase                entity.EnrollmentUseCase
-	gradeUseCase                     entity.GradeUseCase
-	sessionUseCase                   entity.SessionUseCase
-	authUseCase                      entity.AuthUseCase
+	studentUseCase                entity.StudentUseCase
+	courseUseCase                 entity.CourseUseCase
+	courseLearningOutcomeUseCase  entity.CourseLearningOutcomeUseCase
+	programLearningOutcomeUseCase entity.ProgramLearningOutcomeUseCase
+	programOutcomeUseCase         entity.ProgramOutcomeUseCase
+	facultyUseCase                entity.FacultyUseCase
+	departmentUseCase             entity.DepartmentUseCase
+	scoreUseCase                  entity.ScoreUseCase
+	lecturerUseCase               entity.LecturerUseCase
+	assignmentUseCase             entity.AssignmentUseCase
+	programmeUseCase              entity.ProgrammeUseCase
+	semesterUseCase               entity.SemesterUseCase
+	enrollmentUseCase             entity.EnrollmentUseCase
+	gradeUseCase                  entity.GradeUseCase
+	sessionUseCase                entity.SessionUseCase
+	authUseCase                   entity.AuthUseCase
 }
 
 func NewFiberServer() *fiberServer {
@@ -90,7 +88,6 @@ func (f *fiberServer) initRepository() (err error) {
 	f.courseRepository = repository.NewCourseRepositoryGorm(f.gorm)
 	f.courseLearningOutcomeRepository = repository.NewCourseLearningOutcomeRepositoryGorm(f.gorm)
 	f.programLearningOutcomeRepository = repository.NewProgramLearningOutcomeRepositoryGorm(f.gorm)
-	f.subProgramLearningOutcomeRepository = repository.NewSubProgramLearningOutcomeRepositoryGorm(f.gorm)
 	f.programOutcomeRepository = repository.NewProgramOutcomeRepositoryGorm(f.gorm)
 	f.facultyRepository = repository.NewFacultyRepositoryGorm(f.gorm)
 	f.departmentRepository = repository.NewDepartmentRepositoryGorm(f.gorm)
@@ -112,7 +109,6 @@ func (f *fiberServer) initUseCase() {
 	departmentUseCase := usecase.NewDepartmentUseCase(f.departmentRepository)
 	studentUseCase := usecase.NewStudentUseCase(f.studentRepository, departmentUseCase, programmeUseCase)
 	programLearningOutcomeUseCase := usecase.NewProgramLearningOutcomeUseCase(f.programLearningOutcomeRepository, programmeUseCase)
-	subProgramLearningOutcomeUseCase := usecase.NewSubProgramLearningOutcomeUseCase(f.subProgramLearningOutcomeRepository, programLearningOutcomeUseCase)
 	lecturerUseCase := usecase.NewLecturerUseCase(f.lecturerRepository)
 	semesterUseCase := usecase.NewSemesterUseCase(f.semesterRepository)
 	courseUseCase := usecase.NewCourseUseCase(f.courseRepository, semesterUseCase, lecturerUseCase)
@@ -121,7 +117,7 @@ func (f *fiberServer) initUseCase() {
 	sessionUseCase := usecase.NewSessionUseCase(f.sessionRepository, f.config.Client.Auth)
 	authUseCase := usecase.NewAuthUseCase(sessionUseCase, lecturerUseCase)
 	programOutcomeUseCase := usecase.NewProgramOutcomeUseCase(f.programOutcomeRepository, semesterUseCase)
-	courseLearningOutcomeUseCase := usecase.NewCourseLearningOutcomeUseCase(f.courseLearningOutcomeRepository, courseUseCase, programOutcomeUseCase, subProgramLearningOutcomeUseCase)
+	courseLearningOutcomeUseCase := usecase.NewCourseLearningOutcomeUseCase(f.courseLearningOutcomeRepository, courseUseCase, programOutcomeUseCase, programLearningOutcomeUseCase)
 	assignmentUseCase := usecase.NewAssignmentUseCase(f.assignmentRepository, courseLearningOutcomeUseCase)
 	scoreUseCase := usecase.NewScoreUseCase(f.scoreRepository, enrollmentUseCase, assignmentUseCase, lecturerUseCase)
 
@@ -141,7 +137,6 @@ func (f *fiberServer) initUseCase() {
 	f.semesterUseCase = semesterUseCase
 	f.sessionUseCase = sessionUseCase
 	f.studentUseCase = studentUseCase
-	f.subProgramLearningOutcomeUseCase = subProgramLearningOutcomeUseCase
 }
 
 func (f *fiberServer) initController() error {
@@ -169,7 +164,7 @@ func (f *fiberServer) initController() error {
 	courseController := controller.NewCourseController(validator, f.courseUseCase)
 	courseLearningOutcomeController := controller.NewCourseLearningOutcomeController(validator, f.courseLearningOutcomeUseCase)
 	programLearningOutcomeController := controller.NewProgramLearningOutcomeController(validator, f.programLearningOutcomeUseCase)
-	subProgramLearningOutcomeController := controller.NewSubProgramLearningOutcomeController(validator, f.subProgramLearningOutcomeUseCase)
+	subProgramLearningOutcomeController := controller.NewSubProgramLearningOutcomeController(validator, f.programLearningOutcomeUseCase)
 	programOutcomeController := controller.NewProgramOutcomeController(validator, f.programOutcomeUseCase)
 	facultyController := controller.NewFacultyController(validator, f.facultyUseCase)
 	departmentController := controller.NewDepartmentController(validator, f.departmentUseCase)

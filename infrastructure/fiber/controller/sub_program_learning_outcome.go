@@ -9,19 +9,19 @@ import (
 )
 
 type subProgramLearningOutcomeController struct {
-	subProgramLearningOutcomeUseCase entity.SubProgramLearningOutcomeUseCase
-	Validator                        validator.PayloadValidator
+	programLearningOutcomeUseCase entity.ProgramLearningOutcomeUseCase
+	Validator                     validator.PayloadValidator
 }
 
-func NewSubProgramLearningOutcomeController(validator validator.PayloadValidator, subProgramLearningOutcomeUseCase entity.SubProgramLearningOutcomeUseCase) *subProgramLearningOutcomeController {
+func NewSubProgramLearningOutcomeController(validator validator.PayloadValidator, programLearningOutcomeUseCase entity.ProgramLearningOutcomeUseCase) *subProgramLearningOutcomeController {
 	return &subProgramLearningOutcomeController{
-		subProgramLearningOutcomeUseCase: subProgramLearningOutcomeUseCase,
-		Validator:                        validator,
+		programLearningOutcomeUseCase: programLearningOutcomeUseCase,
+		Validator:                     validator,
 	}
 }
 
 func (c subProgramLearningOutcomeController) GetAll(ctx *fiber.Ctx) error {
-	splos, err := c.subProgramLearningOutcomeUseCase.GetAll()
+	splos, err := c.programLearningOutcomeUseCase.GetAllSubPlo()
 	if err != nil {
 		return err
 	}
@@ -32,7 +32,7 @@ func (c subProgramLearningOutcomeController) GetAll(ctx *fiber.Ctx) error {
 func (c subProgramLearningOutcomeController) GetById(ctx *fiber.Ctx) error {
 	sploId := ctx.Params("sploId")
 
-	splo, err := c.subProgramLearningOutcomeUseCase.GetById(sploId)
+	splo, err := c.programLearningOutcomeUseCase.GetSubPLO(sploId)
 	if err != nil {
 		return err
 	}
@@ -47,7 +47,7 @@ func (c subProgramLearningOutcomeController) Create(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	err := c.subProgramLearningOutcomeUseCase.Create(payload.Code, payload.DescriptionThai, payload.DescriptionEng, payload.ProgramLearningOutcomeId)
+	err := c.programLearningOutcomeUseCase.CreateSubPLO(payload.Code, payload.DescriptionThai, payload.DescriptionEng, payload.ProgramLearningOutcomeId)
 	if err != nil {
 		return err
 	}
@@ -64,7 +64,7 @@ func (c subProgramLearningOutcomeController) Update(ctx *fiber.Ctx) error {
 
 	id := ctx.Params("sploId")
 
-	err := c.subProgramLearningOutcomeUseCase.Update(id, &entity.SubProgramLearningOutcome{
+	err := c.programLearningOutcomeUseCase.UpdateSubPLO(id, &entity.SubProgramLearningOutcome{
 		Code:                     payload.Code,
 		DescriptionThai:          payload.DescriptionThai,
 		DescriptionEng:           payload.DescriptionEng,
@@ -81,12 +81,7 @@ func (c subProgramLearningOutcomeController) Update(ctx *fiber.Ctx) error {
 func (c subProgramLearningOutcomeController) Delete(ctx *fiber.Ctx) error {
 	sploId := ctx.Params("sploId")
 
-	_, err := c.subProgramLearningOutcomeUseCase.GetById(sploId)
-	if err != nil {
-		return err
-	}
-
-	err = c.subProgramLearningOutcomeUseCase.Delete(sploId)
+	err := c.programLearningOutcomeUseCase.DeleteSubPLO(sploId)
 	if err != nil {
 		return err
 	}
