@@ -21,8 +21,11 @@ type Course struct {
 	Code        string `json:"code"`
 	Curriculum  string `json:"curriculum"`
 	Description string `json:"description"`
-	SemesterId  string `json:"semester_id"`
-	LecturerId  string `json:"lecturer_id"`
+	// TODO: Add academic year and graduated year
+	// AcademicYear  string `json:"academicYear"`
+	// GraduatedYear string `json:"graduatedYear"`
+	SemesterId string `json:"semesterId"`
+	LecturerId string `json:"lecturerId"`
 	CriteriaGrade
 
 	Semester Semester
