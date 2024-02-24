@@ -16,6 +16,7 @@ type LecturerRepository interface {
 	GetByEmail(email string) (*Lecturer, error)
 	GetBySessionId(sessionId string) (*Lecturer, error)
 	Create(lecturer *Lecturer) error
+	CreateMany(lecturers []Lecturer) error
 	Update(id string, lecturer *Lecturer) error
 	Delete(id string) error
 }
@@ -26,6 +27,7 @@ type LecturerUseCase interface {
 	GetByParams(params *Lecturer, limit int, offset int) ([]Lecturer, error)
 	GetByEmail(email string) (*Lecturer, error)
 	Create(name string, firstName string, lastName string, password string) error
+	CreateMany(lecturers []Lecturer) error
 	Update(id string, lecturer *Lecturer) error
 	Delete(id string) error
 	GetBySessionId(sessionId string) (*Lecturer, error)
