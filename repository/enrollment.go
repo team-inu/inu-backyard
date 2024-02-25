@@ -18,7 +18,13 @@ func NewEnrollmentRepositoryGorm(gorm *gorm.DB) entity.EnrollmentRepository {
 func (r enrollmentRepositoryGorm) GetAll() ([]entity.Enrollment, error) {
 	var enrollments []entity.Enrollment
 
-	err := r.gorm.Find(&enrollments).Error
+	err := r.gorm.
+		Model(&enrollments).
+		Select("enrollment.*, student.first_name, student.last_name, student.email").
+		Joins("LEFT JOIN student on student.id = enrollment.student_id").
+		Scan(&enrollments).
+		Error
+
 	if err == gorm.ErrRecordNotFound {
 		return nil, nil
 	} else if err != nil {
@@ -31,7 +37,12 @@ func (r enrollmentRepositoryGorm) GetAll() ([]entity.Enrollment, error) {
 func (r enrollmentRepositoryGorm) GetById(id string) (*entity.Enrollment, error) {
 	var enrollment *entity.Enrollment
 
-	err := r.gorm.Where("id = ?", id).First(&enrollment).Error
+	err := r.gorm.
+		Select("enrollment.*, student.first_name, student.last_name, student.email").
+		Joins("LEFT JOIN student on student.id = enrollment.student_id").
+		Where("enrollment.id = ?", id).
+		First(&enrollment).
+		Error
 
 	if err == gorm.ErrRecordNotFound {
 		return nil, nil
