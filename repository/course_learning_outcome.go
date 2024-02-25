@@ -17,7 +17,7 @@ func NewCourseLearningOutcomeRepositoryGorm(gorm *gorm.DB) entity.CourseLearning
 
 func (r courseLearningOutcomeRepositoryGorm) GetAll() ([]entity.CourseLearningOutcome, error) {
 	var clos []entity.CourseLearningOutcome
-	err := r.gorm.Preload("SubProgramLearningOutcome").Preload("SubProgramLearningOutcome.ProgramLearningOutcome").Preload("ProgramOutcome").Find(&clos).Error
+	err := r.gorm.Find(&clos).Error
 
 	if err == gorm.ErrRecordNotFound {
 		return nil, nil
@@ -30,7 +30,7 @@ func (r courseLearningOutcomeRepositoryGorm) GetAll() ([]entity.CourseLearningOu
 
 func (r courseLearningOutcomeRepositoryGorm) GetById(id string) (*entity.CourseLearningOutcome, error) {
 	var clo entity.CourseLearningOutcome
-	err := r.gorm.Preload("SubProgramLearningOutcome").Preload("SubProgramLearningOutcome.ProgramLearningOutcome").Preload("ProgramOutcome").Where("id = ?", id).First(&clo).Error
+	err := r.gorm.Preload("SubProgramLearningOutcomes").Where("id = ?", id).First(&clo).Error
 
 	if err == gorm.ErrRecordNotFound {
 		return nil, nil
