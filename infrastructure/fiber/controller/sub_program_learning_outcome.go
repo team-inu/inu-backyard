@@ -46,8 +46,8 @@ func (c subProgramLearningOutcomeController) Create(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	subPlos := make([]entity.CreateSubProgramLearningOutcomeDto, 0, len(payload.SubProgramLeaningOutcomes))
-	for _, subPlo := range payload.SubProgramLeaningOutcomes {
+	subPlos := make([]entity.CreateSubProgramLearningOutcomeDto, 0, len(payload.SubProgramLearningOutcomes))
+	for _, subPlo := range payload.SubProgramLearningOutcomes {
 		subPlos = append(subPlos, entity.CreateSubProgramLearningOutcomeDto(subPlo))
 	}
 
