@@ -50,6 +50,15 @@ func (r programOutcomeRepositoryGorm) Create(programOutcome *entity.ProgramOutco
 	return nil
 }
 
+func (r programOutcomeRepositoryGorm) CreateMany(programOutcome []entity.ProgramOutcome) error {
+	err := r.gorm.Create(&programOutcome).Error
+	if err != nil {
+		return fmt.Errorf("cannot create programOutcome: %w", err)
+	}
+
+	return nil
+}
+
 func (r programOutcomeRepositoryGorm) Update(id string, programOutcome *entity.ProgramOutcome) error {
 	err := r.gorm.Model(&entity.ProgramOutcome{}).Where("id = ?", id).Updates(programOutcome).Error
 	if err != nil {

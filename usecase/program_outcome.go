@@ -36,15 +36,19 @@ func (u programOutcomeUseCase) GetById(id string) (*entity.ProgramOutcome, error
 	return po, nil
 }
 
-func (u programOutcomeUseCase) Create(code string, name string, description string) error {
-	po := entity.ProgramOutcome{
-		Id:          ulid.Make().String(),
-		Code:        code,
-		Name:        name,
-		Description: description,
-	}
+func (u programOutcomeUseCase) Create(dto []entity.ProgramOutcome) error {
+	pos := make([]entity.ProgramOutcome, 0, len(dto))
+	for _, po := range dto {
+		id := ulid.Make().String()
 
-	err := u.programOutcomeRepo.Create(&po)
+		pos = append(pos, entity.ProgramOutcome{
+			Id:          id,
+			Code:        po.Code,
+			Name:        po.Name,
+			Description: po.Description,
+		})
+	}
+	err := u.programOutcomeRepo.CreateMany(pos)
 	if err != nil {
 		return errs.New(errs.ErrCreatePO, "cannot create PO", err)
 	}
