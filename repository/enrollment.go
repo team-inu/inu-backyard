@@ -35,13 +35,13 @@ func (r enrollmentRepositoryGorm) GetAll() ([]entity.Enrollment, error) {
 }
 
 func (r enrollmentRepositoryGorm) GetById(id string) (*entity.Enrollment, error) {
-	var enrollment *entity.Enrollment
+	var enrollments *entity.Enrollment
 
 	err := r.gorm.
+		Model(&enrollments).
 		Select("enrollment.*, student.first_name, student.last_name, student.email").
 		Joins("LEFT JOIN student on student.id = enrollment.student_id").
-		Where("enrollment.id = ?", id).
-		First(&enrollment).
+		Scan(&enrollments).
 		Error
 
 	if err == gorm.ErrRecordNotFound {
@@ -50,7 +50,28 @@ func (r enrollmentRepositoryGorm) GetById(id string) (*entity.Enrollment, error)
 		return nil, fmt.Errorf("cannot query to get enrollment by id: %w", err)
 	}
 
-	return enrollment, nil
+	return enrollments, nil
+}
+
+func (r enrollmentRepositoryGorm) GetByCourseId(courseId string) ([]entity.Enrollment, error) {
+	var enrollments []entity.Enrollment
+	fmt.Println(courseId)
+	err := r.gorm.
+		Model(&enrollments).
+		Select("enrollment.*, student.first_name, student.last_name, student.email").
+		Joins("LEFT JOIN student on student.id = enrollment.student_id").
+		Where("enrollment.course_id = ?", courseId).
+		Scan(&enrollments).
+		Error
+
+	fmt.Println(err)
+	if err == gorm.ErrRecordNotFound {
+		return nil, nil
+	} else if err != nil {
+		return nil, fmt.Errorf("cannot query to get enrollment by id: %w", err)
+	}
+
+	return enrollments, nil
 }
 
 func (r enrollmentRepositoryGorm) CreateMany(enrollments []entity.Enrollment) error {

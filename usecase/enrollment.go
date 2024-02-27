@@ -39,6 +39,15 @@ func (u enrollmentUseCase) GetById(id string) (*entity.Enrollment, error) {
 	return enrollment, nil
 }
 
+func (u enrollmentUseCase) GetByCourseId(courseId string) ([]entity.Enrollment, error) {
+	enrollment, err := u.enrollmentRepo.GetByCourseId(courseId)
+	if err != nil {
+		return nil, errs.New(errs.ErrQueryEnrollment, "cannot get enrollment by course id %s", courseId, err)
+	}
+
+	return enrollment, nil
+}
+
 func (u enrollmentUseCase) CreateMany(courseId string, status entity.EnrollmentStatus, studentIds []string) error {
 	course, err := u.courseUseCase.GetById(courseId)
 	if err != nil {

@@ -23,6 +23,7 @@ type Enrollment struct {
 type EnrollmentRepository interface {
 	GetAll() ([]Enrollment, error)
 	GetById(id string) (*Enrollment, error)
+	GetByCourseId(courseId string) ([]Enrollment, error)
 	Create(enrollment *Enrollment) error
 	CreateMany(enrollments []Enrollment) error
 	Update(id string, enrollment *Enrollment) error
@@ -33,6 +34,7 @@ type EnrollmentRepository interface {
 type EnrollmentUseCase interface {
 	GetAll() ([]Enrollment, error)
 	GetById(id string) (*Enrollment, error)
+	GetByCourseId(courseId string) ([]Enrollment, error)
 	CreateMany(courseId string, status EnrollmentStatus, studentIds []string) error
 	Update(id string, enrollment *Enrollment) error
 	Delete(id string) error

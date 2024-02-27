@@ -40,6 +40,18 @@ func (c enrollmentController) GetById(ctx *fiber.Ctx) error {
 	return ctx.JSON(enrollment)
 }
 
+func (c enrollmentController) GetByCourseId(ctx *fiber.Ctx) error {
+	enrollmentId := ctx.Params("courseId")
+
+	enrollments, err := c.EnrollmentUseCase.GetByCourseId(enrollmentId)
+
+	if err != nil {
+		return err
+	}
+
+	return ctx.JSON(enrollments)
+}
+
 func (c enrollmentController) Create(ctx *fiber.Ctx) error {
 	var payload request.CreateEnrollmentsPayload
 
