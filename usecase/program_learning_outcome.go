@@ -46,7 +46,7 @@ func (u programLearningOutcomeUseCase) Create(dto []entity.CrateProgramLearningO
 		programmeNames = append(programmeNames, plo.ProgrammeName)
 	}
 
-	programmeNames = slice.DeduplicateValue(programmeNames)
+	programmeNames = slice.DeduplicateValues(programmeNames)
 	nonExistedProgrammes, err := u.programmeUseCase.FilterNonExisted(programmeNames)
 	if err != nil {
 		return errs.New(errs.SameCode, "cannot validate existed programmes while creating clo")
@@ -85,9 +85,11 @@ func (u programLearningOutcomeUseCase) Create(dto []entity.CrateProgramLearningO
 		return errs.New(errs.ErrCreatePLO, "cannot create PLO", err)
 	}
 
-	err = u.programLearningOutcomeRepo.CreateSubPLO(subPlos)
-	if err != nil {
-		return errs.New(errs.ErrCreatePLO, "cannot create sub plo", err)
+	if len(subPlos) > 0 {
+		err = u.programLearningOutcomeRepo.CreateSubPLO(subPlos)
+		if err != nil {
+			return errs.New(errs.ErrCreatePLO, "cannot create sub plo", err)
+		}
 	}
 
 	return nil

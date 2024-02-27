@@ -8,7 +8,7 @@ type CreateSubProgramLeaningOutcome struct {
 }
 
 type CreateSubProgramLearningOutcomePayload struct {
-	SubProgramLeaningOutcomes []CreateSubProgramLeaningOutcome `validate:"required,dive"`
+	SubProgramLearningOutcomes []CreateSubProgramLeaningOutcome `validate:"required,dive"`
 }
 
 type UpdateSubProgramLearningOutcomePayload struct {

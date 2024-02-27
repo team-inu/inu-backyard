@@ -10,15 +10,16 @@ type ProgramOutcome struct {
 type ProgramOutcomeRepository interface {
 	GetAll() ([]ProgramOutcome, error)
 	GetById(id string) (*ProgramOutcome, error)
-	Create(programLearningOutcome *ProgramOutcome) error
-	Update(id string, programLearningOutcome *ProgramOutcome) error
+	Create(programOutcome *ProgramOutcome) error
+	CreateMany(programOutcome []ProgramOutcome) error
+	Update(id string, programOutcome *ProgramOutcome) error
 	Delete(id string) error
 }
 
 type ProgramOutcomeUseCase interface {
 	GetAll() ([]ProgramOutcome, error)
 	GetById(id string) (*ProgramOutcome, error)
-	Create(code string, name string, description string) error
-	Update(id string, programLearningOutcome *ProgramOutcome) error
+	Create(programOutcome []ProgramOutcome) error
+	Update(id string, programOutcome *ProgramOutcome) error
 	Delete(id string) error
 }

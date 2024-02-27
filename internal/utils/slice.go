@@ -37,7 +37,7 @@ func GetDuplicateValue(values []string) []string {
 	return duplicatedValues
 }
 
-func DeduplicateValue(values []string) []string {
+func DeduplicateValues(values []string) []string {
 	deduplicateValues := []string{}
 	isDuplicateByValue := make(map[string]bool)
 

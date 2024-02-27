@@ -4,17 +4,17 @@ type CourseLearningOutcome struct {
 	Id                                  string  `json:"id" gorm:"primaryKey;type:char(255)"`
 	Code                                string  `json:"code"`
 	Description                         string  `json:"description"`
-	ExpectedPassingAssignmentPercentage float64 `json:"expectedPassingAssignment"`
+	ExpectedPassingAssignmentPercentage float64 `json:"expectedPassingAssignmentPercentage"`
 	ExpectedScorePercentage             float64 `json:"expectedScorePercentage"`
 	ExpectedPassingStudentPercentage    float64 `json:"expectedPassingStudentPercentage"`
 	Status                              string  `json:"status"`
 	ProgramOutcomeId                    string  `json:"programOutcomeId"`
 	CourseId                            string  `json:"courseId"`
 
-	SubProgramLearningOutcomes []*SubProgramLearningOutcome `gorm:"many2many:clo_subplo"`
-	Assignments                []*Assignment                `gorm:"many2many:clo_assignment"`
-	ProgramOutcome             ProgramOutcome
-	Course                     Course
+	SubProgramLearningOutcomes []*SubProgramLearningOutcome `gorm:"many2many:clo_subplo" json:"subProgramLearningOutcomes,omitempty"`
+	Assignments                []*Assignment                `gorm:"many2many:clo_assignment" json:"-"`
+	ProgramOutcome             ProgramOutcome               `json:"-"`
+	Course                     Course                       `json:"-"`
 }
 
 type CreateCourseLearningOutcomeDto struct {
