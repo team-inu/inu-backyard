@@ -60,7 +60,13 @@ func (r programLearningOutcomeRepositoryGorm) CreateMany(programLearningOutcome 
 }
 
 func (r programLearningOutcomeRepositoryGorm) Update(id string, programLearningOutcome *entity.ProgramLearningOutcome) error {
-	err := r.gorm.Model(&entity.ProgramLearningOutcome{}).Where("id = ?", id).Updates(programLearningOutcome).Error
+	err := r.gorm.Model(&entity.ProgramLearningOutcome{}).Where("id = ?", id).Updates(map[string]interface{}{ // update this way because empty string for optional field won't be updated otherwise
+		"code":             programLearningOutcome.Code,
+		"description_thai": programLearningOutcome.DescriptionThai,
+		"description_eng":  programLearningOutcome.DescriptionEng,
+		"program_year":     programLearningOutcome.ProgramYear,
+		"programme_name":   programLearningOutcome.ProgrammeName,
+	}).Error
 	if err != nil {
 		return fmt.Errorf("cannot update programLearningOutcome: %w", err)
 	}

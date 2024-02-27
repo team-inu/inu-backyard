@@ -49,9 +49,9 @@ func (u programLearningOutcomeUseCase) Create(dto []entity.CrateProgramLearningO
 	programmeNames = slice.DeduplicateValues(programmeNames)
 	nonExistedProgrammes, err := u.programmeUseCase.FilterNonExisted(programmeNames)
 	if err != nil {
-		return errs.New(errs.SameCode, "cannot validate existed programmes while creating clo")
+		return errs.New(errs.SameCode, "cannot validate existed programmes while creating plo")
 	} else if len(nonExistedProgrammes) > 0 {
-		return errs.New(errs.ErrCreateCLO, "there are non existed programme %v while creating clo", nonExistedProgrammes)
+		return errs.New(errs.ErrCreateCLO, "there are non existed programme %v while creating plo", nonExistedProgrammes)
 	}
 
 	plos := make([]entity.ProgramLearningOutcome, 0, len(dto))
@@ -96,11 +96,18 @@ func (u programLearningOutcomeUseCase) Create(dto []entity.CrateProgramLearningO
 }
 
 func (u programLearningOutcomeUseCase) Update(id string, programLearningOutcome *entity.ProgramLearningOutcome) error {
-	existProgramLearningOutcome, err := u.GetById(id)
+	nonExistedPloIds, err := u.FilterNonExisted([]string{id})
 	if err != nil {
-		return errs.New(errs.SameCode, "cannot get programLearningOutcome id %s to update", id, err)
-	} else if existProgramLearningOutcome == nil {
-		return errs.New(errs.ErrPLONotFound, "cannot get programLearningOutcome id %s to update", id)
+		return errs.New(errs.SameCode, "cannot get programLearningOutcome id %s to update")
+	} else if len(nonExistedPloIds) > 0 {
+		return errs.New(errs.ErrCreateSubPLO, "plo id not existed while updating plo %v", nonExistedPloIds)
+	}
+
+	nonExistedProgrammes, err := u.programmeUseCase.FilterNonExisted([]string{programLearningOutcome.ProgrammeName})
+	if err != nil {
+		return errs.New(errs.SameCode, "cannot validate existed programmes while creating plo")
+	} else if len(nonExistedProgrammes) > 0 {
+		return errs.New(errs.ErrCreateCLO, "there are non existed programme %v while creating plo", nonExistedProgrammes)
 	}
 
 	err = u.programLearningOutcomeRepo.Update(id, programLearningOutcome)
@@ -112,7 +119,21 @@ func (u programLearningOutcomeUseCase) Update(id string, programLearningOutcome 
 }
 
 func (u programLearningOutcomeUseCase) Delete(id string) error {
-	err := u.programLearningOutcomeRepo.Delete(id)
+	nonExistedPloIds, err := u.FilterNonExisted([]string{id})
+	if err != nil {
+		return errs.New(errs.SameCode, "cannot get programLearningOutcome id %s to delete")
+	} else if len(nonExistedPloIds) > 0 {
+		return errs.New(errs.ErrCreateSubPLO, "plo id not existed while deleting plo %v", nonExistedPloIds)
+	}
+
+	splos, err := u.GetSubPloByPloId(id)
+	if err != nil {
+		return errs.New(errs.SameCode, "cannot get subProgramLearningOutcome related to this programLearningOutcome")
+	} else if len(splos) > 0 {
+		return errs.New(errs.ErrCreateSubPLO, "splo related to this plo still exist %v", splos[0].Id)
+	}
+
+	err = u.programLearningOutcomeRepo.Delete(id)
 	if err != nil {
 		return errs.New(errs.ErrDeletePLO, "cannot delete PLO", err)
 	}

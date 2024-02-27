@@ -46,6 +46,7 @@ type ProgramLearningOutcomeRepository interface {
 	FilterExisted(ids []string) ([]string, error)
 
 	GetSubPLO(subPloId string) (*SubProgramLearningOutcome, error)
+	GetSubPloByPloId(ploId string) ([]SubProgramLearningOutcome, error)
 	GetAllSubPlo() ([]SubProgramLearningOutcome, error)
 	CreateSubPLO(programLearningOutcome []SubProgramLearningOutcome) error
 	UpdateSubPLO(id string, programLearningOutcome *SubProgramLearningOutcome) error
@@ -62,6 +63,7 @@ type ProgramLearningOutcomeUseCase interface {
 	FilterNonExisted(ids []string) ([]string, error)
 
 	GetSubPLO(subPloId string) (*SubProgramLearningOutcome, error)
+	GetSubPloByPloId(ploId string) ([]SubProgramLearningOutcome, error)
 	GetAllSubPlo() ([]SubProgramLearningOutcome, error)
 	CreateSubPLO(dto []CreateSubProgramLearningOutcomeDto) error
 	UpdateSubPLO(id string, programLearningOutcome *SubProgramLearningOutcome) error

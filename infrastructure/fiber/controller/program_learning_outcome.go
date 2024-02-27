@@ -81,11 +81,11 @@ func (c programLearningOutcomeController) Update(ctx *fiber.Ctx) error {
 	id := ctx.Params("ploId")
 
 	err := c.programLearningOutcomeUseCase.Update(id, &entity.ProgramLearningOutcome{
-		Code:            payload.Code,
-		DescriptionThai: payload.DescriptionThai,
-		DescriptionEng:  payload.DescriptionEng,
-		ProgramYear:     payload.ProgramYear,
-		ProgrammeName:   payload.Programme,
+		Code:            payload.ProgramLearningOutcomes[0].Code,
+		DescriptionThai: payload.ProgramLearningOutcomes[0].DescriptionThai,
+		DescriptionEng:  *payload.ProgramLearningOutcomes[0].DescriptionEng, // because description eng can be empty string
+		ProgramYear:     payload.ProgramLearningOutcomes[0].ProgramYear,
+		ProgrammeName:   payload.ProgramLearningOutcomes[0].ProgrammeName,
 	})
 
 	if err != nil {
@@ -98,12 +98,7 @@ func (c programLearningOutcomeController) Update(ctx *fiber.Ctx) error {
 func (c programLearningOutcomeController) Delete(ctx *fiber.Ctx) error {
 	ploId := ctx.Params("ploId")
 
-	_, err := c.programLearningOutcomeUseCase.GetById(ploId)
-	if err != nil {
-		return err
-	}
-
-	err = c.programLearningOutcomeUseCase.Delete(ploId)
+	err := c.programLearningOutcomeUseCase.Delete(ploId)
 	if err != nil {
 		return err
 	}
