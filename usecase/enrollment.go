@@ -24,7 +24,7 @@ func NewEnrollmentUseCase(enrollmentRepo entity.EnrollmentRepository, studentUse
 func (u enrollmentUseCase) GetAll() ([]entity.Enrollment, error) {
 	enrollments, err := u.enrollmentRepo.GetAll()
 	if err != nil {
-		return nil, errs.New(errs.ErrQueryEnrollment, "cannot get all enrollments", err)
+		return nil, errs.New(errs.SameCode, "cannot get all enrollments", err)
 	}
 
 	return enrollments, nil
@@ -33,13 +33,20 @@ func (u enrollmentUseCase) GetAll() ([]entity.Enrollment, error) {
 func (u enrollmentUseCase) GetById(id string) (*entity.Enrollment, error) {
 	enrollment, err := u.enrollmentRepo.GetById(id)
 	if err != nil {
-		return nil, errs.New(errs.ErrQueryEnrollment, "cannot get enrollment by id %s", id, err)
+		return nil, errs.New(errs.SameCode, "cannot get enrollment by id %s", id, err)
 	}
 
 	return enrollment, nil
 }
 
 func (u enrollmentUseCase) GetByCourseId(courseId string) ([]entity.Enrollment, error) {
+	course, err := u.courseUseCase.GetById(courseId)
+	if err != nil {
+		return nil, errs.New(errs.SameCode, "cannot get course id %s while get enrollments", course, err)
+	} else if course == nil {
+		return nil, errs.New(errs.ErrEnrollmentNotFound, "course id %s not found while getting enrollments", courseId, err)
+	}
+
 	enrollment, err := u.enrollmentRepo.GetByCourseId(courseId)
 	if err != nil {
 		return nil, errs.New(errs.ErrQueryEnrollment, "cannot get enrollment by course id %s", courseId, err)
