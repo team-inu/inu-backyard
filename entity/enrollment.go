@@ -13,8 +13,8 @@ type Enrollment struct {
 	StudentId string           `json:"studentId"`
 	Status    EnrollmentStatus `json:"status" gorm:"type:enum('ENROLL','WITHDRAW')"`
 
-	Course  Course
-	Student Student
+	Course  Course  `json:"course"`
+	Student Student `json:"student"`
 }
 
 type EnrollmentRepository interface {

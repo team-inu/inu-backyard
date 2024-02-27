@@ -16,8 +16,8 @@ type ProgramLearningOutcome struct {
 	ProgramYear     int    `json:"programYear"`
 	ProgrammeName   string `json:"programmeName"`
 
-	SubProgramLearningOutcomes []SubProgramLearningOutcome
-	Programme                  Programme `json:"-"`
+	SubProgramLearningOutcomes []SubProgramLearningOutcome `json:"subProgramLearningOutcomes"`
+	Programme                  Programme                   `json:"-"`
 }
 
 type CreateSubProgramLearningOutcomeDto struct {
