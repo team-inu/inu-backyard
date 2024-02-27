@@ -7,9 +7,13 @@ type Score struct {
 	LecturerId   string  `json:"lecturer_id"`
 	AssignmentId string  `json:"assignment_id"`
 
-	Student    Student
-	Lecturer   Lecturer
-	Assignment Assignment
+	Email     string `json:"email" gorm:"->;-:migration"`
+	FirstName string `json:"firstName" gorm:"->;-:migration"`
+	LastName  string `json:"lastName" gorm:"->;-:migration"`
+
+	Student    Student    `json:"-"`
+	Lecturer   Lecturer   `json:"-"`
+	Assignment Assignment `json:"-"`
 }
 
 type StudentScore struct {
@@ -20,6 +24,7 @@ type StudentScore struct {
 type ScoreRepository interface {
 	GetAll() ([]Score, error)
 	GetById(id string) (*Score, error)
+	GetByAssignmentId(assignmentId string) ([]Score, error)
 	Create(score *Score) error
 	CreateMany(score []Score) error
 	Update(id string, score *Score) error
@@ -30,6 +35,7 @@ type ScoreRepository interface {
 type ScoreUseCase interface {
 	GetAll() ([]Score, error)
 	GetById(id string) (*Score, error)
+	GetByAssignmentId(assignmentId string) ([]Score, error)
 	CreateMany(lecturerId string, assignmentId string, studentScores []StudentScore) error
 	Update(scoreId string, score float64) error
 	Delete(id string) error

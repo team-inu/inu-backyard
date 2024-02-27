@@ -31,7 +31,7 @@ func NewScoreUseCase(
 func (u scoreUseCase) GetAll() ([]entity.Score, error) {
 	scores, err := u.scoreRepo.GetAll()
 	if err != nil {
-		return nil, errs.New(errs.ErrQueryScore, "cannot get all scores", err)
+		return nil, errs.New(errs.SameCode, "cannot get all scores", err)
 	}
 
 	return scores, nil
@@ -40,10 +40,26 @@ func (u scoreUseCase) GetAll() ([]entity.Score, error) {
 func (u scoreUseCase) GetById(id string) (*entity.Score, error) {
 	score, err := u.scoreRepo.GetById(id)
 	if err != nil {
-		return nil, errs.New(errs.ErrQueryScore, "cannot get score by id", err)
+		return nil, errs.New(errs.SameCode, "cannot get score by id", err)
 	}
 
 	return score, nil
+}
+
+func (u scoreUseCase) GetByAssignmentId(assignmentId string) ([]entity.Score, error) {
+	assignment, err := u.assignmentUseCase.GetById(assignmentId)
+	if err != nil {
+		return nil, errs.New(errs.SameCode, "cannot get assignment when finding score", err)
+	} else if assignment == nil {
+		return nil, errs.New(errs.ErrQueryScore, "assignment id %s not found while finding score", assignmentId)
+	}
+
+	scores, err := u.scoreRepo.GetByAssignmentId(assignmentId)
+	if err != nil {
+		return nil, errs.New(errs.SameCode, "cannot get all scores", err)
+	}
+
+	return scores, nil
 }
 
 func (u scoreUseCase) CreateMany(lecturerId string, assignmentId string, studentScores []entity.StudentScore) error {
@@ -150,7 +166,7 @@ func (u scoreUseCase) Delete(id string) error {
 func (u scoreUseCase) FilterSubmittedScoreStudents(assignmentId string, studentIds []string) ([]string, error) {
 	submittedScoreStudentIds, err := u.scoreRepo.FilterSubmittedScoreStudents(assignmentId, studentIds)
 	if err != nil {
-		return nil, errs.New(errs.ErrQueryStudent, "cannot query students", err)
+		return nil, errs.New(errs.SameCode, "cannot query students", err)
 	}
 
 	return submittedScoreStudentIds, nil

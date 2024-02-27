@@ -17,7 +17,12 @@ func NewScoreRepositoryGorm(gorm *gorm.DB) entity.ScoreRepository {
 
 func (r scoreRepository) GetAll() ([]entity.Score, error) {
 	var scores []entity.Score
-	err := r.gorm.Find(&scores).Error
+	err := r.gorm.
+		Model(&scores).
+		Select("score.*, student.first_name, student.last_name, student.email").
+		Joins("LEFT JOIN student on student.id = score.student_id").
+		Find(&scores).
+		Error
 
 	if err != nil {
 		return nil, fmt.Errorf("cannot query to get scores: %w", err)
@@ -28,7 +33,13 @@ func (r scoreRepository) GetAll() ([]entity.Score, error) {
 
 func (r scoreRepository) GetById(id string) (*entity.Score, error) {
 	var score entity.Score
-	err := r.gorm.Where("id = ?", id).First(&score).Error
+	err := r.gorm.
+		Model(&score).
+		Select("score.*, student.first_name, student.last_name, student.email").
+		Joins("LEFT JOIN student on student.id = score.student_id").
+		Where("score.id = ?", id).
+		Find(&score).
+		Error
 
 	if err == gorm.ErrRecordNotFound {
 		return nil, nil
@@ -37,6 +48,23 @@ func (r scoreRepository) GetById(id string) (*entity.Score, error) {
 	}
 
 	return &score, nil
+}
+
+func (r scoreRepository) GetByAssignmentId(assignmentId string) ([]entity.Score, error) {
+	var scores []entity.Score
+
+	err := r.gorm.
+		Model(&scores).
+		Select("score.*, student.first_name, student.last_name, student.email").
+		Joins("LEFT JOIN student on student.id = score.student_id").
+		Where("assignment_id = ?", assignmentId).
+		Find(&scores).
+		Error
+	if err != nil {
+		return nil, fmt.Errorf("cannot query to get scores: %w", err)
+	}
+
+	return scores, nil
 }
 
 func (r scoreRepository) Create(score *entity.Score) error {

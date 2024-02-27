@@ -39,6 +39,17 @@ func (c scoreController) GetById(ctx *fiber.Ctx) error {
 	return ctx.JSON(score)
 }
 
+func (c scoreController) GetByAssignmentId(ctx *fiber.Ctx) error {
+	assignmentId := ctx.Params("assignmentId")
+
+	score, err := c.ScoreUseCase.GetByAssignmentId(assignmentId)
+	if err != nil {
+		return err
+	}
+
+	return ctx.JSON(score)
+}
+
 func (c scoreController) CreateMany(ctx *fiber.Ctx) error {
 	var payload request.BulkCreateScoreRequestPayload
 
