@@ -38,10 +38,9 @@ func (r enrollmentRepositoryGorm) GetById(id string) (*entity.Enrollment, error)
 	var enrollments *entity.Enrollment
 
 	err := r.gorm.
-		Model(&enrollments).
+		First(&enrollments, "id = ?", id).
 		Select("enrollment.*, student.first_name, student.last_name, student.email").
 		Joins("LEFT JOIN student on student.id = enrollment.student_id").
-		Scan(&enrollments).
 		Error
 
 	if err == gorm.ErrRecordNotFound {
@@ -106,6 +105,17 @@ func (r enrollmentRepositoryGorm) Delete(id string) error {
 	}
 
 	return nil
+}
+
+func (r enrollmentRepositoryGorm) FilterExisted(ids []string) ([]string, error) {
+	var existedIds []string
+
+	err := r.gorm.Raw("SELECT id FROM `enrollment` WHERE id in ?", ids).Scan(&existedIds).Error
+	if err != nil {
+		return nil, fmt.Errorf("cannot query enrollments: %w", err)
+	}
+
+	return existedIds, nil
 }
 
 func (r enrollmentRepositoryGorm) FilterJoinedStudent(studentIds []string, courseId string, status *entity.EnrollmentStatus) ([]string, error) {

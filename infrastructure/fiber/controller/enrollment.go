@@ -70,20 +70,13 @@ func (c enrollmentController) Create(ctx *fiber.Ctx) error {
 func (c enrollmentController) Update(ctx *fiber.Ctx) error {
 	enrollmentId := ctx.Params("enrollmentId")
 
-	_, err := c.EnrollmentUseCase.GetById(enrollmentId)
-	if err != nil {
-		return err
-	}
 	var payload request.UpdateEnrollmentPayload
 
 	if ok, err := c.Validator.Validate(&payload, ctx); !ok {
 		return err
 	}
 
-	err = c.EnrollmentUseCase.Update(enrollmentId, &entity.Enrollment{
-		CourseId:  payload.CourseId,
-		StudentId: payload.StudentId,
-	})
+	err := c.EnrollmentUseCase.Update(enrollmentId, payload.Status)
 	if err != nil {
 		return err
 	}

@@ -28,6 +28,7 @@ type EnrollmentRepository interface {
 	CreateMany(enrollments []Enrollment) error
 	Update(id string, enrollment *Enrollment) error
 	Delete(id string) error
+	FilterExisted(ids []string) ([]string, error)
 	FilterJoinedStudent(studentIds []string, courseId string, withStatus *EnrollmentStatus) ([]string, error)
 }
 
@@ -36,9 +37,7 @@ type EnrollmentUseCase interface {
 	GetById(id string) (*Enrollment, error)
 	GetByCourseId(courseId string) ([]Enrollment, error)
 	CreateMany(courseId string, status EnrollmentStatus, studentIds []string) error
-	Update(id string, enrollment *Enrollment) error
+	Update(id string, status EnrollmentStatus) error
 	Delete(id string) error
-	Enroll(studentId string, courseId string) error
-	Withdraw(studentId string, courseId string) error
 	FilterJoinedStudent(studentIds []string, courseId string, withStatus *EnrollmentStatus) ([]string, error)
 }

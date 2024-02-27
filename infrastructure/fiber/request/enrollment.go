@@ -9,6 +9,5 @@ type CreateEnrollmentsPayload struct {
 }
 
 type UpdateEnrollmentPayload struct {
-	CourseId  string `json:"courseId"`
-	StudentId string `json:"studentId"`
+	Status entity.EnrollmentStatus `json:"status" validate:"required"`
 }

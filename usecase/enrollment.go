@@ -103,18 +103,20 @@ func (u enrollmentUseCase) CreateMany(courseId string, status entity.EnrollmentS
 	return err
 }
 
-func (u enrollmentUseCase) Update(id string, enrollment *entity.Enrollment) error {
+func (u enrollmentUseCase) Update(id string, status entity.EnrollmentStatus) error {
 	existEnrollment, err := u.GetById(id)
 	if err != nil {
 		return errs.New(errs.SameCode, "cannot get enrollment id %s to update", id, err)
 	} else if existEnrollment == nil {
-		return errs.New(errs.ErrEnrollmentNotFound, "cannot get enrollment id %s to update", id)
+		return errs.New(errs.ErrEnrollmentNotFound, "enrollment id %s not found while update enrollment", id)
 	}
 
-	err = u.enrollmentRepo.Update(id, enrollment)
+	err = u.enrollmentRepo.Update(id, &entity.Enrollment{
+		Status: status,
+	})
 
 	if err != nil {
-		return errs.New(errs.ErrUpdateEnrollment, "cannot update enrollment by id %s", enrollment.Id, err)
+		return errs.New(errs.ErrUpdateEnrollment, "cannot update enrollment by id %s", id, err)
 	}
 
 	return nil
@@ -135,14 +137,6 @@ func (u enrollmentUseCase) Delete(id string) error {
 	}
 
 	return nil
-}
-
-func (u enrollmentUseCase) Enroll(studentId string, courseId string) error {
-	return nil //TODO
-}
-
-func (u enrollmentUseCase) Withdraw(studentId string, courseId string) error {
-	return nil //TODO
 }
 
 func (u enrollmentUseCase) FilterJoinedStudent(studentIds []string, courseId string, status *entity.EnrollmentStatus) ([]string, error) {
