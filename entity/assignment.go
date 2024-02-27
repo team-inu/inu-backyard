@@ -17,6 +17,7 @@ type Assignment struct {
 type AssignmentRepository interface {
 	GetById(id string) (*Assignment, error)
 	GetByParams(params *Assignment, limit int, offset int) ([]Assignment, error)
+	GetByCourseId(courseId string) ([]Assignment, error)
 	Create(assignment *Assignment) error
 	CreateMany(assignment []Assignment) error
 	Update(id string, assignment *Assignment) error
@@ -26,7 +27,7 @@ type AssignmentRepository interface {
 type AssignmentUseCase interface {
 	GetById(id string) (*Assignment, error)
 	GetByParams(params *Assignment, limit int, offset int) ([]Assignment, error)
-	GetByCourseId(courseId string, limit int, offset int) ([]Assignment, error)
+	GetByCourseId(courseId string) ([]Assignment, error)
 	Create(name string, description string, maxScore int, weight int, expectedScorePercentage float64, expectedPassingStudentPercentage float64, courseLearningOutcomeIds []string) error
 	Update(id string, assignment *Assignment) error
 	Delete(id string) error

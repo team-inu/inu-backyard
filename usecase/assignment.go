@@ -10,15 +10,18 @@ import (
 type assignmentUseCase struct {
 	assignmentRepo               entity.AssignmentRepository
 	courseLearningOutcomeUseCase entity.CourseLearningOutcomeUseCase
+	courseUseCase                entity.CourseUseCase
 }
 
 func NewAssignmentUseCase(
 	assignmentRepo entity.AssignmentRepository,
 	courseLearningOutcomeUseCase entity.CourseLearningOutcomeUseCase,
+	courseUseCase entity.CourseUseCase,
 ) entity.AssignmentUseCase {
 	return &assignmentUseCase{
 		assignmentRepo:               assignmentRepo,
 		courseLearningOutcomeUseCase: courseLearningOutcomeUseCase,
+		courseUseCase:                courseUseCase,
 	}
 }
 
@@ -41,14 +44,20 @@ func (u assignmentUseCase) GetByParams(params *entity.Assignment, limit int, off
 	return assignments, nil
 }
 
-func (u assignmentUseCase) GetByCourseId(courseId string, limit int, offset int) ([]entity.Assignment, error) {
-	// clos, err := u.courseLearningOutcomeRepo.GetByCourseId(courseId)
+func (u assignmentUseCase) GetByCourseId(courseId string) ([]entity.Assignment, error) {
+	course, err := u.courseUseCase.GetById(courseId)
+	if err != nil {
+		return nil, errs.New(errs.SameCode, "cannot get course id %s while get assignments", course, err)
+	} else if course == nil {
+		return nil, errs.New(errs.ErrEnrollmentNotFound, "course id %s not found while getting assignments", courseId, err)
+	}
 
-	// if err != nil {
-	// 	return nil, errs.New(errs.ErrQueryAssignment, "cannot get assignment by params", err)
-	// }
-	// TODO: after we have table between assignment and clos
-	return nil, nil
+	assignment, err := u.assignmentRepo.GetByCourseId(courseId)
+	if err != nil {
+		return nil, errs.New(errs.ErrQueryAssignment, "cannot get enrollment by course id %s", courseId, err)
+	}
+
+	return assignment, nil
 }
 
 func (u assignmentUseCase) Create(name string, description string, maxScore int, weight int, expectedScorePercentage float64, expectedPassingStudentPercentage float64, courseLearningOutcomeIds []string) error {

@@ -118,7 +118,7 @@ func (f *fiberServer) initUseCase() {
 	authUseCase := usecase.NewAuthUseCase(sessionUseCase, lecturerUseCase)
 	programOutcomeUseCase := usecase.NewProgramOutcomeUseCase(f.programOutcomeRepository, semesterUseCase)
 	courseLearningOutcomeUseCase := usecase.NewCourseLearningOutcomeUseCase(f.courseLearningOutcomeRepository, courseUseCase, programOutcomeUseCase, programLearningOutcomeUseCase)
-	assignmentUseCase := usecase.NewAssignmentUseCase(f.assignmentRepository, courseLearningOutcomeUseCase)
+	assignmentUseCase := usecase.NewAssignmentUseCase(f.assignmentRepository, courseLearningOutcomeUseCase, courseUseCase)
 	scoreUseCase := usecase.NewScoreUseCase(f.scoreRepository, enrollmentUseCase, assignmentUseCase, lecturerUseCase)
 
 	f.assignmentUseCase = assignmentUseCase
@@ -200,11 +200,13 @@ func (f *fiberServer) initController() error {
 
 	app.Get("/clos", courseLearningOutcomeController.GetAll)
 	app.Get("/clos/:cloId", courseLearningOutcomeController.GetById)
-	app.Get("/courses/:courseId/clos", courseLearningOutcomeController.GetByCourseId)
-	app.Get("/courses/:courseId/enrollments", enrollmentController.GetByCourseId)
 	app.Post("/clos", courseLearningOutcomeController.Create)
 	app.Patch("/clos/:cloId", courseLearningOutcomeController.Update)
 	app.Delete("/clos/:cloId", courseLearningOutcomeController.Delete)
+
+	app.Get("/courses/:courseId/clos", courseLearningOutcomeController.GetByCourseId)
+	app.Get("/courses/:courseId/enrollments", enrollmentController.GetByCourseId)
+	app.Get("/courses/:courseId/assignments", assignmentController.GetByCourseId)
 
 	app.Get("/plos", programLearningOutcomeController.GetAll)
 	app.Get("/plos/:ploId", programLearningOutcomeController.GetById)

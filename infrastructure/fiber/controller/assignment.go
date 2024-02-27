@@ -50,14 +50,14 @@ func (c assignmentController) GetAssignments(ctx *fiber.Ctx) error {
 	return response.NewSuccessResponse(ctx, fiber.StatusOK, assignments)
 }
 
-func (c assignmentController) GetAssignmentsByCourseId(ctx *fiber.Ctx) error {
+func (c assignmentController) GetByCourseId(ctx *fiber.Ctx) error {
 	var payload request.GetAssignmentsByCourseIdPayload
 
 	if ok, err := c.Validator.Validate(&payload, ctx); !ok {
 		return err
 	}
 
-	assignment, err := c.AssignmentUseCase.GetByCourseId(payload.CourseId, -1, -1)
+	assignment, err := c.AssignmentUseCase.GetByCourseId(payload.CourseId)
 
 	if err != nil {
 		return err

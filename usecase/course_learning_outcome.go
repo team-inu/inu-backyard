@@ -47,6 +47,13 @@ func (u courseLearningOutcomeUseCase) GetById(id string) (*entity.CourseLearning
 }
 
 func (u courseLearningOutcomeUseCase) GetByCourseId(courseId string) ([]entity.CourseLearningOutcome, error) {
+	course, err := u.courseUseCase.GetById(courseId)
+	if err != nil {
+		return nil, errs.New(errs.SameCode, "cannot get course id %s while querying clo", courseId, err)
+	} else if course == nil {
+		return nil, errs.New(errs.ErrCourseNotFound, "course id %s not found while querying clo", courseId)
+	}
+
 	clo, err := u.courseLearningOutcomeRepo.GetByCourseId(courseId)
 	if err != nil {
 		return nil, errs.New(errs.ErrQueryCLO, "cannot get CLO by course id %s", courseId, err)
