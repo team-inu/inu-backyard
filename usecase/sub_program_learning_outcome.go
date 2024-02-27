@@ -16,6 +16,15 @@ func (u programLearningOutcomeUseCase) GetAllSubPlo() ([]entity.SubProgramLearni
 	return splos, nil
 }
 
+func (u programLearningOutcomeUseCase) GetSubPloByPloId(ploId string) ([]entity.SubProgramLearningOutcome, error) {
+	splos, err := u.programLearningOutcomeRepo.GetSubPloByPloId(ploId)
+	if err != nil {
+		return nil, errs.New(errs.ErrQuerySubPLO, "cannot get sub plos by plo id", err)
+	}
+
+	return splos, nil
+}
+
 func (u programLearningOutcomeUseCase) GetSubPLO(id string) (*entity.SubProgramLearningOutcome, error) {
 	splo, err := u.programLearningOutcomeRepo.GetSubPLO(id)
 	if err != nil {
@@ -64,6 +73,13 @@ func (u programLearningOutcomeUseCase) UpdateSubPLO(id string, subProgramLearnin
 		return errs.New(errs.SameCode, "cannot get subProgramLearningOutcome id %s to update", id, err)
 	} else if existSubProgramLearningOutcome == nil {
 		return errs.New(errs.ErrSubPLONotFound, "cannot get subProgramLearningOutcome id %s to update", id)
+	}
+
+	nonExistedPloIds, err := u.FilterNonExisted([]string{subProgramLearningOutcome.ProgramLearningOutcomeId})
+	if err != nil {
+		return errs.New(errs.SameCode, "cannot find non existing plo id while updating sub plo")
+	} else if len(nonExistedPloIds) > 0 {
+		return errs.New(errs.ErrCreateSubPLO, "plo ids not existed while updating sub plo %v", nonExistedPloIds)
 	}
 
 	err = u.programLearningOutcomeRepo.UpdateSubPLO(id, subProgramLearningOutcome)

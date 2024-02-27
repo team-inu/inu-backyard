@@ -69,10 +69,10 @@ func (c subProgramLearningOutcomeController) Update(ctx *fiber.Ctx) error {
 	id := ctx.Params("sploId")
 
 	err := c.programLearningOutcomeUseCase.UpdateSubPLO(id, &entity.SubProgramLearningOutcome{
-		Code:                     payload.Code,
-		DescriptionThai:          payload.DescriptionThai,
-		DescriptionEng:           payload.DescriptionEng,
-		ProgramLearningOutcomeId: payload.ProgramLearningOutcomeId,
+		Code:                     payload.SubProgramLearningOutcomes[0].Code,
+		DescriptionThai:          payload.SubProgramLearningOutcomes[0].DescriptionThai,
+		DescriptionEng:           *payload.SubProgramLearningOutcomes[0].DescriptionEng,
+		ProgramLearningOutcomeId: payload.SubProgramLearningOutcomes[0].ProgramLearningOutcomeId,
 	})
 
 	if err != nil {

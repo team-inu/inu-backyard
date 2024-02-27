@@ -19,6 +19,20 @@ func (r programLearningOutcomeRepositoryGorm) GetAllSubPlo() ([]entity.SubProgra
 
 	return splos, err
 }
+
+func (r programLearningOutcomeRepositoryGorm) GetSubPloByPloId(ploId string) ([]entity.SubProgramLearningOutcome, error) {
+	var splos []entity.SubProgramLearningOutcome
+	err := r.gorm.Where("program_learning_outcome_id = ?", ploId).Find(&splos).Error
+
+	if err == gorm.ErrRecordNotFound {
+		return nil, nil
+	} else if err != nil {
+		return nil, fmt.Errorf("cannot query to get subPLOs with plo id: %w", err)
+	}
+
+	return splos, err
+}
+
 func (r programLearningOutcomeRepositoryGorm) GetSubPLO(id string) (*entity.SubProgramLearningOutcome, error) {
 	var splo entity.SubProgramLearningOutcome
 	err := r.gorm.Where("id = ?", id).First(&splo).Error
@@ -42,7 +56,12 @@ func (r programLearningOutcomeRepositoryGorm) CreateSubPLO(subProgramLearningOut
 }
 
 func (r programLearningOutcomeRepositoryGorm) UpdateSubPLO(id string, subProgramLearningOutcome *entity.SubProgramLearningOutcome) error {
-	err := r.gorm.Model(&entity.SubProgramLearningOutcome{}).Where("id = ?", id).Updates(subProgramLearningOutcome).Error
+	err := r.gorm.Model(&entity.SubProgramLearningOutcome{}).Where("id = ?", id).Updates(map[string]interface{}{ // update this way because empty string for optional field won't be updated otherwise
+		"code":                        subProgramLearningOutcome.Code,
+		"description_thai":            subProgramLearningOutcome.DescriptionThai,
+		"description_eng":             subProgramLearningOutcome.DescriptionEng,
+		"program_learning_outcome_id": subProgramLearningOutcome.ProgramLearningOutcomeId,
+	}).Error
 	if err != nil {
 		return fmt.Errorf("cannot update subProgramLearningOutcome: %w", err)
 	}
