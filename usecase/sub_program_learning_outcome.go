@@ -91,7 +91,14 @@ func (u programLearningOutcomeUseCase) UpdateSubPLO(id string, subProgramLearnin
 }
 
 func (u programLearningOutcomeUseCase) DeleteSubPLO(id string) error {
-	err := u.programLearningOutcomeRepo.DeleteSubPLO(id)
+	existSubProgramLearningOutcome, err := u.GetSubPLO(id)
+	if err != nil {
+		return errs.New(errs.SameCode, "cannot get subProgramLearningOutcome id %s to delete", id, err)
+	} else if existSubProgramLearningOutcome == nil {
+		return errs.New(errs.ErrSubPLONotFound, "cannot get subProgramLearningOutcome id %s to delete", id)
+	}
+
+	err = u.programLearningOutcomeRepo.DeleteSubPLO(id)
 	if err != nil {
 		return errs.New(errs.ErrDeleteSubPLO, "cannot delete sub plo", err)
 	}
