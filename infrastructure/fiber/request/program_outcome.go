@@ -10,8 +10,12 @@ type CreateProgramOutcomePayload struct {
 	ProgramOutcomes []CreateProgramOutcome `json:"programOutcomes" validate:"required,dive"`
 }
 
+type UpdateProgramOutcome struct {
+	Code        string `validate:"required"`
+	Name        string `validate:"required"`
+	Description string `validate:"required"`
+}
+
 type UpdateProgramOutcomePayload struct {
-	Code        string `json:"code"`
-	Name        string `json:"name"`
-	Description string `json:"description"`
+	ProgramOutcomes []UpdateProgramOutcome `json:"programOutcomes" validate:"required,dive"`
 }

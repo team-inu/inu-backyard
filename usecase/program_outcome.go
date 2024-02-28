@@ -73,7 +73,15 @@ func (u programOutcomeUseCase) Update(id string, programOutcome *entity.ProgramO
 }
 
 func (u programOutcomeUseCase) Delete(id string) error {
-	err := u.programOutcomeRepo.Delete(id)
+	existProgramOutcome, err := u.GetById(id)
+
+	if err != nil {
+		return errs.New(errs.SameCode, "cannot get programOutcome id %s to delete", id, err)
+	} else if existProgramOutcome == nil {
+		return errs.New(errs.ErrPONotFound, "cannot get programOutcome id %s to delete", id)
+	}
+
+	err = u.programOutcomeRepo.Delete(id)
 	if err != nil {
 		return errs.New(errs.ErrDeletePO, "cannot delete PO", err)
 	}
