@@ -18,7 +18,10 @@ func NewAssignmentRepositoryGorm(gorm *gorm.DB) entity.AssignmentRepository {
 func (r assignmentRepositoryGorm) GetById(id string) (*entity.Assignment, error) {
 	var assignment *entity.Assignment
 
-	err := r.gorm.Preload("CourseLearningOutcomes").Preload("Scores").Where("id = ?", id).Find(&assignment).Error
+	err := r.gorm.Raw(
+		`SELECT a.*, clo.course_id FROM clo_assignment AS clo_a INNER JOIN course_learning_outcome AS clo ON clo_a.course_learning_outcome_id = clo.id INNER JOIN assignment AS a ON a.id = clo_a.assignment_id  WHERE a.id = ? LIMIT 1;`,
+		id,
+	).Scan(&assignment).Error
 
 	if err == gorm.ErrRecordNotFound {
 		return nil, nil
