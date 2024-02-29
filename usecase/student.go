@@ -52,15 +52,6 @@ func (u studentUseCase) GetByParams(params *entity.Student, limit int, offset in
 	return students, nil
 }
 
-func (u studentUseCase) Create(student *entity.Student) error {
-	err := u.studentRepo.Create(student)
-	if err != nil {
-		return errs.New(errs.ErrCreateStudent, "cannot create student", err)
-	}
-
-	return nil
-}
-
 func (u studentUseCase) CreateMany(students []entity.Student) error {
 	departmentNames := []string{}
 	programmeNames := []string{}

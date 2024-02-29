@@ -36,7 +36,6 @@ type StudentUseCase interface {
 	GetById(id string) (*Student, error)
 	GetAll() ([]Student, error)
 	GetByParams(params *Student, limit int, offset int) ([]Student, error)
-	Create(student *Student) error
 	CreateMany(student []Student) error
 	Update(id string, student *Student) error
 	Delete(id string) error

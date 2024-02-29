@@ -39,6 +39,8 @@ type UpdateStudentPayload struct {
 	EngGPA    float64 `json:"engGPA" `
 	SciGPA    float64 `json:"sciGPA"`
 	School    string  `json:"school"`
+	City      string  `json:"city"`
+	Email     string  `json:"email"`
 	Year      string  `json:"year"`
 	Admission string  `json:"admission"`
 	Remark    string  `json:"remark"`

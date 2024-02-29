@@ -68,22 +68,24 @@ func (c studentController) Create(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	err := c.studentUseCase.Create(&entity.Student{
-		Id:             payload.KmuttId,
-		FirstName:      payload.FirstName,
-		LastName:       payload.LastName,
-		Email:          payload.Email,
-		ProgrammeName:  payload.ProgrammeName,
-		DepartmentName: payload.DepartmentName,
-		GPAX:           payload.GPAX,
-		MathGPA:        payload.MathGPA,
-		EngGPA:         payload.EngGPA,
-		SciGPA:         payload.SciGPA,
-		School:         payload.School,
-		City:           payload.City,
-		Year:           payload.Year,
-		Admission:      payload.Admission,
-		Remark:         payload.Remark,
+	err := c.studentUseCase.CreateMany([]entity.Student{
+		{
+			Id:             payload.KmuttId,
+			FirstName:      payload.FirstName,
+			LastName:       payload.LastName,
+			Email:          payload.Email,
+			ProgrammeName:  payload.ProgrammeName,
+			DepartmentName: payload.DepartmentName,
+			GPAX:           payload.GPAX,
+			MathGPA:        payload.MathGPA,
+			EngGPA:         payload.EngGPA,
+			SciGPA:         payload.SciGPA,
+			School:         payload.School,
+			City:           payload.City,
+			Year:           payload.Year,
+			Admission:      payload.Admission,
+			Remark:         payload.Remark,
+		},
 	})
 	if err != nil {
 		return err
@@ -150,6 +152,8 @@ func (c studentController) Update(ctx *fiber.Ctx) error {
 		Year:           payload.Year,
 		Admission:      payload.Admission,
 		Remark:         payload.Remark,
+		City:           payload.City,
+		Email:          payload.Email,
 	})
 
 	if err != nil {
