@@ -26,6 +26,11 @@ func (r assignmentRepositoryGorm) GetById(id string) (*entity.Assignment, error)
 		return nil, fmt.Errorf("cannot query to get assignment by id: %w", err)
 	}
 
+	if len(assignment.CourseLearningOutcomes) > 0 {
+		assignment.CourseId = assignment.CourseLearningOutcomes[0].CourseId
+
+	}
+
 	return assignment, nil
 }
 
