@@ -3,9 +3,9 @@ package entity
 type Score struct {
 	Id           string  `json:"id" gorm:"primaryKey;type:char(255)"`
 	Score        float64 ` json:"score"`
-	StudentId    string  `json:"student_id"`
-	LecturerId   string  `json:"lecturer_id"`
-	AssignmentId string  `json:"assignment_id"`
+	StudentId    string  `json:"studentId"`
+	LecturerId   string  `json:"lecturerId"`
+	AssignmentId string  `json:"assignmentId"`
 
 	Email     string `json:"email" gorm:"->;-:migration"`
 	FirstName string `json:"firstName" gorm:"->;-:migration"`

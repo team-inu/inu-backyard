@@ -11,7 +11,7 @@ type Assignment struct {
 
 	CourseId string `json:"courseId" gorm:"->;-:migration"`
 
-	CourseLearningOutcomes []*CourseLearningOutcome `gorm:"many2many:clo_assignment"`
+	CourseLearningOutcomes []*CourseLearningOutcome `gorm:"many2many:clo_assignment" json:"courseLearningOutcomes"`
 }
 
 type AssignmentRepository interface {
