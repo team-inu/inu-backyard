@@ -98,6 +98,7 @@ func (c lecturerController) Update(ctx *fiber.Ctx) error {
 		FirstName: payload.FirstName,
 		LastName:  payload.LastName,
 		Email:     payload.Email,
+		Role:      payload.Role,
 	})
 
 	if err != nil {
