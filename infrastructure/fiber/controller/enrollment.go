@@ -4,6 +4,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/team-inu/inu-backyard/entity"
 	"github.com/team-inu/inu-backyard/infrastructure/fiber/request"
+	"github.com/team-inu/inu-backyard/infrastructure/fiber/response"
 	"github.com/team-inu/inu-backyard/internal/validator"
 )
 
@@ -25,7 +26,11 @@ func (c enrollmentController) GetAll(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	return ctx.JSON(enrollments)
+	if len(enrollments) == 0 {
+		return response.NewSuccessResponse(ctx, fiber.StatusNotFound, enrollments)
+	}
+
+	return response.NewSuccessResponse(ctx, fiber.StatusOK, enrollments)
 }
 
 func (c enrollmentController) GetById(ctx *fiber.Ctx) error {
@@ -37,7 +42,11 @@ func (c enrollmentController) GetById(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	return ctx.JSON(enrollment)
+	if enrollment == nil {
+		return response.NewSuccessResponse(ctx, fiber.StatusNotFound, enrollment)
+	}
+
+	return response.NewSuccessResponse(ctx, fiber.StatusOK, enrollment)
 }
 
 func (c enrollmentController) GetByCourseId(ctx *fiber.Ctx) error {
@@ -49,7 +58,11 @@ func (c enrollmentController) GetByCourseId(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	return ctx.JSON(enrollments)
+	if len(enrollments) == 0 {
+		return response.NewSuccessResponse(ctx, fiber.StatusNotFound, enrollments)
+	}
+
+	return response.NewSuccessResponse(ctx, fiber.StatusOK, enrollments)
 }
 
 func (c enrollmentController) Create(ctx *fiber.Ctx) error {
@@ -64,7 +77,7 @@ func (c enrollmentController) Create(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	return ctx.SendStatus(201)
+	return response.NewSuccessResponse(ctx, fiber.StatusCreated, nil)
 }
 
 func (c enrollmentController) Update(ctx *fiber.Ctx) error {
@@ -81,7 +94,7 @@ func (c enrollmentController) Update(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	return ctx.JSON(payload)
+	return response.NewSuccessResponse(ctx, fiber.StatusOK, nil)
 }
 
 func (c enrollmentController) Delete(ctx *fiber.Ctx) error {
@@ -97,5 +110,5 @@ func (c enrollmentController) Delete(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	return ctx.SendStatus(200)
+	return response.NewSuccessResponse(ctx, fiber.StatusOK, nil)
 }

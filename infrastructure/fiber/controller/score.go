@@ -4,6 +4,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/team-inu/inu-backyard/entity"
 	"github.com/team-inu/inu-backyard/infrastructure/fiber/request"
+	"github.com/team-inu/inu-backyard/infrastructure/fiber/response"
 	"github.com/team-inu/inu-backyard/internal/validator"
 )
 
@@ -25,7 +26,11 @@ func (c scoreController) GetAll(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	return ctx.JSON(scores)
+	if len(scores) == 0 {
+		return response.NewSuccessResponse(ctx, fiber.StatusNotFound, scores)
+	}
+
+	return response.NewSuccessResponse(ctx, fiber.StatusOK, scores)
 }
 
 func (c scoreController) GetById(ctx *fiber.Ctx) error {
@@ -36,18 +41,26 @@ func (c scoreController) GetById(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	return ctx.JSON(score)
+	if score == nil {
+		return response.NewSuccessResponse(ctx, fiber.StatusNotFound, score)
+	}
+
+	return response.NewSuccessResponse(ctx, fiber.StatusOK, score)
 }
 
 func (c scoreController) GetByAssignmentId(ctx *fiber.Ctx) error {
 	assignmentId := ctx.Params("assignmentId")
 
-	score, err := c.ScoreUseCase.GetByAssignmentId(assignmentId)
+	scores, err := c.ScoreUseCase.GetByAssignmentId(assignmentId)
 	if err != nil {
 		return err
 	}
 
-	return ctx.JSON(score)
+	if len(scores) == 0 {
+		return response.NewSuccessResponse(ctx, fiber.StatusNotFound, scores)
+	}
+
+	return response.NewSuccessResponse(ctx, fiber.StatusOK, scores)
 }
 
 func (c scoreController) CreateMany(ctx *fiber.Ctx) error {
@@ -66,7 +79,7 @@ func (c scoreController) CreateMany(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	return ctx.SendStatus(201)
+	return response.NewSuccessResponse(ctx, fiber.StatusCreated, nil)
 }
 
 func (c scoreController) Delete(ctx *fiber.Ctx) error {
@@ -82,7 +95,7 @@ func (c scoreController) Delete(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	return ctx.SendStatus(200)
+	return response.NewSuccessResponse(ctx, fiber.StatusOK, nil)
 }
 
 func (c scoreController) Update(ctx *fiber.Ctx) error {
@@ -103,5 +116,5 @@ func (c scoreController) Update(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	return ctx.JSON(payload)
+	return response.NewSuccessResponse(ctx, fiber.StatusOK, nil)
 }

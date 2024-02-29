@@ -26,7 +26,11 @@ func (c gradeController) GetAll(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	return ctx.JSON(grades)
+	if len(grades) == 0 {
+		return response.NewSuccessResponse(ctx, fiber.StatusNotFound, grades)
+	}
+
+	return response.NewSuccessResponse(ctx, fiber.StatusOK, grades)
 }
 
 func (c gradeController) GetById(ctx *fiber.Ctx) error {
@@ -38,7 +42,11 @@ func (c gradeController) GetById(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	return response.NewSuccessResponse(ctx, fiber.StatusCreated, grade)
+	if grade == nil {
+		return response.NewSuccessResponse(ctx, fiber.StatusNotFound, grade)
+	}
+
+	return response.NewSuccessResponse(ctx, fiber.StatusOK, grade)
 }
 
 func (c gradeController) Create(ctx *fiber.Ctx) error {

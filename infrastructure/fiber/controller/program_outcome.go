@@ -26,7 +26,11 @@ func (c programOutcomeController) GetAll(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	return ctx.JSON(pos)
+	if len(pos) == 0 {
+		return response.NewSuccessResponse(ctx, fiber.StatusNotFound, pos)
+	}
+
+	return response.NewSuccessResponse(ctx, fiber.StatusOK, pos)
 }
 
 func (c programOutcomeController) GetById(ctx *fiber.Ctx) error {
@@ -37,7 +41,11 @@ func (c programOutcomeController) GetById(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	return response.NewSuccessResponse(ctx, fiber.StatusCreated, po)
+	if po == nil {
+		return response.NewSuccessResponse(ctx, fiber.StatusNotFound, po)
+	}
+
+	return response.NewSuccessResponse(ctx, fiber.StatusOK, po)
 }
 
 func (c programOutcomeController) Create(ctx *fiber.Ctx) error {

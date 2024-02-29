@@ -4,6 +4,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/team-inu/inu-backyard/entity"
 	"github.com/team-inu/inu-backyard/infrastructure/fiber/request"
+	"github.com/team-inu/inu-backyard/infrastructure/fiber/response"
 	"github.com/team-inu/inu-backyard/internal/validator"
 )
 
@@ -25,7 +26,11 @@ func (c FacultyController) GetAll(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	return ctx.JSON(faculties)
+	if len(faculties) == 0 {
+		return response.NewSuccessResponse(ctx, fiber.StatusNotFound, faculties)
+	}
+
+	return response.NewSuccessResponse(ctx, fiber.StatusOK, faculties)
 }
 
 func (c FacultyController) GetById(ctx *fiber.Ctx) error {
@@ -37,7 +42,11 @@ func (c FacultyController) GetById(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	return ctx.JSON(faculty)
+	if faculty == nil {
+		return response.NewSuccessResponse(ctx, fiber.StatusNotFound, faculty)
+	}
+
+	return response.NewSuccessResponse(ctx, fiber.StatusOK, faculty)
 }
 
 func (c FacultyController) Create(ctx *fiber.Ctx) error {
@@ -55,7 +64,7 @@ func (c FacultyController) Create(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	return ctx.JSON(payload)
+	return response.NewSuccessResponse(ctx, fiber.StatusCreated, nil)
 }
 
 func (c FacultyController) Update(ctx *fiber.Ctx) error {
@@ -81,7 +90,7 @@ func (c FacultyController) Update(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	return ctx.JSON(payload)
+	return response.NewSuccessResponse(ctx, fiber.StatusOK, nil)
 }
 
 func (c FacultyController) Delete(ctx *fiber.Ctx) error {
@@ -99,5 +108,5 @@ func (c FacultyController) Delete(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	return ctx.SendStatus(200)
+	return response.NewSuccessResponse(ctx, fiber.StatusOK, nil)
 }

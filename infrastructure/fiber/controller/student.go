@@ -26,7 +26,11 @@ func (c studentController) GetAll(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	return ctx.JSON(students)
+	if len(students) == 0 {
+		return response.NewSuccessResponse(ctx, fiber.StatusNotFound, students)
+	}
+
+	return response.NewSuccessResponse(ctx, fiber.StatusOK, students)
 }
 
 func (c studentController) GetById(ctx *fiber.Ctx) error {
@@ -38,7 +42,11 @@ func (c studentController) GetById(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	return ctx.JSON(student)
+	if student == nil {
+		return response.NewSuccessResponse(ctx, fiber.StatusNotFound, student)
+	}
+
+	return response.NewSuccessResponse(ctx, fiber.StatusOK, student)
 }
 
 func (c studentController) GetStudents(ctx *fiber.Ctx) error {
@@ -48,7 +56,7 @@ func (c studentController) GetStudents(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	student, err := c.studentUseCase.GetByParams(&entity.Student{
+	students, err := c.studentUseCase.GetByParams(&entity.Student{
 		ProgrammeName:  payload.ProgrammeName,
 		DepartmentName: payload.DepartmentName,
 		Year:           payload.Year,
@@ -58,7 +66,11 @@ func (c studentController) GetStudents(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	return ctx.JSON(student)
+	if len(students) == 0 {
+		return response.NewSuccessResponse(ctx, fiber.StatusNotFound, students)
+	}
+
+	return response.NewSuccessResponse(ctx, fiber.StatusOK, students)
 }
 
 func (c studentController) Create(ctx *fiber.Ctx) error {
@@ -91,7 +103,7 @@ func (c studentController) Create(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	return ctx.JSON(payload)
+	return response.NewSuccessResponse(ctx, fiber.StatusCreated, nil)
 }
 
 func (c studentController) CreateMany(ctx *fiber.Ctx) error {
@@ -126,7 +138,7 @@ func (c studentController) CreateMany(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	return ctx.JSON(payload)
+	return response.NewSuccessResponse(ctx, fiber.StatusCreated, nil)
 }
 
 func (c studentController) Update(ctx *fiber.Ctx) error {

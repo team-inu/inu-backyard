@@ -26,7 +26,11 @@ func (c subProgramLearningOutcomeController) GetAll(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	return ctx.JSON(splos)
+	if len(splos) == 0 {
+		return response.NewSuccessResponse(ctx, fiber.StatusNotFound, splos)
+	}
+
+	return response.NewSuccessResponse(ctx, fiber.StatusOK, splos)
 }
 
 func (c subProgramLearningOutcomeController) GetById(ctx *fiber.Ctx) error {
@@ -37,7 +41,11 @@ func (c subProgramLearningOutcomeController) GetById(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	return response.NewSuccessResponse(ctx, fiber.StatusCreated, splo)
+	if splo == nil {
+		return response.NewSuccessResponse(ctx, fiber.StatusNotFound, splo)
+	}
+
+	return response.NewSuccessResponse(ctx, fiber.StatusOK, splo)
 }
 
 func (c subProgramLearningOutcomeController) Create(ctx *fiber.Ctx) error {
