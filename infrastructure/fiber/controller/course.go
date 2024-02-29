@@ -28,7 +28,11 @@ func (c courseController) GetAll(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	return response.NewSuccessResponse(ctx, fiber.StatusCreated, courses)
+	if len(courses) == 0 {
+		return response.NewSuccessResponse(ctx, fiber.StatusNotFound, courses)
+	}
+
+	return response.NewSuccessResponse(ctx, fiber.StatusOK, courses)
 }
 
 func (c courseController) GetById(ctx *fiber.Ctx) error {
@@ -39,7 +43,11 @@ func (c courseController) GetById(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	return response.NewSuccessResponse(ctx, fiber.StatusCreated, course)
+	if course == nil {
+		return response.NewSuccessResponse(ctx, fiber.StatusNotFound, course)
+	}
+
+	return response.NewSuccessResponse(ctx, fiber.StatusOK, course)
 }
 
 func (c courseController) Create(ctx *fiber.Ctx) error {

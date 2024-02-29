@@ -29,6 +29,10 @@ func (c assignmentController) GetById(ctx *fiber.Ctx) error {
 		return err
 	}
 
+	if assignment == nil {
+		return response.NewSuccessResponse(ctx, fiber.StatusNotFound, assignment)
+	}
+
 	return response.NewSuccessResponse(ctx, fiber.StatusOK, assignment)
 }
 
@@ -47,6 +51,10 @@ func (c assignmentController) GetAssignments(ctx *fiber.Ctx) error {
 		return err
 	}
 
+	if len(assignments) == 0 {
+		return response.NewSuccessResponse(ctx, fiber.StatusNotFound, assignments)
+	}
+
 	return response.NewSuccessResponse(ctx, fiber.StatusOK, assignments)
 }
 
@@ -57,13 +65,17 @@ func (c assignmentController) GetByCourseId(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	assignment, err := c.AssignmentUseCase.GetByCourseId(payload.CourseId)
+	assignments, err := c.AssignmentUseCase.GetByCourseId(payload.CourseId)
 
 	if err != nil {
 		return err
 	}
 
-	return response.NewSuccessResponse(ctx, fiber.StatusOK, assignment)
+	if len(assignments) == 0 {
+		return response.NewSuccessResponse(ctx, fiber.StatusNotFound, assignments)
+	}
+
+	return response.NewSuccessResponse(ctx, fiber.StatusOK, assignments)
 }
 
 func (c assignmentController) Create(ctx *fiber.Ctx) error {

@@ -26,6 +26,10 @@ func (c semesterController) GetAll(ctx *fiber.Ctx) error {
 		return err
 	}
 
+	if len(semesters) == 0 {
+		return response.NewSuccessResponse(ctx, fiber.StatusNotFound, semesters)
+	}
+
 	return response.NewSuccessResponse(ctx, fiber.StatusOK, semesters)
 }
 
@@ -35,6 +39,10 @@ func (c semesterController) GetById(ctx *fiber.Ctx) error {
 	semester, err := c.SemesterUseCase.GetById(semesterId)
 	if err != nil {
 		return err
+	}
+
+	if semester == nil {
+		return response.NewSuccessResponse(ctx, fiber.StatusNotFound, semester)
 	}
 
 	return response.NewSuccessResponse(ctx, fiber.StatusOK, semester)

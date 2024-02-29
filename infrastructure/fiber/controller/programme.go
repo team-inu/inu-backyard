@@ -26,7 +26,11 @@ func (c programmeController) GetAll(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	return response.NewSuccessResponse(ctx, fiber.StatusCreated, programmes)
+	if len(programmes) == 0 {
+		return response.NewSuccessResponse(ctx, fiber.StatusNotFound, programmes)
+	}
+
+	return response.NewSuccessResponse(ctx, fiber.StatusOK, programmes)
 }
 
 func (c programmeController) GetByName(ctx *fiber.Ctx) error {
@@ -38,7 +42,11 @@ func (c programmeController) GetByName(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	return response.NewSuccessResponse(ctx, fiber.StatusCreated, programme)
+	if programme == nil {
+		return response.NewSuccessResponse(ctx, fiber.StatusNotFound, programme)
+	}
+
+	return response.NewSuccessResponse(ctx, fiber.StatusOK, programme)
 }
 
 func (c programmeController) Create(ctx *fiber.Ctx) error {
