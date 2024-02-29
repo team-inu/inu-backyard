@@ -29,6 +29,16 @@ type CreateCourseLearningOutcomeDto struct {
 	CourseId                            string
 }
 
+type UpdateCourseLeaningOutcomeDto struct {
+	Code                                string
+	Description                         string
+	ExpectedPassingAssignmentPercentage float64
+	ExpectedScorePercentage             float64
+	ExpectedPassingStudentPercentage    float64
+	Status                              string
+	ProgramOutcomeId                    string
+}
+
 type CourseLearningOutcomeRepository interface {
 	GetAll() ([]CourseLearningOutcome, error)
 	GetById(id string) (*CourseLearningOutcome, error)
@@ -44,7 +54,7 @@ type CourseLearningOutcomeUseCase interface {
 	GetById(id string) (*CourseLearningOutcome, error)
 	GetByCourseId(courseId string) ([]CourseLearningOutcome, error)
 	Create(dto CreateCourseLearningOutcomeDto) error
-	Update(id string, courseLearningOutcome *CourseLearningOutcome) error
+	Update(id string, dto UpdateCourseLeaningOutcomeDto) error
 	Delete(id string) error
 	FilterNonExisted(ids []string) ([]string, error)
 }

@@ -85,11 +85,14 @@ func (c courseLearningOutcomeController) Update(ctx *fiber.Ctx) error {
 
 	id := ctx.Params("cloId")
 
-	err := c.courseLearningOutcomeUseCase.Update(id, &entity.CourseLearningOutcome{
-		Code:             payload.Code,
-		Description:      payload.Description,
-		ProgramOutcomeId: payload.ProgramOutcomeId,
-		Status:           payload.Status,
+	err := c.courseLearningOutcomeUseCase.Update(id, entity.UpdateCourseLeaningOutcomeDto{
+		Code:                                payload.Code,
+		Description:                         payload.Description,
+		ExpectedPassingAssignmentPercentage: payload.ExpectedPassingAssignmentPercentage,
+		ExpectedScorePercentage:             payload.ExpectedScorePercentage,
+		ExpectedPassingStudentPercentage:    payload.ExpectedPassingStudentPercentage,
+		Status:                              payload.Status,
+		ProgramOutcomeId:                    payload.ProgramOutcomeId,
 	})
 
 	if err != nil {

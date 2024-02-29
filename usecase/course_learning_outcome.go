@@ -116,7 +116,7 @@ func (u courseLearningOutcomeUseCase) Create(dto entity.CreateCourseLearningOutc
 	return nil
 }
 
-func (u courseLearningOutcomeUseCase) Update(id string, courseLearningOutcome *entity.CourseLearningOutcome) error {
+func (u courseLearningOutcomeUseCase) Update(id string, dto entity.UpdateCourseLeaningOutcomeDto) error {
 	existCourseLearningOutcome, err := u.GetById(id)
 	if err != nil {
 		return errs.New(errs.SameCode, "cannot get courseLearningOutcome id %s to update", id, err)
@@ -124,9 +124,25 @@ func (u courseLearningOutcomeUseCase) Update(id string, courseLearningOutcome *e
 		return errs.New(errs.ErrCLONotFound, "cannot get courseLearningOutcome id %s to update", id)
 	}
 
-	err = u.courseLearningOutcomeRepo.Update(id, courseLearningOutcome)
+	existedProgramOutcome, err := u.programOutcomeUseCase.GetById(dto.ProgramOutcomeId)
 	if err != nil {
-		return errs.New(errs.ErrUpdateCLO, "cannot update courseLearningOutcome by id %s", courseLearningOutcome.Id, err)
+		return errs.New(errs.SameCode, "cannot get program outcome id %s to update clo", dto.ProgramOutcomeId, err)
+	} else if existedProgramOutcome == nil {
+		return errs.New(errs.ErrPONotFound, "program outcome id %s not found while updating clo", dto.ProgramOutcomeId)
+	}
+
+	err = u.courseLearningOutcomeRepo.Update(id, &entity.CourseLearningOutcome{
+		Code:                                dto.Code,
+		Description:                         dto.Description,
+		ExpectedPassingAssignmentPercentage: dto.ExpectedPassingAssignmentPercentage,
+		ExpectedScorePercentage:             dto.ExpectedScorePercentage,
+		ExpectedPassingStudentPercentage:    dto.ExpectedPassingStudentPercentage,
+		Status:                              dto.Status,
+		ProgramOutcomeId:                    dto.ProgramOutcomeId,
+	})
+
+	if err != nil {
+		return errs.New(errs.ErrUpdateCLO, "cannot update courseLearningOutcome by id %s", id, err)
 	}
 
 	return nil
