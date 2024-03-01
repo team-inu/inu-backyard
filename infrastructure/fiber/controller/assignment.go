@@ -110,13 +110,9 @@ func (c assignmentController) Update(ctx *fiber.Ctx) error {
 }
 
 func (c assignmentController) Delete(ctx *fiber.Ctx) error {
-	var payload request.DeleteAssignmentRequestPayload
+	id := ctx.Params("assignmentId")
 
-	if ok, err := c.Validator.Validate(&payload, ctx); !ok {
-		return err
-	}
-
-	err := c.AssignmentUseCase.Delete(payload.Id)
+	err := c.AssignmentUseCase.Delete(id)
 
 	if err != nil {
 		return err

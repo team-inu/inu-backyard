@@ -30,7 +30,3 @@ type UpdateAssignmentRequestPayload struct {
 	ExpectedPassingStudentPercentage float64 `json:"expectedPassingStudentPercentage"`
 	ExpectedScorePercentage          float64 `json:"expectedScorePercentage"`
 }
-
-type DeleteAssignmentRequestPayload struct {
-	Id string `json:"id" validate:"required"`
-}
