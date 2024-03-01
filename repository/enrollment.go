@@ -73,6 +73,19 @@ func (r enrollmentRepositoryGorm) GetByCourseId(courseId string) ([]entity.Enrol
 	return enrollments, nil
 }
 
+func (r enrollmentRepositoryGorm) GetByStudentId(studentId string) ([]entity.Enrollment, error) {
+	var enrollments []entity.Enrollment
+	err := r.gorm.Where("student_id = ?", studentId).Find(&enrollments).Error
+
+	if err == gorm.ErrRecordNotFound {
+		return nil, nil
+	} else if err != nil {
+		return nil, fmt.Errorf("cannot query to get enrollments by student id: %w", err)
+	}
+
+	return enrollments, nil
+}
+
 func (r enrollmentRepositoryGorm) CreateMany(enrollments []entity.Enrollment) error {
 	return r.gorm.Create(&enrollments).Error
 }

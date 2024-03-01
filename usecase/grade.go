@@ -7,11 +7,12 @@ import (
 )
 
 type gradeUseCase struct {
-	gradeRepo entity.GradeRepository
+	gradeRepo      entity.GradeRepository
+	studentUseCase entity.StudentUseCase
 }
 
-func NewGradeUseCase(gradeRepo entity.GradeRepository) entity.GradeUseCase {
-	return &gradeUseCase{gradeRepo: gradeRepo}
+func NewGradeUseCase(gradeRepo entity.GradeRepository, studentUseCase entity.StudentUseCase) entity.GradeUseCase {
+	return &gradeUseCase{gradeRepo: gradeRepo, studentUseCase: studentUseCase}
 }
 
 func (u gradeUseCase) GetAll() ([]entity.Grade, error) {
@@ -30,6 +31,22 @@ func (u gradeUseCase) GetById(id string) (*entity.Grade, error) {
 	}
 
 	return grade, nil
+}
+
+func (u gradeUseCase) GetByStudentId(studentId string) ([]entity.Grade, error) {
+	student, err := u.studentUseCase.GetById(studentId)
+	if err != nil {
+		return nil, errs.New(errs.SameCode, "cannot get student id %s while get grades", student, err)
+	} else if student == nil {
+		return nil, errs.New(errs.ErrQueryGrade, "student id %s not found while getting grades", studentId, err)
+	}
+
+	enrollment, err := u.gradeRepo.GetByStudentId(studentId)
+	if err != nil {
+		return nil, errs.New(errs.ErrQueryGrade, "cannot get grades by student id %s", studentId, err)
+	}
+
+	return enrollment, nil
 }
 
 func (u gradeUseCase) Create(studentId string, year string, grade string) error {

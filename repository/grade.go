@@ -42,6 +42,19 @@ func (r gradeRepositoryGorm) GetById(id string) (*entity.Grade, error) {
 	return grade, nil
 }
 
+func (r gradeRepositoryGorm) GetByStudentId(studentId string) ([]entity.Grade, error) {
+	var grades []entity.Grade
+	err := r.gorm.Where("student_id = ?", studentId).Find(&grades).Error
+
+	if err == gorm.ErrRecordNotFound {
+		return nil, nil
+	} else if err != nil {
+		return nil, fmt.Errorf("cannot query to get grades by student id: %w", err)
+	}
+
+	return grades, nil
+}
+
 func (r gradeRepositoryGorm) Create(grade *entity.Grade) error {
 	err := r.gorm.Create(&grade).Error
 	if err != nil {

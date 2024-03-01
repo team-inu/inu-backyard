@@ -110,13 +110,13 @@ func (f *fiberServer) initUseCase() {
 	semesterUseCase := usecase.NewSemesterUseCase(f.semesterRepository)
 	courseUseCase := usecase.NewCourseUseCase(f.courseRepository, semesterUseCase, userUseCase)
 	enrollmentUseCase := usecase.NewEnrollmentUseCase(f.enrollmentRepository, studentUseCase, courseUseCase)
-	gradeUseCase := usecase.NewGradeUseCase(f.gradeRepository)
+	gradeUseCase := usecase.NewGradeUseCase(f.gradeRepository, studentUseCase)
 	sessionUseCase := usecase.NewSessionUseCase(f.sessionRepository, f.config.Client.Auth)
 	authUseCase := usecase.NewAuthUseCase(sessionUseCase, userUseCase)
 	programOutcomeUseCase := usecase.NewProgramOutcomeUseCase(f.programOutcomeRepository, semesterUseCase)
 	courseLearningOutcomeUseCase := usecase.NewCourseLearningOutcomeUseCase(f.courseLearningOutcomeRepository, courseUseCase, programOutcomeUseCase, programLearningOutcomeUseCase)
 	assignmentUseCase := usecase.NewAssignmentUseCase(f.assignmentRepository, courseLearningOutcomeUseCase, courseUseCase)
-	scoreUseCase := usecase.NewScoreUseCase(f.scoreRepository, enrollmentUseCase, assignmentUseCase, userUseCase)
+	scoreUseCase := usecase.NewScoreUseCase(f.scoreRepository, enrollmentUseCase, assignmentUseCase, userUseCase, studentUseCase)
 
 	f.assignmentUseCase = assignmentUseCase
 	f.authUseCase = authUseCase

@@ -13,6 +13,7 @@ type Grade struct {
 type GradeRepository interface {
 	GetAll() ([]Grade, error)
 	GetById(id string) (*Grade, error)
+	GetByStudentId(studentId string) ([]Grade, error)
 	Create(grade *Grade) error
 	Update(id string, grade *Grade) error
 	Delete(id string) error
@@ -21,6 +22,7 @@ type GradeRepository interface {
 type GradeUseCase interface {
 	GetAll() ([]Grade, error)
 	GetById(id string) (*Grade, error)
+	GetByStudentId(studentId string) ([]Grade, error)
 	Create(studentId string, year string, grade string) error
 	Update(id string, grade *Grade) error
 	Delete(id string) error
