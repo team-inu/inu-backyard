@@ -3,24 +3,22 @@ package fiber
 import (
 	"github.com/gofiber/contrib/fiberzap/v2"
 	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/monitor"
 	"github.com/team-inu/inu-backyard/entity"
-	"github.com/team-inu/inu-backyard/infrastructure/database"
 	"github.com/team-inu/inu-backyard/infrastructure/fiber/controller"
 	"github.com/team-inu/inu-backyard/infrastructure/fiber/middleware"
 	"github.com/team-inu/inu-backyard/internal/config"
-	"github.com/team-inu/inu-backyard/internal/logger"
 	"github.com/team-inu/inu-backyard/internal/validator"
 	"github.com/team-inu/inu-backyard/repository"
 	"github.com/team-inu/inu-backyard/usecase"
+	"go.uber.org/zap"
 	"gorm.io/gorm"
 )
 
 type fiberServer struct {
 	config config.FiberServerConfig
-
-	gorm *gorm.DB
+	gorm   *gorm.DB
+	logger *zap.Logger
 
 	studentRepository                entity.StudentRepository
 	courseRepository                 entity.CourseRepository
@@ -56,13 +54,19 @@ type fiberServer struct {
 	authUseCase                   entity.AuthUseCase
 }
 
-func NewFiberServer() *fiberServer {
-	return &fiberServer{}
+func NewFiberServer(
+	config config.FiberServerConfig,
+	gorm *gorm.DB,
+	logger *zap.Logger,
+) *fiberServer {
+	return &fiberServer{
+		config: config,
+		gorm:   gorm,
+		logger: logger,
+	}
 }
 
-func (f *fiberServer) Run(config config.FiberServerConfig) {
-	f.config = config
-
+func (f *fiberServer) Run() {
 	err := f.initRepository()
 	if err != nil {
 		panic(err)
@@ -77,13 +81,6 @@ func (f *fiberServer) Run(config config.FiberServerConfig) {
 }
 
 func (f *fiberServer) initRepository() (err error) {
-	gormDB, err := database.NewGorm(&f.config.Database)
-	if err != nil {
-		panic(err)
-	}
-
-	f.gorm = gormDB
-
 	f.studentRepository = repository.NewStudentRepositoryGorm(f.gorm)
 	f.courseRepository = repository.NewCourseRepositoryGorm(f.gorm)
 	f.courseLearningOutcomeRepository = repository.NewCourseLearningOutcomeRepositoryGorm(f.gorm)
@@ -140,25 +137,20 @@ func (f *fiberServer) initUseCase() {
 }
 
 func (f *fiberServer) initController() error {
-	fiberConfig := fiber.Config{
-		AppName:      "inu-backyard",
-		ErrorHandler: errorHandler(logger.NewZapLogger()),
-		// EnablePrintRoutes: true,
-	}
 
-	app := fiber.New(fiberConfig)
+	app := fiber.New(fiber.Config{
+		AppName:      "inu-backyard",
+		ErrorHandler: errorHandler(f.logger),
+	})
+
+	app.Use(middleware.NewCorsMiddleware(f.config.Client.Cors.AllowOrigins))
+	app.Use(middleware.NewLogger(fiberzap.Config{
+		Logger: f.logger,
+	}))
 
 	validator := validator.NewPayloadValidator(&f.config.Client.Auth)
 
 	authMiddleware := middleware.NewAuthMiddleware(validator, f.authUseCase)
-
-	//TODO: change to production url
-	app.Use(cors.New(cors.Config{
-		AllowHeaders:     "Origin,Content-Type,Accept,Content-Length,Accept-Language,Accept-Encoding,Connection,Access-Control-Allow-Origin",
-		AllowOrigins:     "http://localhost:3000",
-		AllowCredentials: true,
-		AllowMethods:     "GET,POST,HEAD,PUT,DELETE,PATCH,OPTIONS",
-	}))
 
 	studentController := controller.NewStudentController(validator, f.studentUseCase)
 	courseController := controller.NewCourseController(validator, f.courseUseCase)
@@ -169,21 +161,13 @@ func (f *fiberServer) initController() error {
 	facultyController := controller.NewFacultyController(validator, f.facultyUseCase)
 	departmentController := controller.NewDepartmentController(validator, f.departmentUseCase)
 	scoreController := controller.NewScoreController(validator, f.scoreUseCase)
-
 	userController := controller.NewUserController(validator, f.userUseCase)
-
 	assignmentController := controller.NewAssignmentController(validator, f.assignmentUseCase)
 	programmeController := controller.NewProgrammeController(validator, f.programmeUseCase)
 	semesterController := controller.NewSemesterController(validator, f.semesterUseCase)
-
 	enrollmentController := controller.NewEnrollmentController(validator, f.enrollmentUseCase)
-
 	gradeController := controller.NewGradeController(validator, f.gradeUseCase)
 	authController := controller.NewAuthController(validator, f.config.Client.Auth, f.authUseCase, f.userUseCase)
-
-	app.Use(fiberzap.New(fiberzap.Config{
-		Logger: logger.NewZapLogger(),
-	}))
 
 	app.Get("/students/:studentId", studentController.GetById)
 	app.Get("/students", studentController.GetStudents)

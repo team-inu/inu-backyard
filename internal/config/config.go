@@ -13,8 +13,13 @@ type AuthConfig struct {
 	Session SessionConfig
 }
 
+type CorsConfig struct {
+	AllowOrigins []string
+}
+
 type ClientConfig struct {
 	Auth AuthConfig
+	Cors CorsConfig
 }
 
 type FiberServerConfig struct {
