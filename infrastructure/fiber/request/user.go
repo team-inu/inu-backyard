@@ -9,10 +9,10 @@ type CreateUserPayload struct {
 }
 
 type UpdateUserPayload struct {
-	FirstName string `json:"firstName"`
-	LastName  string `json:"lastName"`
-	Email     string `json:"email"`
-	Role      string `json:"role"`
+	FirstName string `json:"firstName" validate:"required"`
+	LastName  string `json:"lastName" validate:"required"`
+	Email     string `json:"email" validate:"required"`
+	Role      string `json:"role" validate:"required"`
 }
 
 type CreateBulkUserPayload struct {

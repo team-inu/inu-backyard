@@ -8,15 +8,19 @@ import (
 )
 
 type userUseCase struct {
-	useRepo entity.UserRepository
+	userRepo entity.UserRepository
+	// courseUseCase entity.CourseUseCase
+	// scoreUseCase  entity.ScoreUseCase
 }
 
 func NewUserUseCase(userRepo entity.UserRepository) entity.UserUseCase {
-	return &userUseCase{useRepo: userRepo}
+	// func NewUserUseCase(userRepo entity.UserRepository, courseUseCase entity.CourseUseCase, scoreUseCase entity.ScoreUseCase) entity.UserUseCase {
+	// return &userUseCase{userRepo: userRepo, courseUseCase: courseUseCase, scoreUseCase: scoreUseCase}
+	return &userUseCase{userRepo: userRepo}
 }
 
 func (u userUseCase) GetAll() ([]entity.User, error) {
-	users, err := u.useRepo.GetAll()
+	users, err := u.userRepo.GetAll()
 	if err != nil {
 		return nil, errs.New(errs.ErrQueryUser, "cannot get all users", err)
 	}
@@ -25,7 +29,7 @@ func (u userUseCase) GetAll() ([]entity.User, error) {
 }
 
 func (u userUseCase) GetByEmail(email string) (*entity.User, error) {
-	user, err := u.useRepo.GetByEmail(email)
+	user, err := u.userRepo.GetByEmail(email)
 	if err != nil {
 		return nil, errs.New(errs.ErrQueryUser, "cannot get user by email %s", email, err)
 	}
@@ -34,7 +38,7 @@ func (u userUseCase) GetByEmail(email string) (*entity.User, error) {
 }
 
 func (u userUseCase) GetById(id string) (*entity.User, error) {
-	user, err := u.useRepo.GetById(id)
+	user, err := u.userRepo.GetById(id)
 	if err != nil {
 		return nil, errs.New(errs.ErrQueryUser, "cannot get user by id %s", id, err)
 	}
@@ -43,7 +47,7 @@ func (u userUseCase) GetById(id string) (*entity.User, error) {
 }
 
 func (u userUseCase) GetBySessionId(sessionId string) (*entity.User, error) {
-	user, err := u.useRepo.GetBySessionId(sessionId)
+	user, err := u.userRepo.GetBySessionId(sessionId)
 	if err != nil {
 		return nil, errs.New(errs.ErrQueryUser, "cannot get user by session id %s", sessionId, err)
 	}
@@ -52,7 +56,7 @@ func (u userUseCase) GetBySessionId(sessionId string) (*entity.User, error) {
 }
 
 func (u userUseCase) GetByParams(params *entity.User, limit int, offset int) ([]entity.User, error) {
-	users, err := u.useRepo.GetByParams(params, limit, offset)
+	users, err := u.userRepo.GetByParams(params, limit, offset)
 
 	if err != nil {
 		return nil, errs.New(errs.ErrQueryUser, "cannot get users by params", err)
@@ -77,7 +81,7 @@ func (u userUseCase) Create(firstName string, lastName string, email string, pas
 		Password:  hasPassword,
 	}
 
-	err = u.useRepo.Create(user)
+	err = u.userRepo.Create(user)
 	if err != nil {
 		return errs.New(errs.ErrCreateUser, "cannot create user", err)
 	}
@@ -96,7 +100,7 @@ func (u userUseCase) CreateMany(users []entity.User) error {
 		(users)[i].Password = string(bcryptPassword)
 	}
 
-	err := u.useRepo.CreateMany(users)
+	err := u.userRepo.CreateMany(users)
 	if err != nil {
 		return errs.New(errs.ErrCreateUser, "cannot create user", err)
 	}
@@ -112,7 +116,7 @@ func (u userUseCase) Update(id string, user *entity.User) error {
 		return errs.New(errs.ErrUserNotFound, "cannot get user id %s to update", id)
 	}
 
-	err = u.useRepo.Update(id, user)
+	err = u.userRepo.Update(id, user)
 	if err != nil {
 		return errs.New(errs.ErrUpdateUser, "cannot update user by id %s", user.Id, err)
 	}
@@ -128,7 +132,21 @@ func (u userUseCase) Delete(id string) error {
 		return errs.New(errs.ErrUserNotFound, "cannot get user id %s to delete", id)
 	}
 
-	err = u.useRepo.Delete(id)
+	// courses, err := u.courseUseCase.GetByUserId(id)
+	// if err != nil {
+	// 	return errs.New(errs.SameCode, "cannot get courses related to this user", err)
+	// } else if len(courses) > 0 {
+	// 	return errs.New(errs.ErrUserNotFound, "courses related to this user still exist", courses[0].Id)
+	// }
+
+	// scores, err := u.scoreUseCase.GetByUserId(id)
+	// if err != nil {
+	// 	return errs.New(errs.SameCode, "cannot get scores related to this user", err)
+	// } else if len(scores) > 0 {
+	// 	return errs.New(errs.ErrUserNotFound, "scores related to this user still exist", scores[0].Id)
+	// }
+
+	err = u.userRepo.Delete(id)
 
 	if err != nil {
 		return errs.New(errs.ErrDeleteUser, "cannot delete user by id %s", id, err)
