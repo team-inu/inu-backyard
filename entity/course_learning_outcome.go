@@ -44,8 +44,10 @@ type CourseLearningOutcomeRepository interface {
 	GetById(id string) (*CourseLearningOutcome, error)
 	GetByCourseId(courseId string) ([]CourseLearningOutcome, error)
 	Create(courseLearningOutcome *CourseLearningOutcome) error
+	CreateLinkSubProgramLearningOutcome(id string, subProgramLearningOutcomeId []string) error
 	Update(id string, courseLearningOutcome *CourseLearningOutcome) error
 	Delete(id string) error
+	DeleteLinkSubProgramLearningOutcome(id string, subProgramLearningOutcomeId string) error
 	FilterExisted(ids []string) ([]string, error)
 }
 
@@ -54,7 +56,9 @@ type CourseLearningOutcomeUseCase interface {
 	GetById(id string) (*CourseLearningOutcome, error)
 	GetByCourseId(courseId string) ([]CourseLearningOutcome, error)
 	Create(dto CreateCourseLearningOutcomeDto) error
+	CreateLinkSubProgramLearningOutcome(id string, subProgramLearningOutcomeId []string) error
 	Update(id string, dto UpdateCourseLeaningOutcomeDto) error
 	Delete(id string) error
+	DeleteLinkSubProgramLearningOutcome(id string, subProgramLearningOutcomeId string) error
 	FilterNonExisted(ids []string) ([]string, error)
 }
