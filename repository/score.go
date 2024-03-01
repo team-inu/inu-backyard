@@ -69,6 +69,32 @@ func (r scoreRepository) GetByAssignmentId(assignmentId string) ([]entity.Score,
 	return scores, nil
 }
 
+func (r scoreRepository) GetByUserId(userId string) ([]entity.Score, error) {
+	var scores []entity.Score
+	err := r.gorm.Where("user_id = ?", userId).Find(&scores).Error
+
+	if err == gorm.ErrRecordNotFound {
+		return nil, nil
+	} else if err != nil {
+		return nil, fmt.Errorf("cannot query to get scores by user id: %w", err)
+	}
+
+	return scores, nil
+}
+
+func (r scoreRepository) GetByStudentId(studentId string) ([]entity.Score, error) {
+	var scores []entity.Score
+	err := r.gorm.Where("student_id = ?", studentId).Find(&scores).Error
+
+	if err == gorm.ErrRecordNotFound {
+		return nil, nil
+	} else if err != nil {
+		return nil, fmt.Errorf("cannot query to get scores by student id: %w", err)
+	}
+
+	return scores, nil
+}
+
 func (r scoreRepository) Create(score *entity.Score) error {
 	err := r.gorm.Create(&score).Error
 	if err != nil {

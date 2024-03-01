@@ -35,6 +35,7 @@ type Course struct {
 type CourseRepository interface {
 	GetAll() ([]Course, error)
 	GetById(id string) (*Course, error)
+	GetByUserId(userId string) ([]Course, error)
 	Create(course *Course) error
 	Update(id string, course *Course) error
 	Delete(id string) error
@@ -42,6 +43,7 @@ type CourseRepository interface {
 type CourseUseCase interface {
 	GetAll() ([]Course, error)
 	GetById(id string) (*Course, error)
+	GetByUserId(userId string) ([]Course, error)
 	Create(semesterId string, userId string, name string, code string, curriculum string, description string, criteriaGrade CriteriaGrade) error
 	Update(id string, course *Course) error
 	Delete(id string) error

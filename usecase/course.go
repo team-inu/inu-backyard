@@ -34,6 +34,22 @@ func (u courseUseCase) GetById(id string) (*entity.Course, error) {
 	return course, nil
 }
 
+func (u courseUseCase) GetByUserId(userId string) ([]entity.Course, error) {
+	user, err := u.userUseCase.GetById(userId)
+	if err != nil {
+		return nil, errs.New(errs.SameCode, "cannot get user id %s while get scores", user, err)
+	} else if user == nil {
+		return nil, errs.New(errs.ErrQueryCourse, "user id %s not found while getting scores", userId, err)
+	}
+
+	course, err := u.courseRepo.GetByUserId(userId)
+	if err != nil {
+		return nil, errs.New(errs.ErrQueryCourse, "cannot get score by user id %s", userId, err)
+	}
+
+	return course, nil
+}
+
 func (u courseUseCase) Create(semesterId string, userId string, name string, code string, curriculum string, description string, criteriaGrade entity.CriteriaGrade) error {
 	semester, err := u.semesterUseCase.GetById(semesterId)
 	if err != nil {

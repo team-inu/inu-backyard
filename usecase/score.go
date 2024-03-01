@@ -12,6 +12,7 @@ type scoreUseCase struct {
 	enrollmentUseCase entity.EnrollmentUseCase
 	assignmentUseCase entity.AssignmentUseCase
 	userUseCase       entity.UserUseCase
+	studentUseCase    entity.StudentUseCase
 }
 
 func NewScoreUseCase(
@@ -19,12 +20,14 @@ func NewScoreUseCase(
 	enrollmentUseCase entity.EnrollmentUseCase,
 	assignmentUseCase entity.AssignmentUseCase,
 	userUseCase entity.UserUseCase,
+	studentUsecase entity.StudentUseCase,
 ) entity.ScoreUseCase {
 	return &scoreUseCase{
 		scoreRepo:         scoreRepo,
 		enrollmentUseCase: enrollmentUseCase,
 		assignmentUseCase: assignmentUseCase,
 		userUseCase:       userUseCase,
+		studentUseCase:    studentUsecase,
 	}
 }
 
@@ -57,6 +60,38 @@ func (u scoreUseCase) GetByAssignmentId(assignmentId string) ([]entity.Score, er
 	scores, err := u.scoreRepo.GetByAssignmentId(assignmentId)
 	if err != nil {
 		return nil, errs.New(errs.SameCode, "cannot get all scores", err)
+	}
+
+	return scores, nil
+}
+
+func (u scoreUseCase) GetByUserId(userId string) ([]entity.Score, error) {
+	user, err := u.userUseCase.GetById(userId)
+	if err != nil {
+		return nil, errs.New(errs.SameCode, "cannot get user id %s while get scores", user, err)
+	} else if user == nil {
+		return nil, errs.New(errs.ErrQueryScore, "user id %s not found while getting scores", userId, err)
+	}
+
+	scores, err := u.scoreRepo.GetByUserId(userId)
+	if err != nil {
+		return nil, errs.New(errs.ErrQueryScore, "cannot get score by user id %s", userId, err)
+	}
+
+	return scores, nil
+}
+
+func (u scoreUseCase) GetByStudentId(studentId string) ([]entity.Score, error) {
+	student, err := u.studentUseCase.GetById(studentId)
+	if err != nil {
+		return nil, errs.New(errs.SameCode, "cannot get student id %s while get scores", student, err)
+	} else if student == nil {
+		return nil, errs.New(errs.ErrQueryScore, "student id %s not found while getting scores", studentId, err)
+	}
+
+	scores, err := u.scoreRepo.GetByStudentId(studentId)
+	if err != nil {
+		return nil, errs.New(errs.ErrQueryScore, "cannot get score by student id %s", studentId, err)
 	}
 
 	return scores, nil

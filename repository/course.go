@@ -41,6 +41,19 @@ func (r courseRepositoryGorm) GetById(id string) (*entity.Course, error) {
 	return &course, nil
 }
 
+func (r courseRepositoryGorm) GetByUserId(userId string) ([]entity.Course, error) {
+	var courses []entity.Course
+	err := r.gorm.Where("user_id = ?", userId).First(&courses).Error
+
+	if err == gorm.ErrRecordNotFound {
+		return nil, nil
+	} else if err != nil {
+		return nil, fmt.Errorf("cannot query to get course by user id: %w", err)
+	}
+
+	return courses, nil
+}
+
 func (r courseRepositoryGorm) Create(course *entity.Course) error {
 	err := r.gorm.Create(&course).Error
 	if err != nil {
