@@ -26,11 +26,12 @@ const (
 	ErrDeleteCourse   = 20203
 	ErrQueryCourse    = 20204
 
-	ErrCLONotFound = 20300
-	ErrCreateCLO   = 20301
-	ErrUpdateCLO   = 20302
-	ErrDeleteCLO   = 20303
-	ErrQueryCLO    = 20304
+	ErrCLONotFound  = 20300
+	ErrCreateCLO    = 20301
+	ErrUpdateCLO    = 20302
+	ErrDeleteCLO    = 20303
+	ErrQueryCLO     = 20304
+	ErrUnLinkSubPLO = 20305
 
 	ErrPLONotFound = 20400
 	ErrCreatePLO   = 20401
