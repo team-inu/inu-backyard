@@ -23,13 +23,12 @@ type CreateBulkAssignmentsPayload struct {
 }
 
 type UpdateAssignmentRequestPayload struct {
-	Id string `json:"id" validate:"required"`
-
-	Name                    string `json:"name"`
-	Description             string `json:"description"`
-	Score                   int    `json:"score"`
-	Weight                  int    `json:"weight"`
-	CourseLearningOutcomeId string `json:"courseLearningOutcomeId"`
+	Name                             string  `json:"name"`
+	Description                      string  `json:"description"`
+	Weight                           int     `json:"weight"`
+	MaxScore                         int     `json:"maxScore"`
+	ExpectedPassingStudentPercentage float64 `json:"expectedPassingStudentPercentage"`
+	ExpectedScorePercentage          float64 `json:"expectedScorePercentage"`
 }
 
 type DeleteAssignmentRequestPayload struct {

@@ -95,18 +95,13 @@ func (c assignmentController) Create(ctx *fiber.Ctx) error {
 
 func (c assignmentController) Update(ctx *fiber.Ctx) error {
 	var payload request.UpdateAssignmentRequestPayload
-
 	if ok, err := c.Validator.Validate(&payload, ctx); !ok {
 		return err
 	}
 
-	err := c.AssignmentUseCase.Update(payload.Id, &entity.Assignment{
-		Name:        payload.Name,
-		Description: payload.Description,
-		Weight:      payload.Weight,
-		// CourseLearningOutcomeId: payload.CourseLearningOutcomeId,
-	})
+	id := ctx.Params("assignmentId")
 
+	err := c.AssignmentUseCase.Update(id, payload.Name, payload.Description, payload.MaxScore, payload.Weight, payload.ExpectedScorePercentage, payload.ExpectedPassingStudentPercentage)
 	if err != nil {
 		return err
 	}
