@@ -92,12 +92,7 @@ func (c enrollmentController) Update(ctx *fiber.Ctx) error {
 func (c enrollmentController) Delete(ctx *fiber.Ctx) error {
 	enrollmentId := ctx.Params("enrollmentId")
 
-	_, err := c.EnrollmentUseCase.GetById(enrollmentId)
-	if err != nil {
-		return err
-	}
-
-	err = c.EnrollmentUseCase.Delete(enrollmentId)
+	err := c.EnrollmentUseCase.Delete(enrollmentId)
 	if err != nil {
 		return err
 	}
