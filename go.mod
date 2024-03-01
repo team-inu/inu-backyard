@@ -1,6 +1,6 @@
 module github.com/team-inu/inu-backyard
 
-go 1.20
+go 1.22
 
 require (
 	github.com/go-playground/validator/v10 v10.15.3
