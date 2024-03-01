@@ -58,6 +58,24 @@ func (r courseLearningOutcomeRepositoryGorm) Create(courseLearningOutcome *entit
 	return r.gorm.Create(&courseLearningOutcome).Error
 }
 
+func (r courseLearningOutcomeRepositoryGorm) CreateLinkSubProgramLearningOutcome(id string, subProgramLearningOutcomeId []string) error {
+
+	var query string
+	for _, sploId := range subProgramLearningOutcomeId {
+		query += fmt.Sprintf("('%s', '%s'),", id, sploId)
+	}
+
+	query = query[:len(query)-1]
+
+	err := r.gorm.Exec(fmt.Sprintf("INSERT INTO `clo_subplo` (course_learning_outcome_id, sub_program_learning_outcome_id) VALUES %s", query)).Error
+
+	if err != nil {
+		return fmt.Errorf("cannot create link between CLO and SPLO: %w", err)
+	}
+
+	return nil
+}
+
 func (r courseLearningOutcomeRepositoryGorm) CreateMany(courseLeaningOutcome []entity.CourseLearningOutcome) error {
 	return nil
 }
@@ -76,6 +94,18 @@ func (r courseLearningOutcomeRepositoryGorm) Delete(id string) error {
 
 	if err != nil {
 		return fmt.Errorf("cannot delete courseLearningOutcome: %w", err)
+	}
+
+	return nil
+}
+
+func (r courseLearningOutcomeRepositoryGorm) DeleteLinkSubProgramLearningOutcome(id string, subProgramLearningOutcomeId string) error {
+	// fmt.Println(id, subProgramLearningOutcomeId)
+	err := r.gorm.Exec("DELETE FROM `clo_subplo` WHERE course_learning_outcome_id = ? AND sub_program_learning_outcome_id = ?", id, subProgramLearningOutcomeId).Error
+
+	fmt.Println(err)
+	if err != nil {
+		return fmt.Errorf("cannot delete link between CLO and SPLO: %w", err)
 	}
 
 	return nil
