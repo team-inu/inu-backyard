@@ -116,6 +116,33 @@ func (u courseLearningOutcomeUseCase) Create(dto entity.CreateCourseLearningOutc
 	return nil
 }
 
+func (u courseLearningOutcomeUseCase) CreateLinkSubProgramLearningOutcome(id string, subProgramLearningOutcomeId []string) error {
+	existCourseLearningOutcome, err := u.GetById(id)
+	if err != nil {
+		return errs.New(errs.SameCode, "cannot get courseLearningOutcome id %s to link subPLO", id, err)
+	}
+
+	if existCourseLearningOutcome == nil {
+		return errs.New(errs.ErrCLONotFound, "cannot get courseLearningOutcome id %s to link subPLO", id)
+	}
+
+	nonExistedSubPloIds, err := u.programLearningOutcomeUseCase.FilterNonExistedSubPLO(subProgramLearningOutcomeId)
+
+	if err != nil {
+		return errs.New(errs.SameCode, "cannot get non existed sub plo ids while linking clo and sub plo")
+	} else if len(nonExistedSubPloIds) != 0 {
+		return errs.New(errs.ErrCreateEnrollment, "there are non exist sub plo %v", nonExistedSubPloIds)
+	}
+
+	err = u.courseLearningOutcomeRepo.CreateLinkSubProgramLearningOutcome(id, subProgramLearningOutcomeId)
+
+	if err != nil {
+		return errs.New(errs.ErrCreateCLO, "cannot link CLO and subPLO", err)
+	}
+
+	return nil
+}
+
 func (u courseLearningOutcomeUseCase) Update(id string, dto entity.UpdateCourseLeaningOutcomeDto) error {
 	existCourseLearningOutcome, err := u.GetById(id)
 	if err != nil {
@@ -152,6 +179,15 @@ func (u courseLearningOutcomeUseCase) Delete(id string) error {
 	err := u.courseLearningOutcomeRepo.Delete(id)
 	if err != nil {
 		return errs.New(errs.ErrDeleteCLO, "cannot delete CLO", err)
+	}
+
+	return nil
+}
+
+func (u courseLearningOutcomeUseCase) DeleteLinkSubProgramLearningOutcome(id string, subProgramLearningOutcomeId string) error {
+	err := u.courseLearningOutcomeRepo.DeleteLinkSubProgramLearningOutcome(id, subProgramLearningOutcomeId)
+	if err != nil {
+		return errs.New(errs.ErrUnLinkSubPLO, "cannot delete link CLO and subPLO", err)
 	}
 
 	return nil
