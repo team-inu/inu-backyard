@@ -33,15 +33,17 @@ func (r scoreRepository) GetAll() ([]entity.Score, error) {
 
 func (r scoreRepository) GetById(id string) (*entity.Score, error) {
 	var score entity.Score
-	err := r.gorm.
+	result := r.gorm.
 		Model(&score).
 		Select("score.*, student.first_name, student.last_name, student.email").
 		Joins("LEFT JOIN student on student.id = score.student_id").
 		Where("score.id = ?", id).
-		Find(&score).
-		Error
+		Find(&score)
 
-	if err == gorm.ErrRecordNotFound {
+	err := result.Error
+	rows := result.RowsAffected
+
+	if rows == 0 {
 		return nil, nil
 	} else if err != nil {
 		return nil, fmt.Errorf("cannot query to get score by id: %w", err)
