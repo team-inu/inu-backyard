@@ -21,3 +21,7 @@ type UpdateCourseLearningOutcomePayload struct {
 	Status                              string  `json:"status" validate:"required"`
 	ProgramOutcomeId                    string  `json:"programOutcomeId" validate:"required"`
 }
+
+type CreateLinkSubProgramLearningOutcomePayload struct {
+	SubProgramLearningOutcomeId []string `json:"subProgramLearningOutcomeId" validate:"required"`
+}
