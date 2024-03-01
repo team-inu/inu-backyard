@@ -188,6 +188,9 @@ func (f *fiberServer) initController() error {
 	app.Patch("/clos/:cloId", courseLearningOutcomeController.Update)
 	app.Delete("/clos/:cloId", courseLearningOutcomeController.Delete)
 
+	app.Post("/clos/:cloId/subplos", courseLearningOutcomeController.CreateLinkSubProgramLearningOutcome)
+	app.Delete("/clos/:cloId/subplos/:subploId", courseLearningOutcomeController.DeleteLinkSubProgramLearningOutcome)
+
 	app.Get("/courses/:courseId/clos", courseLearningOutcomeController.GetByCourseId)
 	app.Get("/courses/:courseId/enrollments", enrollmentController.GetByCourseId)
 	app.Get("/courses/:courseId/assignments", assignmentController.GetByCourseId)
