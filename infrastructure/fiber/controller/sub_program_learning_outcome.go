@@ -26,10 +26,6 @@ func (c subProgramLearningOutcomeController) GetAll(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	if len(splos) == 0 {
-		return response.NewSuccessResponse(ctx, fiber.StatusNotFound, splos)
-	}
-
 	return response.NewSuccessResponse(ctx, fiber.StatusOK, splos)
 }
 

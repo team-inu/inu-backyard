@@ -25,11 +25,11 @@ type Course struct {
 	// AcademicYear  string `json:"academicYear"`
 	// GraduatedYear string `json:"graduatedYear"`
 	SemesterId string `json:"semesterId"`
-	LecturerId string `json:"lecturerId"`
+	UserId     string `json:"userId"`
 	CriteriaGrade
 
 	Semester Semester
-	Lecturer User
+	User     User
 }
 
 type CourseRepository interface {
@@ -42,7 +42,7 @@ type CourseRepository interface {
 type CourseUseCase interface {
 	GetAll() ([]Course, error)
 	GetById(id string) (*Course, error)
-	Create(semesterId string, lecturerId string, name string, code string, curriculum string, description string, criteriaGrade CriteriaGrade) error
+	Create(semesterId string, userId string, name string, code string, curriculum string, description string, criteriaGrade CriteriaGrade) error
 	Update(id string, course *Course) error
 	Delete(id string) error
 }

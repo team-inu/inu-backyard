@@ -63,10 +63,6 @@ func (c DepartmentController) GetAll(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	if len(departments) == 0 {
-		return response.NewSuccessResponse(ctx, fiber.StatusNotFound, departments)
-	}
-
 	return response.NewSuccessResponse(ctx, fiber.StatusOK, departments)
 }
 

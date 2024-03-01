@@ -15,9 +15,9 @@ type UserRepository interface {
 	GetByParams(params *User, limit int, offset int) ([]User, error)
 	GetByEmail(email string) (*User, error)
 	GetBySessionId(sessionId string) (*User, error)
-	Create(lecturer *User) error
-	CreateMany(lecturers []User) error
-	Update(id string, lecturer *User) error
+	Create(user *User) error
+	CreateMany(users []User) error
+	Update(id string, user *User) error
 	Delete(id string) error
 }
 
@@ -27,8 +27,8 @@ type UserUseCase interface {
 	GetByParams(params *User, limit int, offset int) ([]User, error)
 	GetByEmail(email string) (*User, error)
 	Create(name string, firstName string, lastName string, password string) error
-	CreateMany(lecturers []User) error
-	Update(id string, lecturer *User) error
+	CreateMany(users []User) error
+	Update(id string, user *User) error
 	Delete(id string) error
 	GetBySessionId(sessionId string) (*User, error)
 }

@@ -8,55 +8,51 @@ import (
 	"github.com/team-inu/inu-backyard/internal/validator"
 )
 
-type lecturerController struct {
-	lecturerUseCase entity.UserUseCase
-	Validator       validator.PayloadValidator
+type userController struct {
+	userUseCase entity.UserUseCase
+	Validator   validator.PayloadValidator
 }
 
-func NewLecturerController(validator validator.PayloadValidator, lecturerUseCase entity.UserUseCase) *lecturerController {
-	return &lecturerController{
-		lecturerUseCase: lecturerUseCase,
-		Validator:       validator,
+func NewUserController(validator validator.PayloadValidator, userUseCase entity.UserUseCase) *userController {
+	return &userController{
+		userUseCase: userUseCase,
+		Validator:   validator,
 	}
 }
 
-func (c lecturerController) GetAll(ctx *fiber.Ctx) error {
-	lecturers, err := c.lecturerUseCase.GetAll()
+func (c userController) GetAll(ctx *fiber.Ctx) error {
+	users, err := c.userUseCase.GetAll()
 	if err != nil {
 		return err
 	}
 
-	if len(lecturers) == 0 {
-		return response.NewSuccessResponse(ctx, fiber.StatusNotFound, lecturers)
-	}
-
-	return response.NewSuccessResponse(ctx, fiber.StatusOK, lecturers)
+	return response.NewSuccessResponse(ctx, fiber.StatusOK, users)
 }
 
-func (c lecturerController) GetById(ctx *fiber.Ctx) error {
-	lecturerId := ctx.Params("lecturerId")
+func (c userController) GetById(ctx *fiber.Ctx) error {
+	userId := ctx.Params("userId")
 
-	lecturer, err := c.lecturerUseCase.GetById(lecturerId)
+	user, err := c.userUseCase.GetById(userId)
 
 	if err != nil {
 		return err
 	}
 
-	if lecturer == nil {
-		return response.NewSuccessResponse(ctx, fiber.StatusNotFound, lecturer)
+	if user == nil {
+		return response.NewSuccessResponse(ctx, fiber.StatusNotFound, user)
 	}
 
-	return response.NewSuccessResponse(ctx, fiber.StatusOK, lecturer)
+	return response.NewSuccessResponse(ctx, fiber.StatusOK, user)
 }
 
-func (c lecturerController) Create(ctx *fiber.Ctx) error {
-	var payload request.CreateLecturerPayload
+func (c userController) Create(ctx *fiber.Ctx) error {
+	var payload request.CreateUserPayload
 
 	if ok, err := c.Validator.Validate(&payload, ctx); !ok {
 		return err
 	}
 
-	err := c.lecturerUseCase.Create(payload.FirstName, payload.LastName, payload.Email, payload.Password)
+	err := c.userUseCase.Create(payload.FirstName, payload.LastName, payload.Email, payload.Password)
 
 	if err != nil {
 		return err
@@ -65,26 +61,26 @@ func (c lecturerController) Create(ctx *fiber.Ctx) error {
 	return response.NewSuccessResponse(ctx, fiber.StatusCreated, nil)
 }
 
-func (c lecturerController) CreateMany(ctx *fiber.Ctx) error {
-	var payload request.CreateBulkLecturerPayload
+func (c userController) CreateMany(ctx *fiber.Ctx) error {
+	var payload request.CreateBulkUserPayload
 
 	if ok, err := c.Validator.Validate(&payload, ctx); !ok {
 		return err
 	}
 
-	newLectuers := make([]entity.User, 0, len(payload.Lecturers))
+	newUsers := make([]entity.User, 0, len(payload.Users))
 
-	for _, lecturer := range payload.Lecturers {
-		newLectuers = append(newLectuers, entity.User{
-			FirstName: lecturer.FirstName,
-			LastName:  lecturer.LastName,
-			Email:     lecturer.Email,
-			Role:      lecturer.Role,
-			Password:  lecturer.Password,
+	for _, user := range payload.Users {
+		newUsers = append(newUsers, entity.User{
+			FirstName: user.FirstName,
+			LastName:  user.LastName,
+			Email:     user.Email,
+			Role:      user.Role,
+			Password:  user.Password,
 		})
 	}
 
-	err := c.lecturerUseCase.CreateMany(newLectuers)
+	err := c.userUseCase.CreateMany(newUsers)
 
 	if err != nil {
 		return err
@@ -93,16 +89,16 @@ func (c lecturerController) CreateMany(ctx *fiber.Ctx) error {
 	return response.NewSuccessResponse(ctx, fiber.StatusCreated, nil)
 }
 
-func (c lecturerController) Update(ctx *fiber.Ctx) error {
-	var payload request.UpdateLecturerPayload
+func (c userController) Update(ctx *fiber.Ctx) error {
+	var payload request.UpdateUserPayload
 
 	if ok, err := c.Validator.Validate(&payload, ctx); !ok {
 		return err
 	}
 
-	id := ctx.Params("lecturerId")
+	id := ctx.Params("userId")
 
-	err := c.lecturerUseCase.Update(id, &entity.User{
+	err := c.userUseCase.Update(id, &entity.User{
 		FirstName: payload.FirstName,
 		LastName:  payload.LastName,
 		Email:     payload.Email,
@@ -116,10 +112,10 @@ func (c lecturerController) Update(ctx *fiber.Ctx) error {
 	return response.NewSuccessResponse(ctx, fiber.StatusOK, nil)
 }
 
-func (c lecturerController) Delete(ctx *fiber.Ctx) error {
-	id := ctx.Params("lecturerId")
+func (c userController) Delete(ctx *fiber.Ctx) error {
+	id := ctx.Params("userId")
 
-	err := c.lecturerUseCase.Delete(id)
+	err := c.userUseCase.Delete(id)
 
 	if err != nil {
 		return err

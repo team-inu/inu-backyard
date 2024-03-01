@@ -26,10 +26,6 @@ func (c scoreController) GetAll(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	if len(scores) == 0 {
-		return response.NewSuccessResponse(ctx, fiber.StatusNotFound, scores)
-	}
-
 	return response.NewSuccessResponse(ctx, fiber.StatusOK, scores)
 }
 
@@ -56,10 +52,6 @@ func (c scoreController) GetByAssignmentId(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	if len(scores) == 0 {
-		return response.NewSuccessResponse(ctx, fiber.StatusNotFound, scores)
-	}
-
 	return response.NewSuccessResponse(ctx, fiber.StatusOK, scores)
 }
 
@@ -71,7 +63,7 @@ func (c scoreController) CreateMany(ctx *fiber.Ctx) error {
 	}
 
 	err := c.ScoreUseCase.CreateMany(
-		payload.LecturerId,
+		payload.UserId,
 		payload.AssignmentId,
 		payload.StudentScores,
 	)

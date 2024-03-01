@@ -26,10 +26,6 @@ func (c enrollmentController) GetAll(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	if len(enrollments) == 0 {
-		return response.NewSuccessResponse(ctx, fiber.StatusNotFound, enrollments)
-	}
-
 	return response.NewSuccessResponse(ctx, fiber.StatusOK, enrollments)
 }
 
@@ -56,10 +52,6 @@ func (c enrollmentController) GetByCourseId(ctx *fiber.Ctx) error {
 
 	if err != nil {
 		return err
-	}
-
-	if len(enrollments) == 0 {
-		return response.NewSuccessResponse(ctx, fiber.StatusNotFound, enrollments)
 	}
 
 	return response.NewSuccessResponse(ctx, fiber.StatusOK, enrollments)

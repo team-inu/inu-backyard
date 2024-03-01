@@ -28,10 +28,6 @@ func (c courseController) GetAll(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	if len(courses) == 0 {
-		return response.NewSuccessResponse(ctx, fiber.StatusNotFound, courses)
-	}
-
 	return response.NewSuccessResponse(ctx, fiber.StatusOK, courses)
 }
 
@@ -60,7 +56,7 @@ func (c courseController) Create(ctx *fiber.Ctx) error {
 	fmt.Println(payload.Description[0])
 	err := c.courseUseCase.Create(
 		payload.SemesterId,
-		payload.LecturerId,
+		payload.UserId,
 		payload.Name,
 		payload.Code,
 		payload.Curriculum,
@@ -87,7 +83,7 @@ func (c courseController) Update(ctx *fiber.Ctx) error {
 		Name:       payload.Name,
 		Code:       payload.Code,
 		SemesterId: payload.SemesterId,
-		LecturerId: payload.LecturerId,
+		UserId:     payload.UserId,
 	})
 
 	if err != nil {

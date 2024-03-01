@@ -68,12 +68,12 @@ const (
 	ErrDeleteAssignment   = 20903
 	ErrQueryAssignment    = 20904
 
-	ErrLecturerNotFound = 21000
-	ErrCreateLecturer   = 21001
-	ErrUpdateLecturer   = 21002
-	ErrDeleteLecturer   = 21003
-	ErrQueryLecturer    = 21004
-	ErrLecturerPassword = 21005
+	ErrUserNotFound = 21000
+	ErrCreateUser   = 21001
+	ErrUpdateUser   = 21002
+	ErrDeleteUser   = 21003
+	ErrQueryUser    = 21004
+	ErrUserPassword = 21005
 
 	ErrProgrammeNotFound = 21100
 	ErrCreateProgramme   = 21101

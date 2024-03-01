@@ -26,10 +26,6 @@ func (c semesterController) GetAll(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	if len(semesters) == 0 {
-		return response.NewSuccessResponse(ctx, fiber.StatusNotFound, semesters)
-	}
-
 	return response.NewSuccessResponse(ctx, fiber.StatusOK, semesters)
 }
 

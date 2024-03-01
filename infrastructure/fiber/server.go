@@ -30,7 +30,7 @@ type fiberServer struct {
 	facultyRepository                entity.FacultyRepository
 	departmentRepository             entity.DepartmentRepository
 	scoreRepository                  entity.ScoreRepository
-	lecturerRepository               entity.UserRepository
+	userRepository                   entity.UserRepository
 	assignmentRepository             entity.AssignmentRepository
 	programmeRepository              entity.ProgrammeRepository
 	semesterRepository               entity.SemesterRepository
@@ -46,7 +46,7 @@ type fiberServer struct {
 	facultyUseCase                entity.FacultyUseCase
 	departmentUseCase             entity.DepartmentUseCase
 	scoreUseCase                  entity.ScoreUseCase
-	lecturerUseCase               entity.UserUseCase
+	userUseCase                   entity.UserUseCase
 	assignmentUseCase             entity.AssignmentUseCase
 	programmeUseCase              entity.ProgrammeUseCase
 	semesterUseCase               entity.SemesterUseCase
@@ -92,7 +92,7 @@ func (f *fiberServer) initRepository() (err error) {
 	f.facultyRepository = repository.NewFacultyRepositoryGorm(f.gorm)
 	f.departmentRepository = repository.NewDepartmentRepositoryGorm(f.gorm)
 	f.scoreRepository = repository.NewScoreRepositoryGorm(f.gorm)
-	f.lecturerRepository = repository.NewLecturerRepositoryGorm(f.gorm)
+	f.userRepository = repository.NewUserRepositoryGorm(f.gorm)
 	f.assignmentRepository = repository.NewAssignmentRepositoryGorm(f.gorm)
 	f.programmeRepository = repository.NewProgrammeRepositoryGorm(f.gorm)
 	f.semesterRepository = repository.NewSemesterRepositoryGorm(f.gorm)
@@ -109,17 +109,17 @@ func (f *fiberServer) initUseCase() {
 	departmentUseCase := usecase.NewDepartmentUseCase(f.departmentRepository)
 	studentUseCase := usecase.NewStudentUseCase(f.studentRepository, departmentUseCase, programmeUseCase)
 	programLearningOutcomeUseCase := usecase.NewProgramLearningOutcomeUseCase(f.programLearningOutcomeRepository, programmeUseCase)
-	lecturerUseCase := usecase.NewLecturerUseCase(f.lecturerRepository)
+	userUseCase := usecase.NewUserUseCase(f.userRepository)
 	semesterUseCase := usecase.NewSemesterUseCase(f.semesterRepository)
-	courseUseCase := usecase.NewCourseUseCase(f.courseRepository, semesterUseCase, lecturerUseCase)
+	courseUseCase := usecase.NewCourseUseCase(f.courseRepository, semesterUseCase, userUseCase)
 	enrollmentUseCase := usecase.NewEnrollmentUseCase(f.enrollmentRepository, studentUseCase, courseUseCase)
 	gradeUseCase := usecase.NewGradeUseCase(f.gradeRepository)
 	sessionUseCase := usecase.NewSessionUseCase(f.sessionRepository, f.config.Client.Auth)
-	authUseCase := usecase.NewAuthUseCase(sessionUseCase, lecturerUseCase)
+	authUseCase := usecase.NewAuthUseCase(sessionUseCase, userUseCase)
 	programOutcomeUseCase := usecase.NewProgramOutcomeUseCase(f.programOutcomeRepository, semesterUseCase)
 	courseLearningOutcomeUseCase := usecase.NewCourseLearningOutcomeUseCase(f.courseLearningOutcomeRepository, courseUseCase, programOutcomeUseCase, programLearningOutcomeUseCase)
 	assignmentUseCase := usecase.NewAssignmentUseCase(f.assignmentRepository, courseLearningOutcomeUseCase, courseUseCase)
-	scoreUseCase := usecase.NewScoreUseCase(f.scoreRepository, enrollmentUseCase, assignmentUseCase, lecturerUseCase)
+	scoreUseCase := usecase.NewScoreUseCase(f.scoreRepository, enrollmentUseCase, assignmentUseCase, userUseCase)
 
 	f.assignmentUseCase = assignmentUseCase
 	f.authUseCase = authUseCase
@@ -129,7 +129,7 @@ func (f *fiberServer) initUseCase() {
 	f.enrollmentUseCase = enrollmentUseCase
 	f.facultyUseCase = facultyUseCase
 	f.gradeUseCase = gradeUseCase
-	f.lecturerUseCase = lecturerUseCase
+	f.userUseCase = userUseCase
 	f.programLearningOutcomeUseCase = programLearningOutcomeUseCase
 	f.programOutcomeUseCase = programOutcomeUseCase
 	f.programmeUseCase = programmeUseCase
@@ -170,7 +170,7 @@ func (f *fiberServer) initController() error {
 	departmentController := controller.NewDepartmentController(validator, f.departmentUseCase)
 	scoreController := controller.NewScoreController(validator, f.scoreUseCase)
 
-	lecturerController := controller.NewLecturerController(validator, f.lecturerUseCase)
+	userController := controller.NewUserController(validator, f.userUseCase)
 
 	assignmentController := controller.NewAssignmentController(validator, f.assignmentUseCase)
 	programmeController := controller.NewProgrammeController(validator, f.programmeUseCase)
@@ -179,7 +179,7 @@ func (f *fiberServer) initController() error {
 	enrollmentController := controller.NewEnrollmentController(validator, f.enrollmentUseCase)
 
 	gradeController := controller.NewGradeController(validator, f.gradeUseCase)
-	authController := controller.NewAuthController(validator, f.config.Client.Auth, f.authUseCase, f.lecturerUseCase)
+	authController := controller.NewAuthController(validator, f.config.Client.Auth, f.authUseCase, f.userUseCase)
 
 	app.Use(fiberzap.New(fiberzap.Config{
 		Logger: logger.NewZapLogger(),
@@ -244,12 +244,12 @@ func (f *fiberServer) initController() error {
 	app.Patch("/scores/:scoreId", scoreController.Update)
 	app.Delete("/scores/:scoreId", scoreController.Delete)
 
-	app.Get("/lecturers", lecturerController.GetAll)
-	app.Get("/lecturers/:lecturerId", lecturerController.GetById)
-	app.Post("/lecturers", lecturerController.Create)
-	app.Post("/lecturers/bulk", lecturerController.CreateMany)
-	app.Patch("/lecturers/:lecturerId", lecturerController.Update)
-	app.Delete("/lecturers/:lecturerId", lecturerController.Delete)
+	app.Get("/users", userController.GetAll)
+	app.Get("/users/:userId", userController.GetById)
+	app.Post("/users", userController.Create)
+	app.Post("/users/bulk", userController.CreateMany)
+	app.Patch("/users/:userId", userController.Update)
+	app.Delete("/users/:userId", userController.Delete)
 
 	app.Get("/assignments", assignmentController.GetAssignments)
 	app.Get("/assignments/:assignmentId", assignmentController.GetById)

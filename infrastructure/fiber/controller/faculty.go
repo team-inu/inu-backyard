@@ -26,10 +26,6 @@ func (c FacultyController) GetAll(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	if len(faculties) == 0 {
-		return response.NewSuccessResponse(ctx, fiber.StatusNotFound, faculties)
-	}
-
 	return response.NewSuccessResponse(ctx, fiber.StatusOK, faculties)
 }
 

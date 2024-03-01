@@ -26,10 +26,6 @@ func (c studentController) GetAll(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	if len(students) == 0 {
-		return response.NewSuccessResponse(ctx, fiber.StatusNotFound, students)
-	}
-
 	return response.NewSuccessResponse(ctx, fiber.StatusOK, students)
 }
 
@@ -64,10 +60,6 @@ func (c studentController) GetStudents(ctx *fiber.Ctx) error {
 
 	if err != nil {
 		return err
-	}
-
-	if len(students) == 0 {
-		return response.NewSuccessResponse(ctx, fiber.StatusNotFound, students)
 	}
 
 	return response.NewSuccessResponse(ctx, fiber.StatusOK, students)

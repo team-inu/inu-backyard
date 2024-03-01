@@ -14,23 +14,23 @@ import (
 )
 
 type AuthController struct {
-	config          config.AuthConfig
-	validator       validator.PayloadValidator
-	authUseCase     entity.AuthUseCase
-	lecturerUseCase entity.UserUseCase
+	config      config.AuthConfig
+	validator   validator.PayloadValidator
+	authUseCase entity.AuthUseCase
+	userUseCase entity.UserUseCase
 }
 
 func NewAuthController(
 	validator validator.PayloadValidator,
 	config config.AuthConfig,
 	authUseCase entity.AuthUseCase,
-	lecturerUseCase entity.UserUseCase,
+	userUseCase entity.UserUseCase,
 ) *AuthController {
 	return &AuthController{
-		config:          config,
-		validator:       validator,
-		authUseCase:     authUseCase,
-		lecturerUseCase: lecturerUseCase,
+		config:      config,
+		validator:   validator,
+		authUseCase: authUseCase,
+		userUseCase: userUseCase,
 	}
 }
 

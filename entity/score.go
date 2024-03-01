@@ -4,7 +4,7 @@ type Score struct {
 	Id           string  `json:"id" gorm:"primaryKey;type:char(255)"`
 	Score        float64 ` json:"score"`
 	StudentId    string  `json:"studentId"`
-	LecturerId   string  `json:"lecturerId"`
+	UserId       string  `json:"userId"`
 	AssignmentId string  `json:"assignmentId"`
 
 	Email     string `json:"email" gorm:"->;-:migration"`
@@ -12,7 +12,7 @@ type Score struct {
 	LastName  string `json:"lastName" gorm:"->;-:migration"`
 
 	Student    Student    `json:"-"`
-	Lecturer   User       `json:"-"`
+	User       User       `json:"-"`
 	Assignment Assignment `json:"-"`
 }
 
@@ -36,7 +36,7 @@ type ScoreUseCase interface {
 	GetAll() ([]Score, error)
 	GetById(id string) (*Score, error)
 	GetByAssignmentId(assignmentId string) ([]Score, error)
-	CreateMany(lecturerId string, assignmentId string, studentScores []StudentScore) error
+	CreateMany(userId string, assignmentId string, studentScores []StudentScore) error
 	Update(scoreId string, score float64) error
 	Delete(id string) error
 	FilterSubmittedScoreStudents(assignmentId string, studentIds []string) ([]string, error)

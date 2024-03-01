@@ -1,6 +1,6 @@
 package request
 
-type CreateLecturerPayload struct {
+type CreateUserPayload struct {
 	FirstName string `json:"firstName" validate:"required"`
 	LastName  string `json:"lastName" validate:"required"`
 	Email     string `json:"email" validate:"required,email"`
@@ -8,13 +8,13 @@ type CreateLecturerPayload struct {
 	Password  string `json:"password" validate:"required"`
 }
 
-type UpdateLecturerPayload struct {
+type UpdateUserPayload struct {
 	FirstName string `json:"firstName"`
 	LastName  string `json:"lastName"`
 	Email     string `json:"email"`
 	Role      string `json:"role"`
 }
 
-type CreateBulkLecturerPayload struct {
-	Lecturers []CreateLecturerPayload `json:"lecturers" validate:"dive"`
+type CreateBulkUserPayload struct {
+	Users []CreateUserPayload `json:"users" validate:"dive"`
 }

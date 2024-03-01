@@ -8,17 +8,17 @@ import (
 )
 
 type authUseCase struct {
-	sessionUseCase  entity.SessionUseCase
-	lecturerUseCase entity.UserUseCase
+	sessionUseCase entity.SessionUseCase
+	userUserCase   entity.UserUseCase
 }
 
 func NewAuthUseCase(
 	sessionUseCase entity.SessionUseCase,
-	lecturerUseCase entity.UserUseCase,
+	userUseCase entity.UserUseCase,
 ) entity.AuthUseCase {
 	return &authUseCase{
-		sessionUseCase:  sessionUseCase,
-		lecturerUseCase: lecturerUseCase,
+		sessionUseCase: sessionUseCase,
+		userUserCase:   userUseCase,
 	}
 }
 
@@ -28,7 +28,7 @@ func (u authUseCase) Authenticate(header string) (*entity.User, error) {
 		return nil, errs.New(errs.SameCode, "cannot authenticate user", err)
 	}
 
-	user, err := u.lecturerUseCase.GetBySessionId(session.Id)
+	user, err := u.userUserCase.GetBySessionId(session.Id)
 	if err != nil {
 		return nil, errs.New(errs.SameCode, "cannot get user to authenticate", err)
 	}
@@ -37,18 +37,18 @@ func (u authUseCase) Authenticate(header string) (*entity.User, error) {
 
 func (u authUseCase) SignIn(email string, password string, ipAddress string, userAgent string) (*fiber.Cookie, error) {
 
-	lecturer, err := u.lecturerUseCase.GetByEmail(email)
+	user, err := u.userUserCase.GetByEmail(email)
 	if err != nil {
 		return nil, errs.New(errs.SameCode, "cannot get user data to sign in", err)
-	} else if lecturer == nil {
-		return nil, errs.New(errs.ErrLecturerNotFound, "account with email %s is not registered", email)
+	} else if user == nil {
+		return nil, errs.New(errs.ErrUserNotFound, "account with email %s is not registered", email)
 	}
 
-	if err = bcrypt.CompareHashAndPassword([]byte(lecturer.Password), []byte(password)); err != nil {
-		return nil, errs.New(errs.ErrLecturerPassword, "password is incorrect", err)
+	if err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password)); err != nil {
+		return nil, errs.New(errs.ErrUserPassword, "password is incorrect", err)
 	}
 
-	cookie, err := u.sessionUseCase.Create(lecturer.Id, ipAddress, userAgent)
+	cookie, err := u.sessionUseCase.Create(user.Id, ipAddress, userAgent)
 	if err != nil {
 		return nil, errs.New(errs.SameCode, "cannot create session to sign in", err)
 	}

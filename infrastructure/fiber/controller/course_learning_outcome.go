@@ -26,10 +26,6 @@ func (c courseLearningOutcomeController) GetAll(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	if len(clos) == 0 {
-		return response.NewSuccessResponse(ctx, fiber.StatusNotFound, clos)
-	}
-
 	return response.NewSuccessResponse(ctx, fiber.StatusOK, clos)
 
 }
@@ -55,10 +51,6 @@ func (c courseLearningOutcomeController) GetByCourseId(ctx *fiber.Ctx) error {
 	clos, err := c.courseLearningOutcomeUseCase.GetByCourseId(courseId)
 	if err != nil {
 		return err
-	}
-
-	if len(clos) == 0 {
-		return response.NewSuccessResponse(ctx, fiber.StatusNotFound, clos)
 	}
 
 	return response.NewSuccessResponse(ctx, fiber.StatusOK, clos)

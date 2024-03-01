@@ -11,20 +11,20 @@ type scoreUseCase struct {
 	scoreRepo         entity.ScoreRepository
 	enrollmentUseCase entity.EnrollmentUseCase
 	assignmentUseCase entity.AssignmentUseCase
-	LecturerUseCase   entity.UserUseCase
+	userUseCase       entity.UserUseCase
 }
 
 func NewScoreUseCase(
 	scoreRepo entity.ScoreRepository,
 	enrollmentUseCase entity.EnrollmentUseCase,
 	assignmentUseCase entity.AssignmentUseCase,
-	lecturerUseCase entity.UserUseCase,
+	userUseCase entity.UserUseCase,
 ) entity.ScoreUseCase {
 	return &scoreUseCase{
 		scoreRepo:         scoreRepo,
 		enrollmentUseCase: enrollmentUseCase,
 		assignmentUseCase: assignmentUseCase,
-		LecturerUseCase:   lecturerUseCase,
+		userUseCase:       userUseCase,
 	}
 }
 
@@ -62,16 +62,16 @@ func (u scoreUseCase) GetByAssignmentId(assignmentId string) ([]entity.Score, er
 	return scores, nil
 }
 
-func (u scoreUseCase) CreateMany(lecturerId string, assignmentId string, studentScores []entity.StudentScore) error {
+func (u scoreUseCase) CreateMany(userId string, assignmentId string, studentScores []entity.StudentScore) error {
 	if len(studentScores) == 0 {
 		return errs.New(errs.ErrCreateScore, "studentScores must not be empty")
 	}
 
-	lecturer, err := u.LecturerUseCase.GetById(lecturerId)
+	user, err := u.userUseCase.GetById(userId)
 	if err != nil {
-		return errs.New(errs.SameCode, "cannot get lecturer id %s to create score", lecturerId, err)
-	} else if lecturer == nil {
-		return errs.New(errs.ErrLecturerNotFound, "cannot get lecturer id %s to create score", lecturerId)
+		return errs.New(errs.SameCode, "cannot get user id %s to create score", userId, err)
+	} else if user == nil {
+		return errs.New(errs.ErrUserNotFound, "cannot get user id %s to create score", userId)
 	}
 
 	assignment, err := u.assignmentUseCase.GetById(assignmentId)
@@ -116,7 +116,7 @@ func (u scoreUseCase) CreateMany(lecturerId string, assignmentId string, student
 			Id:           ulid.Make().String(),
 			Score:        studentScore.Score,
 			StudentId:    studentScore.StudentId,
-			LecturerId:   lecturerId,
+			UserId:       userId,
 			AssignmentId: assignmentId,
 		})
 	}
@@ -139,7 +139,7 @@ func (u scoreUseCase) Update(scoreId string, score float64) error {
 	err = u.scoreRepo.Update(scoreId, &entity.Score{
 		Score:        score,
 		StudentId:    existScore.StudentId,
-		LecturerId:   existScore.LecturerId,
+		UserId:       existScore.UserId,
 		AssignmentId: existScore.AssignmentId,
 	})
 	if err != nil {

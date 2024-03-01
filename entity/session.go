@@ -8,13 +8,13 @@ import (
 
 type Session struct {
 	Id        string    `gorm:"primaryKey;type:char(255)"`
-	UserId    string    `json:"userId" gorm:"column:lecturer_id"`
+	UserId    string    `json:"userId" gorm:"column:user_id"`
 	IpAddress string    `json:"ipAddress" db:"ip_address"`
 	UserAgent string    `json:"userAgent" db:"user_agent"`
 	ExpiredAt time.Time `json:"expiredAt" db:"expired_at"`
 	CreatedAt time.Time `json:"createdAt" db:"created_at"`
 
-	Lecturer User `gorm:"foreignKey:UserId"`
+	User User `gorm:"foreignKey:UserId"`
 }
 
 type SessionRepository interface {

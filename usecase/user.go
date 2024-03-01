@@ -7,69 +7,69 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-type lecturerUseCase struct {
-	lecturerRepo entity.UserRepository
+type userUseCase struct {
+	useRepo entity.UserRepository
 }
 
-func NewLecturerUseCase(lecturerRepo entity.UserRepository) entity.UserUseCase {
-	return &lecturerUseCase{lecturerRepo: lecturerRepo}
+func NewUserUseCase(userRepo entity.UserRepository) entity.UserUseCase {
+	return &userUseCase{useRepo: userRepo}
 }
 
-func (u lecturerUseCase) GetAll() ([]entity.User, error) {
-	lecturers, err := u.lecturerRepo.GetAll()
+func (u userUseCase) GetAll() ([]entity.User, error) {
+	users, err := u.useRepo.GetAll()
 	if err != nil {
-		return nil, errs.New(errs.ErrQueryLecturer, "cannot get all lecturers", err)
+		return nil, errs.New(errs.ErrQueryUser, "cannot get all users", err)
 	}
 
-	return lecturers, nil
+	return users, nil
 }
 
-func (u lecturerUseCase) GetByEmail(email string) (*entity.User, error) {
-	lecturer, err := u.lecturerRepo.GetByEmail(email)
+func (u userUseCase) GetByEmail(email string) (*entity.User, error) {
+	user, err := u.useRepo.GetByEmail(email)
 	if err != nil {
-		return nil, errs.New(errs.ErrQueryLecturer, "cannot get lecturer by email %s", email, err)
+		return nil, errs.New(errs.ErrQueryUser, "cannot get user by email %s", email, err)
 	}
 
-	return lecturer, nil
+	return user, nil
 }
 
-func (u lecturerUseCase) GetById(id string) (*entity.User, error) {
-	lecturer, err := u.lecturerRepo.GetById(id)
+func (u userUseCase) GetById(id string) (*entity.User, error) {
+	user, err := u.useRepo.GetById(id)
 	if err != nil {
-		return nil, errs.New(errs.ErrQueryLecturer, "cannot get lecturer by id %s", id, err)
+		return nil, errs.New(errs.ErrQueryUser, "cannot get user by id %s", id, err)
 	}
 
-	return lecturer, nil
+	return user, nil
 }
 
-func (u lecturerUseCase) GetBySessionId(sessionId string) (*entity.User, error) {
-	lecturer, err := u.lecturerRepo.GetBySessionId(sessionId)
+func (u userUseCase) GetBySessionId(sessionId string) (*entity.User, error) {
+	user, err := u.useRepo.GetBySessionId(sessionId)
 	if err != nil {
-		return nil, errs.New(errs.ErrQueryLecturer, "cannot get lecturer by session id %s", sessionId, err)
+		return nil, errs.New(errs.ErrQueryUser, "cannot get user by session id %s", sessionId, err)
 	}
 
-	return lecturer, nil
+	return user, nil
 }
 
-func (u lecturerUseCase) GetByParams(params *entity.User, limit int, offset int) ([]entity.User, error) {
-	lecturers, err := u.lecturerRepo.GetByParams(params, limit, offset)
+func (u userUseCase) GetByParams(params *entity.User, limit int, offset int) ([]entity.User, error) {
+	users, err := u.useRepo.GetByParams(params, limit, offset)
 
 	if err != nil {
-		return nil, errs.New(errs.ErrQueryLecturer, "cannot get lecturers by params", err)
+		return nil, errs.New(errs.ErrQueryUser, "cannot get users by params", err)
 	}
 
-	return lecturers, nil
+	return users, nil
 }
 
-func (u lecturerUseCase) Create(firstName string, lastName string, email string, password string) error {
+func (u userUseCase) Create(firstName string, lastName string, email string, password string) error {
 	bcryptPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
-		return errs.New(errs.ErrCreateLecturer, "cannot create lecturer", err)
+		return errs.New(errs.ErrCreateUser, "cannot create user", err)
 	}
 
 	hasPassword := string(bcryptPassword)
 
-	lecturer := &entity.User{
+	user := &entity.User{
 		Id:        ulid.Make().String(),
 		FirstName: firstName,
 		LastName:  lastName,
@@ -77,61 +77,61 @@ func (u lecturerUseCase) Create(firstName string, lastName string, email string,
 		Password:  hasPassword,
 	}
 
-	err = u.lecturerRepo.Create(lecturer)
+	err = u.useRepo.Create(user)
 	if err != nil {
-		return errs.New(errs.ErrCreateLecturer, "cannot create lecturer", err)
+		return errs.New(errs.ErrCreateUser, "cannot create user", err)
 	}
 
 	return nil
 }
 
-func (u lecturerUseCase) CreateMany(lecturers []entity.User) error {
+func (u userUseCase) CreateMany(users []entity.User) error {
 	//encrypt password
-	for i := range lecturers {
-		bcryptPassword, err := bcrypt.GenerateFromPassword([]byte((lecturers)[i].Password), bcrypt.DefaultCost)
+	for i := range users {
+		bcryptPassword, err := bcrypt.GenerateFromPassword([]byte((users)[i].Password), bcrypt.DefaultCost)
 		if err != nil {
-			return errs.New(errs.ErrCreateLecturer, "cannot create lecturer", err)
+			return errs.New(errs.ErrCreateUser, "cannot create user", err)
 		}
-		lecturers[i].Id = ulid.Make().String()
-		(lecturers)[i].Password = string(bcryptPassword)
+		users[i].Id = ulid.Make().String()
+		(users)[i].Password = string(bcryptPassword)
 	}
 
-	err := u.lecturerRepo.CreateMany(lecturers)
+	err := u.useRepo.CreateMany(users)
 	if err != nil {
-		return errs.New(errs.ErrCreateLecturer, "cannot create lecturer", err)
-	}
-
-	return nil
-}
-
-func (u lecturerUseCase) Update(id string, lecturer *entity.User) error {
-	existLecturer, err := u.GetById(id)
-	if err != nil {
-		return errs.New(errs.SameCode, "cannot get lecturer id %s to update", id, err)
-	} else if existLecturer == nil {
-		return errs.New(errs.ErrLecturerNotFound, "cannot get lecturer id %s to update", id)
-	}
-
-	err = u.lecturerRepo.Update(id, lecturer)
-	if err != nil {
-		return errs.New(errs.ErrUpdateLecturer, "cannot update lecturer by id %s", lecturer.Id, err)
+		return errs.New(errs.ErrCreateUser, "cannot create user", err)
 	}
 
 	return nil
 }
 
-func (u lecturerUseCase) Delete(id string) error {
-	lecturer, err := u.GetById(id)
+func (u userUseCase) Update(id string, user *entity.User) error {
+	existedUser, err := u.GetById(id)
 	if err != nil {
-		return errs.New(errs.SameCode, "cannot get lecturer id %s to delete", id, err)
-	} else if lecturer == nil {
-		return errs.New(errs.ErrLecturerNotFound, "cannot get lecturer id %s to delete", id)
+		return errs.New(errs.SameCode, "cannot get user id %s to update", id, err)
+	} else if existedUser == nil {
+		return errs.New(errs.ErrUserNotFound, "cannot get user id %s to update", id)
 	}
 
-	err = u.lecturerRepo.Delete(id)
+	err = u.useRepo.Update(id, user)
+	if err != nil {
+		return errs.New(errs.ErrUpdateUser, "cannot update user by id %s", user.Id, err)
+	}
+
+	return nil
+}
+
+func (u userUseCase) Delete(id string) error {
+	user, err := u.GetById(id)
+	if err != nil {
+		return errs.New(errs.SameCode, "cannot get user id %s to delete", id, err)
+	} else if user == nil {
+		return errs.New(errs.ErrUserNotFound, "cannot get user id %s to delete", id)
+	}
+
+	err = u.useRepo.Delete(id)
 
 	if err != nil {
-		return errs.New(errs.ErrDeleteLecturer, "cannot delete lecturer by id %s", id, err)
+		return errs.New(errs.ErrDeleteUser, "cannot delete user by id %s", id, err)
 	}
 
 	return nil

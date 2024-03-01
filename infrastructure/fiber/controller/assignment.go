@@ -51,10 +51,6 @@ func (c assignmentController) GetAssignments(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	if len(assignments) == 0 {
-		return response.NewSuccessResponse(ctx, fiber.StatusNotFound, assignments)
-	}
-
 	return response.NewSuccessResponse(ctx, fiber.StatusOK, assignments)
 }
 
@@ -69,10 +65,6 @@ func (c assignmentController) GetByCourseId(ctx *fiber.Ctx) error {
 
 	if err != nil {
 		return err
-	}
-
-	if len(assignments) == 0 {
-		return response.NewSuccessResponse(ctx, fiber.StatusNotFound, assignments)
 	}
 
 	return response.NewSuccessResponse(ctx, fiber.StatusOK, assignments)

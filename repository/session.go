@@ -56,7 +56,7 @@ func (r *sessionRepository) DeleteByUserId(userId string) error {
 }
 
 func (r *sessionRepository) DeleteDuplicates(userId string, ipAddress string, userAgent string) error {
-	result := r.gorm.Where("lecturer_id = ? AND ip_address = ? AND user_agent = ?", userId, ipAddress, userAgent).Delete(&entity.Session{})
+	result := r.gorm.Where("user_id = ? AND ip_address = ? AND user_agent = ?", userId, ipAddress, userAgent).Delete(&entity.Session{})
 
 	if result.Error != nil {
 		return fmt.Errorf("cannot query to delete session: %w", result.Error)

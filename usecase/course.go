@@ -9,11 +9,11 @@ import (
 type courseUseCase struct {
 	courseRepo      entity.CourseRepository
 	semesterUseCase entity.SemesterUseCase
-	lecturerUseCase entity.UserUseCase
+	userUseCase     entity.UserUseCase
 }
 
-func NewCourseUseCase(courseRepo entity.CourseRepository, semesterUseCase entity.SemesterUseCase, lecturerUseCase entity.UserUseCase) entity.CourseUseCase {
-	return &courseUseCase{courseRepo: courseRepo, semesterUseCase: semesterUseCase, lecturerUseCase: lecturerUseCase}
+func NewCourseUseCase(courseRepo entity.CourseRepository, semesterUseCase entity.SemesterUseCase, userUseCase entity.UserUseCase) entity.CourseUseCase {
+	return &courseUseCase{courseRepo: courseRepo, semesterUseCase: semesterUseCase, userUseCase: userUseCase}
 }
 
 func (u courseUseCase) GetAll() ([]entity.Course, error) {
@@ -34,7 +34,7 @@ func (u courseUseCase) GetById(id string) (*entity.Course, error) {
 	return course, nil
 }
 
-func (u courseUseCase) Create(semesterId string, lecturerId string, name string, code string, curriculum string, description string, criteriaGrade entity.CriteriaGrade) error {
+func (u courseUseCase) Create(semesterId string, userId string, name string, code string, curriculum string, description string, criteriaGrade entity.CriteriaGrade) error {
 	semester, err := u.semesterUseCase.GetById(semesterId)
 	if err != nil {
 		return errs.New(errs.SameCode, "cannot get semester id %s while creating course", semesterId, err)
@@ -42,11 +42,11 @@ func (u courseUseCase) Create(semesterId string, lecturerId string, name string,
 		return errs.New(errs.ErrSemesterNotFound, "semester id %s not found while creating course", semesterId)
 	}
 
-	lecturer, err := u.lecturerUseCase.GetById(lecturerId)
+	user, err := u.userUseCase.GetById(userId)
 	if err != nil {
-		return errs.New(errs.SameCode, "cannot get lecturer id %s while creating course", lecturerId, err)
-	} else if lecturer == nil {
-		return errs.New(errs.ErrLecturerNotFound, "lecturer id %s not found while creating course", lecturerId)
+		return errs.New(errs.SameCode, "cannot get user id %s while creating course", userId, err)
+	} else if user == nil {
+		return errs.New(errs.ErrUserNotFound, "user id %s not found while creating course", userId)
 	}
 
 	if !criteriaGrade.IsValid() {
@@ -56,7 +56,7 @@ func (u courseUseCase) Create(semesterId string, lecturerId string, name string,
 	course := entity.Course{
 		Id:            ulid.Make().String(),
 		SemesterId:    semesterId,
-		LecturerId:    lecturerId,
+		UserId:        userId,
 		Name:          name,
 		Code:          code,
 		Curriculum:    curriculum,

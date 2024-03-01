@@ -26,10 +26,6 @@ func (c gradeController) GetAll(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	if len(grades) == 0 {
-		return response.NewSuccessResponse(ctx, fiber.StatusNotFound, grades)
-	}
-
 	return response.NewSuccessResponse(ctx, fiber.StatusOK, grades)
 }
 

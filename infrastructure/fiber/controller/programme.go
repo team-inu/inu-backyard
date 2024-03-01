@@ -26,10 +26,6 @@ func (c programmeController) GetAll(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	if len(programmes) == 0 {
-		return response.NewSuccessResponse(ctx, fiber.StatusNotFound, programmes)
-	}
-
 	return response.NewSuccessResponse(ctx, fiber.StatusOK, programmes)
 }
 
