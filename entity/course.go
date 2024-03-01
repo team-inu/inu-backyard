@@ -29,7 +29,7 @@ type Course struct {
 	CriteriaGrade
 
 	Semester Semester
-	Lecturer Lecturer
+	Lecturer User
 }
 
 type CourseRepository interface {

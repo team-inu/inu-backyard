@@ -29,7 +29,7 @@ func main() {
 		&entity.Faculty{},
 		&entity.Grade{},
 		&entity.GraduatedStudent{},
-		&entity.Lecturer{},
+		&entity.User{},
 		&entity.ProgramLearningOutcome{},
 		&entity.ProgramOutcome{},
 		&entity.Programme{},

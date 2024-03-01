@@ -30,7 +30,7 @@ type fiberServer struct {
 	facultyRepository                entity.FacultyRepository
 	departmentRepository             entity.DepartmentRepository
 	scoreRepository                  entity.ScoreRepository
-	lecturerRepository               entity.LecturerRepository
+	lecturerRepository               entity.UserRepository
 	assignmentRepository             entity.AssignmentRepository
 	programmeRepository              entity.ProgrammeRepository
 	semesterRepository               entity.SemesterRepository
@@ -46,7 +46,7 @@ type fiberServer struct {
 	facultyUseCase                entity.FacultyUseCase
 	departmentUseCase             entity.DepartmentUseCase
 	scoreUseCase                  entity.ScoreUseCase
-	lecturerUseCase               entity.LecturerUseCase
+	lecturerUseCase               entity.UserUseCase
 	assignmentUseCase             entity.AssignmentUseCase
 	programmeUseCase              entity.ProgrammeUseCase
 	semesterUseCase               entity.SemesterUseCase

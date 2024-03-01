@@ -27,7 +27,7 @@ func NewAuthMiddleware(
 	}
 }
 
-func GetUserFromCtx(ctx *fiber.Ctx) *entity.Lecturer {
-	user, _ := ctx.Locals("user").(*entity.Lecturer)
+func GetUserFromCtx(ctx *fiber.Ctx) *entity.User {
+	user, _ := ctx.Locals("user").(*entity.User)
 	return user
 }

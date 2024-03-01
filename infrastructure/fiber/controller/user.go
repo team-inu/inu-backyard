@@ -9,11 +9,11 @@ import (
 )
 
 type lecturerController struct {
-	lecturerUseCase entity.LecturerUseCase
+	lecturerUseCase entity.UserUseCase
 	Validator       validator.PayloadValidator
 }
 
-func NewLecturerController(validator validator.PayloadValidator, lecturerUseCase entity.LecturerUseCase) *lecturerController {
+func NewLecturerController(validator validator.PayloadValidator, lecturerUseCase entity.UserUseCase) *lecturerController {
 	return &lecturerController{
 		lecturerUseCase: lecturerUseCase,
 		Validator:       validator,
@@ -72,10 +72,10 @@ func (c lecturerController) CreateMany(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	newLectuers := make([]entity.Lecturer, 0, len(payload.Lecturers))
+	newLectuers := make([]entity.User, 0, len(payload.Lecturers))
 
 	for _, lecturer := range payload.Lecturers {
-		newLectuers = append(newLectuers, entity.Lecturer{
+		newLectuers = append(newLectuers, entity.User{
 			FirstName: lecturer.FirstName,
 			LastName:  lecturer.LastName,
 			Email:     lecturer.Email,
@@ -102,7 +102,7 @@ func (c lecturerController) Update(ctx *fiber.Ctx) error {
 
 	id := ctx.Params("lecturerId")
 
-	err := c.lecturerUseCase.Update(id, &entity.Lecturer{
+	err := c.lecturerUseCase.Update(id, &entity.User{
 		FirstName: payload.FirstName,
 		LastName:  payload.LastName,
 		Email:     payload.Email,

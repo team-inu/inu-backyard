@@ -11,12 +11,12 @@ type lecturerRepositoryGorm struct {
 	gorm *gorm.DB
 }
 
-func NewLecturerRepositoryGorm(gorm *gorm.DB) entity.LecturerRepository {
+func NewLecturerRepositoryGorm(gorm *gorm.DB) entity.UserRepository {
 	return &lecturerRepositoryGorm{gorm: gorm}
 }
 
-func (r lecturerRepositoryGorm) GetAll() ([]entity.Lecturer, error) {
-	var lecturers []entity.Lecturer
+func (r lecturerRepositoryGorm) GetAll() ([]entity.User, error) {
+	var lecturers []entity.User
 
 	err := r.gorm.Find(&lecturers).Error
 	if err == gorm.ErrRecordNotFound {
@@ -28,8 +28,8 @@ func (r lecturerRepositoryGorm) GetAll() ([]entity.Lecturer, error) {
 	return lecturers, nil
 }
 
-func (r lecturerRepositoryGorm) GetBySessionId(sessionId string) (*entity.Lecturer, error) {
-	var lecturer *entity.Lecturer
+func (r lecturerRepositoryGorm) GetBySessionId(sessionId string) (*entity.User, error) {
+	var lecturer *entity.User
 
 	err := r.gorm.Joins("JOIN session ON session.lecturer_id = lecturer_id").Where("session.id = ?", sessionId).First(&lecturer).Error
 
@@ -42,8 +42,8 @@ func (r lecturerRepositoryGorm) GetBySessionId(sessionId string) (*entity.Lectur
 	return lecturer, nil
 }
 
-func (r lecturerRepositoryGorm) GetById(id string) (*entity.Lecturer, error) {
-	var lecturer *entity.Lecturer
+func (r lecturerRepositoryGorm) GetById(id string) (*entity.User, error) {
+	var lecturer *entity.User
 
 	err := r.gorm.Where("id = ?", id).First(&lecturer).Error
 
@@ -56,8 +56,8 @@ func (r lecturerRepositoryGorm) GetById(id string) (*entity.Lecturer, error) {
 	return lecturer, nil
 }
 
-func (r lecturerRepositoryGorm) GetByEmail(email string) (*entity.Lecturer, error) {
-	var lecturer *entity.Lecturer
+func (r lecturerRepositoryGorm) GetByEmail(email string) (*entity.User, error) {
+	var lecturer *entity.User
 
 	err := r.gorm.Where("email = ?", email).First(&lecturer).Error
 	if err == gorm.ErrRecordNotFound {
@@ -69,8 +69,8 @@ func (r lecturerRepositoryGorm) GetByEmail(email string) (*entity.Lecturer, erro
 	return lecturer, nil
 }
 
-func (r lecturerRepositoryGorm) GetByParams(params *entity.Lecturer, limit int, offset int) ([]entity.Lecturer, error) {
-	var lecturers []entity.Lecturer
+func (r lecturerRepositoryGorm) GetByParams(params *entity.User, limit int, offset int) ([]entity.User, error) {
+	var lecturers []entity.User
 
 	err := r.gorm.Where(params).Limit(limit).Offset(offset).Find(&lecturers).Error
 	if err == gorm.ErrRecordNotFound {
@@ -82,7 +82,7 @@ func (r lecturerRepositoryGorm) GetByParams(params *entity.Lecturer, limit int, 
 	return lecturers, nil
 }
 
-func (r lecturerRepositoryGorm) Create(lecturer *entity.Lecturer) error {
+func (r lecturerRepositoryGorm) Create(lecturer *entity.User) error {
 	err := r.gorm.Create(&lecturer).Error
 	if err != nil {
 		return fmt.Errorf("cannot create lecturer: %w", err)
@@ -91,7 +91,7 @@ func (r lecturerRepositoryGorm) Create(lecturer *entity.Lecturer) error {
 	return nil
 }
 
-func (r lecturerRepositoryGorm) CreateMany(lecturers []entity.Lecturer) error {
+func (r lecturerRepositoryGorm) CreateMany(lecturers []entity.User) error {
 	err := r.gorm.Create(&lecturers).Error
 	fmt.Println(err)
 	if err != nil {
@@ -101,8 +101,8 @@ func (r lecturerRepositoryGorm) CreateMany(lecturers []entity.Lecturer) error {
 	return nil
 }
 
-func (r lecturerRepositoryGorm) Update(id string, lecturer *entity.Lecturer) error {
-	err := r.gorm.Model(&entity.Lecturer{}).Where("id = ?", id).Updates(lecturer).Error
+func (r lecturerRepositoryGorm) Update(id string, lecturer *entity.User) error {
+	err := r.gorm.Model(&entity.User{}).Where("id = ?", id).Updates(lecturer).Error
 	if err != nil {
 		return fmt.Errorf("cannot update lecturer: %w", err)
 	}
@@ -111,7 +111,7 @@ func (r lecturerRepositoryGorm) Update(id string, lecturer *entity.Lecturer) err
 }
 
 func (r lecturerRepositoryGorm) Delete(id string) error {
-	err := r.gorm.Delete(&entity.Lecturer{Id: id}).Error
+	err := r.gorm.Delete(&entity.User{Id: id}).Error
 
 	if err != nil {
 		return fmt.Errorf("cannot delete lecturer: %w", err)

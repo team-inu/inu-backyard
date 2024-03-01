@@ -12,7 +12,7 @@ type Score struct {
 	LastName  string `json:"lastName" gorm:"->;-:migration"`
 
 	Student    Student    `json:"-"`
-	Lecturer   Lecturer   `json:"-"`
+	Lecturer   User       `json:"-"`
 	Assignment Assignment `json:"-"`
 }
 

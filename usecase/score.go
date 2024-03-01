@@ -11,14 +11,14 @@ type scoreUseCase struct {
 	scoreRepo         entity.ScoreRepository
 	enrollmentUseCase entity.EnrollmentUseCase
 	assignmentUseCase entity.AssignmentUseCase
-	LecturerUseCase   entity.LecturerUseCase
+	LecturerUseCase   entity.UserUseCase
 }
 
 func NewScoreUseCase(
 	scoreRepo entity.ScoreRepository,
 	enrollmentUseCase entity.EnrollmentUseCase,
 	assignmentUseCase entity.AssignmentUseCase,
-	lecturerUseCase entity.LecturerUseCase,
+	lecturerUseCase entity.UserUseCase,
 ) entity.ScoreUseCase {
 	return &scoreUseCase{
 		scoreRepo:         scoreRepo,

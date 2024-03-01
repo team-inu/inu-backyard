@@ -14,7 +14,7 @@ type Session struct {
 	ExpiredAt time.Time `json:"expiredAt" db:"expired_at"`
 	CreatedAt time.Time `json:"createdAt" db:"created_at"`
 
-	Lecturer Lecturer `gorm:"foreignKey:UserId"`
+	Lecturer User `gorm:"foreignKey:UserId"`
 }
 
 type SessionRepository interface {

@@ -17,14 +17,14 @@ type AuthController struct {
 	config          config.AuthConfig
 	validator       validator.PayloadValidator
 	authUseCase     entity.AuthUseCase
-	lecturerUseCase entity.LecturerUseCase
+	lecturerUseCase entity.UserUseCase
 }
 
 func NewAuthController(
 	validator validator.PayloadValidator,
 	config config.AuthConfig,
 	authUseCase entity.AuthUseCase,
-	lecturerUseCase entity.LecturerUseCase,
+	lecturerUseCase entity.UserUseCase,
 ) *AuthController {
 	return &AuthController{
 		config:          config,

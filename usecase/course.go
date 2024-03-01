@@ -9,10 +9,10 @@ import (
 type courseUseCase struct {
 	courseRepo      entity.CourseRepository
 	semesterUseCase entity.SemesterUseCase
-	lecturerUseCase entity.LecturerUseCase
+	lecturerUseCase entity.UserUseCase
 }
 
-func NewCourseUseCase(courseRepo entity.CourseRepository, semesterUseCase entity.SemesterUseCase, lecturerUseCase entity.LecturerUseCase) entity.CourseUseCase {
+func NewCourseUseCase(courseRepo entity.CourseRepository, semesterUseCase entity.SemesterUseCase, lecturerUseCase entity.UserUseCase) entity.CourseUseCase {
 	return &courseUseCase{courseRepo: courseRepo, semesterUseCase: semesterUseCase, lecturerUseCase: lecturerUseCase}
 }
 

@@ -9,12 +9,12 @@ import (
 
 type authUseCase struct {
 	sessionUseCase  entity.SessionUseCase
-	lecturerUseCase entity.LecturerUseCase
+	lecturerUseCase entity.UserUseCase
 }
 
 func NewAuthUseCase(
 	sessionUseCase entity.SessionUseCase,
-	lecturerUseCase entity.LecturerUseCase,
+	lecturerUseCase entity.UserUseCase,
 ) entity.AuthUseCase {
 	return &authUseCase{
 		sessionUseCase:  sessionUseCase,
@@ -22,7 +22,7 @@ func NewAuthUseCase(
 	}
 }
 
-func (u authUseCase) Authenticate(header string) (*entity.Lecturer, error) {
+func (u authUseCase) Authenticate(header string) (*entity.User, error) {
 	session, err := u.sessionUseCase.Validate(header)
 	if err != nil {
 		return nil, errs.New(errs.SameCode, "cannot authenticate user", err)

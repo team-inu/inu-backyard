@@ -8,14 +8,14 @@ import (
 )
 
 type lecturerUseCase struct {
-	lecturerRepo entity.LecturerRepository
+	lecturerRepo entity.UserRepository
 }
 
-func NewLecturerUseCase(lecturerRepo entity.LecturerRepository) entity.LecturerUseCase {
+func NewLecturerUseCase(lecturerRepo entity.UserRepository) entity.UserUseCase {
 	return &lecturerUseCase{lecturerRepo: lecturerRepo}
 }
 
-func (u lecturerUseCase) GetAll() ([]entity.Lecturer, error) {
+func (u lecturerUseCase) GetAll() ([]entity.User, error) {
 	lecturers, err := u.lecturerRepo.GetAll()
 	if err != nil {
 		return nil, errs.New(errs.ErrQueryLecturer, "cannot get all lecturers", err)
@@ -24,7 +24,7 @@ func (u lecturerUseCase) GetAll() ([]entity.Lecturer, error) {
 	return lecturers, nil
 }
 
-func (u lecturerUseCase) GetByEmail(email string) (*entity.Lecturer, error) {
+func (u lecturerUseCase) GetByEmail(email string) (*entity.User, error) {
 	lecturer, err := u.lecturerRepo.GetByEmail(email)
 	if err != nil {
 		return nil, errs.New(errs.ErrQueryLecturer, "cannot get lecturer by email %s", email, err)
@@ -33,7 +33,7 @@ func (u lecturerUseCase) GetByEmail(email string) (*entity.Lecturer, error) {
 	return lecturer, nil
 }
 
-func (u lecturerUseCase) GetById(id string) (*entity.Lecturer, error) {
+func (u lecturerUseCase) GetById(id string) (*entity.User, error) {
 	lecturer, err := u.lecturerRepo.GetById(id)
 	if err != nil {
 		return nil, errs.New(errs.ErrQueryLecturer, "cannot get lecturer by id %s", id, err)
@@ -42,7 +42,7 @@ func (u lecturerUseCase) GetById(id string) (*entity.Lecturer, error) {
 	return lecturer, nil
 }
 
-func (u lecturerUseCase) GetBySessionId(sessionId string) (*entity.Lecturer, error) {
+func (u lecturerUseCase) GetBySessionId(sessionId string) (*entity.User, error) {
 	lecturer, err := u.lecturerRepo.GetBySessionId(sessionId)
 	if err != nil {
 		return nil, errs.New(errs.ErrQueryLecturer, "cannot get lecturer by session id %s", sessionId, err)
@@ -51,7 +51,7 @@ func (u lecturerUseCase) GetBySessionId(sessionId string) (*entity.Lecturer, err
 	return lecturer, nil
 }
 
-func (u lecturerUseCase) GetByParams(params *entity.Lecturer, limit int, offset int) ([]entity.Lecturer, error) {
+func (u lecturerUseCase) GetByParams(params *entity.User, limit int, offset int) ([]entity.User, error) {
 	lecturers, err := u.lecturerRepo.GetByParams(params, limit, offset)
 
 	if err != nil {
@@ -69,7 +69,7 @@ func (u lecturerUseCase) Create(firstName string, lastName string, email string,
 
 	hasPassword := string(bcryptPassword)
 
-	lecturer := &entity.Lecturer{
+	lecturer := &entity.User{
 		Id:        ulid.Make().String(),
 		FirstName: firstName,
 		LastName:  lastName,
@@ -85,7 +85,7 @@ func (u lecturerUseCase) Create(firstName string, lastName string, email string,
 	return nil
 }
 
-func (u lecturerUseCase) CreateMany(lecturers []entity.Lecturer) error {
+func (u lecturerUseCase) CreateMany(lecturers []entity.User) error {
 	//encrypt password
 	for i := range lecturers {
 		bcryptPassword, err := bcrypt.GenerateFromPassword([]byte((lecturers)[i].Password), bcrypt.DefaultCost)
@@ -104,7 +104,7 @@ func (u lecturerUseCase) CreateMany(lecturers []entity.Lecturer) error {
 	return nil
 }
 
-func (u lecturerUseCase) Update(id string, lecturer *entity.Lecturer) error {
+func (u lecturerUseCase) Update(id string, lecturer *entity.User) error {
 	existLecturer, err := u.GetById(id)
 	if err != nil {
 		return errs.New(errs.SameCode, "cannot get lecturer id %s to update", id, err)
