@@ -103,7 +103,7 @@ func (u assignmentUseCase) Create(name string, description string, maxScore int,
 	return nil
 }
 
-func (u assignmentUseCase) Update(id string, assignment *entity.Assignment) error {
+func (u assignmentUseCase) Update(id string, name string, description string, maxScore int, weight int, expectedScorePercentage float64, expectedPassingStudentPercentage float64) error {
 	existAssignment, err := u.GetById(id)
 	if err != nil {
 		return errs.New(errs.SameCode, "cannot get assignment id %s to update", id, err)
@@ -111,10 +111,17 @@ func (u assignmentUseCase) Update(id string, assignment *entity.Assignment) erro
 		return errs.New(errs.ErrAssignmentNotFound, "cannot get assignment id %s to update", id)
 	}
 
-	err = u.assignmentRepo.Update(id, assignment)
+	err = u.assignmentRepo.Update(id, &entity.Assignment{
+		Name:                             name,
+		Description:                      description,
+		MaxScore:                         maxScore,
+		Weight:                           weight,
+		ExpectedScorePercentage:          expectedScorePercentage,
+		ExpectedPassingStudentPercentage: expectedPassingStudentPercentage,
+	})
 
 	if err != nil {
-		return errs.New(errs.ErrUpdateAssignment, "cannot update assignment by id %s", assignment.Id, err)
+		return errs.New(errs.ErrUpdateAssignment, "cannot update assignment by id %s", id, err)
 	}
 
 	return nil

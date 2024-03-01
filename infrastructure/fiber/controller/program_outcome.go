@@ -78,9 +78,9 @@ func (c programOutcomeController) Update(ctx *fiber.Ctx) error {
 	id := ctx.Params("poId")
 
 	err := c.programOutcomeUseCase.Update(id, &entity.ProgramOutcome{
-		Code:        payload.ProgramOutcomes[0].Code,
-		Name:        payload.ProgramOutcomes[0].Name,
-		Description: payload.ProgramOutcomes[0].Description,
+		Code:        payload.Code,
+		Name:        payload.Name,
+		Description: payload.Description,
 	})
 
 	if err != nil {

@@ -29,6 +29,6 @@ type AssignmentUseCase interface {
 	GetByParams(params *Assignment, limit int, offset int) ([]Assignment, error)
 	GetByCourseId(courseId string) ([]Assignment, error)
 	Create(name string, description string, maxScore int, weight int, expectedScorePercentage float64, expectedPassingStudentPercentage float64, courseLearningOutcomeIds []string) error
-	Update(id string, assignment *Assignment) error
+	Update(id string, name string, description string, maxScore int, weight int, expectedScorePercentage float64, expectedPassingStudentPercentage float64) error
 	Delete(id string) error
 }

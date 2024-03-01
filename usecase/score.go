@@ -154,7 +154,7 @@ func (u scoreUseCase) Delete(id string) error {
 	if err != nil {
 		return errs.New(errs.SameCode, "cannot get score by id %s ", id, err)
 	} else if existScore == nil {
-		return errs.New(errs.ErrScoreNotFound, "score not found", err)
+		return errs.New(errs.ErrScoreNotFound, "score not found to delete")
 	}
 	err = u.scoreRepo.Delete(id)
 	if err != nil {
