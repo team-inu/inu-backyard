@@ -31,7 +31,7 @@ func (r userRepositoryGorm) GetAll() ([]entity.User, error) {
 func (r userRepositoryGorm) GetBySessionId(sessionId string) (*entity.User, error) {
 	var user *entity.User
 
-	err := r.gorm.Joins("JOIN session ON session.user_id = user_id").Where("session.id = ?", sessionId).First(&user).Error
+	err := r.gorm.Joins("JOIN session ON session.user_id = user.id").Where("session.id = ?", sessionId).Find(&user).Error
 
 	if err == gorm.ErrRecordNotFound {
 		return nil, nil
