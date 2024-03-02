@@ -176,7 +176,14 @@ func (u courseLearningOutcomeUseCase) Update(id string, dto entity.UpdateCourseL
 }
 
 func (u courseLearningOutcomeUseCase) Delete(id string) error {
-	err := u.courseLearningOutcomeRepo.Delete(id)
+	clo, err := u.GetById(id)
+	if err != nil {
+		return errs.New(errs.SameCode, "cannot get clo id %s to delete", id, err)
+	} else if clo == nil {
+		return errs.New(errs.ErrAssignmentNotFound, "cannot get clo id %s to delete", id)
+	}
+
+	err = u.courseLearningOutcomeRepo.Delete(id)
 	if err != nil {
 		return errs.New(errs.ErrDeleteCLO, "cannot delete CLO", err)
 	}

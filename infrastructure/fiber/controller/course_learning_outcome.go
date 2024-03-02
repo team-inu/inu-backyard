@@ -125,12 +125,7 @@ func (c courseLearningOutcomeController) Update(ctx *fiber.Ctx) error {
 func (c courseLearningOutcomeController) Delete(ctx *fiber.Ctx) error {
 	cloId := ctx.Params("cloId")
 
-	_, err := c.courseLearningOutcomeUseCase.GetById(cloId)
-	if err != nil {
-		return err
-	}
-
-	err = c.courseLearningOutcomeUseCase.Delete(cloId)
+	err := c.courseLearningOutcomeUseCase.Delete(cloId)
 	if err != nil {
 		return err
 	}
