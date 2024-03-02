@@ -172,7 +172,7 @@ func (f *fiberServer) initController() error {
 	api := app.Group("/")
 
 	// student route
-	student := api.Group("/students")
+	student := api.Group("/students", authMiddleware)
 
 	student.Get("/", studentController.GetStudents)
 	student.Post("/", studentController.Create)
@@ -182,7 +182,7 @@ func (f *fiberServer) initController() error {
 	student.Delete("/:studentId", studentController.Delete)
 
 	// course route
-	course := api.Group("/courses")
+	course := api.Group("/courses", authMiddleware)
 
 	course.Get("/", courseController.GetAll)
 	course.Post("/", courseController.Create)
@@ -195,7 +195,7 @@ func (f *fiberServer) initController() error {
 	course.Get("/:courseId/assignments", assignmentController.GetByCourseId)
 
 	// course learning outcome route
-	clo := api.Group("/clos")
+	clo := api.Group("/clos", authMiddleware)
 
 	clo.Get("/", courseLearningOutcomeController.GetAll)
 	clo.Post("/", courseLearningOutcomeController.Create)
@@ -210,7 +210,7 @@ func (f *fiberServer) initController() error {
 	subPloByClo.Delete("/:subploId", courseLearningOutcomeController.DeleteLinkSubProgramLearningOutcome)
 
 	// program learning outcome route
-	plo := api.Group("/plos")
+	plo := api.Group("/plos", authMiddleware)
 
 	plo.Get("/", programLearningOutcomeController.GetAll)
 	plo.Post("/", programLearningOutcomeController.Create)
@@ -219,7 +219,7 @@ func (f *fiberServer) initController() error {
 	plo.Delete("/:ploId", programLearningOutcomeController.Delete)
 
 	// sub program learning outcome route
-	subPlo := api.Group("/splos")
+	subPlo := api.Group("/splos", authMiddleware)
 
 	subPlo.Get("/", subProgramLearningOutcomeController.GetAll)
 	subPlo.Post("/", subProgramLearningOutcomeController.Create)
@@ -228,7 +228,7 @@ func (f *fiberServer) initController() error {
 	subPlo.Delete("/:sploId", subProgramLearningOutcomeController.Delete)
 
 	// program outcome route
-	pos := api.Group("/pos")
+	pos := api.Group("/pos", authMiddleware)
 
 	pos.Get("/", programOutcomeController.GetAll)
 	pos.Post("/", programOutcomeController.Create)
@@ -237,7 +237,7 @@ func (f *fiberServer) initController() error {
 	pos.Delete("/:poId", programOutcomeController.Delete)
 
 	// faculty route
-	faculty := api.Group("/faculties")
+	faculty := api.Group("/faculties", authMiddleware)
 
 	faculty.Get("/", facultyController.GetAll)
 	faculty.Post("/", facultyController.Create)
@@ -246,7 +246,7 @@ func (f *fiberServer) initController() error {
 	faculty.Delete("/:facultyName", facultyController.Delete)
 
 	// department route
-	department := api.Group("/departments")
+	department := api.Group("/departments", authMiddleware)
 
 	department.Get("/", departmentController.GetAll)
 	department.Post("/", departmentController.Create)
@@ -255,7 +255,7 @@ func (f *fiberServer) initController() error {
 	department.Delete("/:departmentName", departmentController.Delete)
 
 	// score route
-	score := api.Group("/scores")
+	score := api.Group("/scores", authMiddleware)
 
 	score.Get("/", scoreController.GetAll)
 	score.Post("/", scoreController.CreateMany)
@@ -264,7 +264,7 @@ func (f *fiberServer) initController() error {
 	score.Delete("/:scoreId", scoreController.Delete)
 
 	// user route
-	user := api.Group("/users")
+	user := api.Group("/users", authMiddleware)
 
 	user.Get("/", userController.GetAll)
 	user.Post("/", userController.Create)
@@ -274,7 +274,7 @@ func (f *fiberServer) initController() error {
 	user.Post("/bulk", userController.CreateMany)
 
 	// assignment route
-	assignment := api.Group("/assignments")
+	assignment := api.Group("/assignments", authMiddleware)
 
 	assignment.Get("/", assignmentController.GetAssignments)
 	assignment.Post("/", assignmentController.Create)
@@ -289,7 +289,7 @@ func (f *fiberServer) initController() error {
 	cloByAssignment.Delete("/:cloId", assignmentController.DeleteLinkCourseLearningOutcome)
 
 	// programme route
-	programme := api.Group("/programmes")
+	programme := api.Group("/programmes", authMiddleware)
 
 	programme.Get("/", programmeController.GetAll)
 	programme.Post("/", programmeController.Create)
@@ -298,7 +298,7 @@ func (f *fiberServer) initController() error {
 	programme.Delete("/:programmeName", programmeController.Delete)
 
 	// enrollment route
-	enrollment := api.Group("/enrollments")
+	enrollment := api.Group("/enrollments", authMiddleware)
 
 	enrollment.Get("/", enrollmentController.GetAll)
 	enrollment.Post("/", enrollmentController.Create)
@@ -307,7 +307,7 @@ func (f *fiberServer) initController() error {
 	enrollment.Delete("/:enrollmentId", enrollmentController.Delete)
 
 	// semester route
-	semester := api.Group("/semesters")
+	semester := api.Group("/semesters", authMiddleware)
 
 	semester.Get("/", semesterController.GetAll)
 	semester.Get("/:semesterId", semesterController.GetById)
@@ -316,7 +316,7 @@ func (f *fiberServer) initController() error {
 	semester.Delete("/:semesterId", semesterController.Delete)
 
 	// grade route
-	grade := api.Group("/grades")
+	grade := api.Group("/grades", authMiddleware)
 
 	grade.Get("/", gradeController.GetAll)
 	grade.Post("/", gradeController.Create)
@@ -325,7 +325,7 @@ func (f *fiberServer) initController() error {
 	grade.Delete("/:gradeId", gradeController.Delete)
 
 	// authentication route
-	auth := api.Group("/auth")
+	auth := app.Group("/auth")
 
 	auth.Post("/login", authController.SignIn)
 	auth.Get("/logout", authController.SignOut)
