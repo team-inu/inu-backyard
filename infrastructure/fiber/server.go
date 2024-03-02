@@ -169,110 +169,167 @@ func (f *fiberServer) initController() error {
 	gradeController := controller.NewGradeController(validator, f.gradeUseCase)
 	authController := controller.NewAuthController(validator, f.config.Client.Auth, f.authUseCase, f.userUseCase)
 
-	app.Get("/students/:studentId", studentController.GetById)
-	app.Get("/students", studentController.GetStudents)
-	app.Post("/students", studentController.Create)
-	app.Post("/students/bulk", studentController.CreateMany)
-	app.Patch("/students/:studentId", studentController.Update)
-	app.Delete("/students/:studentId", studentController.Delete)
+	api := app.Group("/")
 
-	app.Get("/courses", courseController.GetAll)
-	app.Get("/courses/:courseId", courseController.GetById)
-	app.Post("/courses", courseController.Create)
-	app.Patch("/courses/:courseId", courseController.Update)
-	app.Delete("/courses/:courseId", courseController.Delete)
+	// student route
+	student := api.Group("/students")
 
-	app.Get("/clos", courseLearningOutcomeController.GetAll)
-	app.Get("/clos/:cloId", courseLearningOutcomeController.GetById)
-	app.Post("/clos", courseLearningOutcomeController.Create)
-	app.Patch("/clos/:cloId", courseLearningOutcomeController.Update)
-	app.Delete("/clos/:cloId", courseLearningOutcomeController.Delete)
+	student.Get("/", studentController.GetStudents)
+	student.Post("/", studentController.Create)
+	student.Post("/bulk", studentController.CreateMany)
+	student.Get("/:studentId", studentController.GetById)
+	student.Patch("/:studentId", studentController.Update)
+	student.Delete("/:studentId", studentController.Delete)
 
-	app.Post("/clos/:cloId/subplos", courseLearningOutcomeController.CreateLinkSubProgramLearningOutcome)
-	app.Delete("/clos/:cloId/subplos/:subploId", courseLearningOutcomeController.DeleteLinkSubProgramLearningOutcome)
+	// course route
+	course := api.Group("/courses")
 
-	app.Get("/courses/:courseId/clos", courseLearningOutcomeController.GetByCourseId)
-	app.Get("/courses/:courseId/enrollments", enrollmentController.GetByCourseId)
-	app.Get("/courses/:courseId/assignments", assignmentController.GetByCourseId)
+	course.Get("/", courseController.GetAll)
+	course.Post("/", courseController.Create)
+	course.Get("/:courseId", courseController.GetById)
+	course.Patch("/:courseId", courseController.Update)
+	course.Delete("/:courseId", courseController.Delete)
 
-	app.Get("/plos", programLearningOutcomeController.GetAll)
-	app.Get("/plos/:ploId", programLearningOutcomeController.GetById)
-	app.Post("/plos", programLearningOutcomeController.Create)
-	app.Patch("/plos/:ploId", programLearningOutcomeController.Update)
-	app.Delete("/plos/:ploId", programLearningOutcomeController.Delete)
+	course.Get("/:courseId/clos", courseLearningOutcomeController.GetByCourseId)
+	course.Get("/:courseId/enrollments", enrollmentController.GetByCourseId)
+	course.Get("/:courseId/assignments", assignmentController.GetByCourseId)
 
-	app.Get("/splos", subProgramLearningOutcomeController.GetAll)
-	app.Get("/splos/:sploId", subProgramLearningOutcomeController.GetById)
-	app.Post("/splos", subProgramLearningOutcomeController.Create)
-	app.Patch("/splos/:sploId", subProgramLearningOutcomeController.Update)
-	app.Delete("/splos/:sploId", subProgramLearningOutcomeController.Delete)
+	// course learning outcome route
+	clo := api.Group("/clos")
 
-	app.Get("/pos", programOutcomeController.GetAll)
-	app.Get("/pos/:poId", programOutcomeController.GetById)
-	app.Post("/pos", programOutcomeController.Create)
-	app.Patch("/pos/:poId", programOutcomeController.Update)
-	app.Delete("/pos/:poId", programOutcomeController.Delete)
+	clo.Get("/", courseLearningOutcomeController.GetAll)
+	clo.Post("/", courseLearningOutcomeController.Create)
+	clo.Get("/:cloId", courseLearningOutcomeController.GetById)
+	clo.Patch("/:cloId", courseLearningOutcomeController.Update)
+	clo.Delete("/:cloId", courseLearningOutcomeController.Delete)
 
-	app.Get("/faculties", facultyController.GetAll)
-	app.Get("/faculties/:facultyName", facultyController.GetById)
-	app.Post("/faculties", facultyController.Create)
-	app.Patch("/faculties/:facultyName", facultyController.Update)
-	app.Delete("/faculties/:facultyName", facultyController.Delete)
+	// sub program learning outcome by course learning outcome route
+	subPloByClo := api.Group("/clos/:cloId/subplos")
 
-	app.Get("/departments", departmentController.GetAll)
-	app.Get("/departments/:departmentName", departmentController.GetByName)
-	app.Post("/departments", departmentController.Create)
-	app.Patch("/departments/:departmentName", departmentController.Update)
-	app.Delete("/departments/:departmentName", departmentController.Delete)
+	subPloByClo.Post("/", courseLearningOutcomeController.CreateLinkSubProgramLearningOutcome)
+	subPloByClo.Delete("/:subploId", courseLearningOutcomeController.DeleteLinkSubProgramLearningOutcome)
 
-	app.Get("/scores", scoreController.GetAll)
-	app.Get("/scores/:scoreId", scoreController.GetById)
-	app.Post("/scores", scoreController.CreateMany)
-	app.Patch("/scores/:scoreId", scoreController.Update)
-	app.Delete("/scores/:scoreId", scoreController.Delete)
+	// program learning outcome route
+	plo := api.Group("/plos")
 
-	app.Get("/users", userController.GetAll)
-	app.Get("/users/:userId", userController.GetById)
-	app.Post("/users", userController.Create)
-	app.Post("/users/bulk", userController.CreateMany)
-	app.Patch("/users/:userId", userController.Update)
-	app.Delete("/users/:userId", userController.Delete)
+	plo.Get("/", programLearningOutcomeController.GetAll)
+	plo.Post("/", programLearningOutcomeController.Create)
+	plo.Get("/:ploId", programLearningOutcomeController.GetById)
+	plo.Patch("/:ploId", programLearningOutcomeController.Update)
+	plo.Delete("/:ploId", programLearningOutcomeController.Delete)
 
-	app.Get("/assignments", assignmentController.GetAssignments)
-	app.Get("/assignments/:assignmentId", assignmentController.GetById)
-	app.Post("/assignments", assignmentController.Create)
-	app.Patch("/assignments/:assignmentId", assignmentController.Update)
-	app.Delete("/assignments/:assignmentId", assignmentController.Delete)
-	app.Delete("/assignments/:assignmentId/clos/:cloId", assignmentController.DeleteLinkCourseLearningOutcome)
-	app.Get("/assignments/:assignmentId/scores", scoreController.GetByAssignmentId)
+	// sub program learning outcome route
+	subPlo := api.Group("/splos")
 
-	app.Get("/programmes", programmeController.GetAll)
-	app.Get("/programmes/:programmeName", programmeController.GetByName)
-	app.Post("/programmes", programmeController.Create)
-	app.Patch("/programmes/:programmeName", programmeController.Update)
-	app.Delete("/programmes/:programmeName", programmeController.Delete)
+	subPlo.Get("/", subProgramLearningOutcomeController.GetAll)
+	subPlo.Post("/", subProgramLearningOutcomeController.Create)
+	subPlo.Get("/:sploId", subProgramLearningOutcomeController.GetById)
+	subPlo.Patch("/:sploId", subProgramLearningOutcomeController.Update)
+	subPlo.Delete("/:sploId", subProgramLearningOutcomeController.Delete)
 
-	app.Get("/enrollments", enrollmentController.GetAll)
-	app.Get("/enrollments/:enrollmentId", enrollmentController.GetById)
-	app.Post("/enrollments", enrollmentController.Create)
-	app.Patch("/enrollments/:enrollmentId", enrollmentController.Update)
-	app.Delete("/enrollments/:enrollmentId", enrollmentController.Delete)
+	// program outcome route
+	pos := api.Group("/pos")
 
-	app.Get("/semesters", semesterController.GetAll)
-	app.Get("/semesters/:semesterId", semesterController.GetById)
-	app.Post("/semesters", semesterController.Create)
-	app.Patch("/semesters/:semesterId", semesterController.Update)
-	app.Delete("/semesters/:semesterId", semesterController.Delete)
+	pos.Get("/", programOutcomeController.GetAll)
+	pos.Post("/", programOutcomeController.Create)
+	pos.Get("/:poId", programOutcomeController.GetById)
+	pos.Patch("/:poId", programOutcomeController.Update)
+	pos.Delete("/:poId", programOutcomeController.Delete)
 
-	app.Get("/grades", gradeController.GetAll)
-	app.Get("/grades/:gradeId", gradeController.GetById)
-	app.Post("/grades", gradeController.Create)
-	app.Patch("/grades/:gradeId", gradeController.Update)
-	app.Delete("/grades/:gradeId", gradeController.Delete)
+	// faculty route
+	faculty := app.Group("/faculties")
 
-	app.Post("/auth/login", authController.SignIn)
-	app.Get("/auth/logout", authController.SignOut)
-	app.Get("/auth/me", authMiddleware, authController.Me)
+	faculty.Get("/", facultyController.GetAll)
+	faculty.Post("/", facultyController.Create)
+	faculty.Get("/:facultyName", facultyController.GetById)
+	faculty.Patch("/:facultyName", facultyController.Update)
+	faculty.Delete("/:facultyName", facultyController.Delete)
+
+	// department route
+	department := app.Group("/departments")
+
+	department.Get("/", departmentController.GetAll)
+	department.Post("/", departmentController.Create)
+	department.Get("/:departmentName", departmentController.GetByName)
+	department.Patch("/:departmentName", departmentController.Update)
+	department.Delete("/:departmentName", departmentController.Delete)
+
+	// score route
+	score := app.Group("/scores")
+
+	score.Get("/", scoreController.GetAll)
+	score.Post("/", scoreController.CreateMany)
+	score.Get("/:scoreId", scoreController.GetById)
+	score.Patch("/:scoreId", scoreController.Update)
+	score.Delete("/:scoreId", scoreController.Delete)
+
+	// user route
+	user := app.Group("/users")
+
+	user.Get("/", userController.GetAll)
+	user.Post("/", userController.Create)
+	user.Get("/:userId", userController.GetById)
+	user.Patch("/:userId", userController.Update)
+	user.Delete("/:userId", userController.Delete)
+	user.Post("/bulk", userController.CreateMany)
+
+	// assignment route
+	assignment := app.Group("/assignments")
+
+	assignment.Get("/", assignmentController.GetAssignments)
+	assignment.Post("/", assignmentController.Create)
+	assignment.Get("/:assignmentId", assignmentController.GetById)
+	assignment.Patch("/:assignmentId", assignmentController.Update)
+	assignment.Delete("/:assignmentId", assignmentController.Delete)
+	assignment.Get("/:assignmentId/scores", scoreController.GetByAssignmentId)
+
+	// clo by assignment route
+	cloByAssignment := app.Group("/assignments/:assignmentId/clos/")
+
+	cloByAssignment.Delete("/:cloId", assignmentController.DeleteLinkCourseLearningOutcome)
+
+	// programme route
+	programme := app.Group("/programmes")
+
+	programme.Get("/", programmeController.GetAll)
+	programme.Post("/", programmeController.Create)
+	programme.Get("/:programmeName", programmeController.GetByName)
+	programme.Patch("/:programmeName", programmeController.Update)
+	programme.Delete("/:programmeName", programmeController.Delete)
+
+	// enrollment route
+	enrollment := app.Group("/enrollments")
+
+	enrollment.Get("/", enrollmentController.GetAll)
+	enrollment.Post("/", enrollmentController.Create)
+	enrollment.Get("/:enrollmentId", enrollmentController.GetById)
+	enrollment.Patch("/:enrollmentId", enrollmentController.Update)
+	enrollment.Delete("/:enrollmentId", enrollmentController.Delete)
+
+	// semester route
+	semester := app.Group("/semesters")
+
+	semester.Get("/", semesterController.GetAll)
+	semester.Get("/:semesterId", semesterController.GetById)
+	semester.Post("/", semesterController.Create)
+	semester.Patch("/:semesterId", semesterController.Update)
+	semester.Delete("/:semesterId", semesterController.Delete)
+
+	// grade route
+	grade := app.Group("/grades")
+
+	grade.Get("/", gradeController.GetAll)
+	grade.Post("/", gradeController.Create)
+	grade.Get("/:gradeId", gradeController.GetById)
+	grade.Patch("/:gradeId", gradeController.Update)
+	grade.Delete("/:gradeId", gradeController.Delete)
+
+	// authentication route
+	auth := app.Group("/auth")
+
+	auth.Post("/login", authController.SignIn)
+	auth.Get("/logout", authController.SignOut)
+	auth.Get("/me", authMiddleware, authController.Me)
 
 	app.Get("/metrics", monitor.New())
 
