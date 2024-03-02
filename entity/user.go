@@ -1,12 +1,21 @@
 package entity
 
+type UserRole string
+
+const (
+	UserRoleLecturer         UserRole = "LECTURER"
+	UserRoleModerator        UserRole = "MODERATOR"
+	UserRoleHeadOfCurriculum UserRole = "HEAD_OF_CURRICULUM"
+	UserRoleTABEEManager     UserRole = "TABEE_MANAGER"
+)
+
 type User struct {
 	Id        string `json:"id" gorm:"primaryKey;type:char(255)"`
 	Email     string `json:"email" gorm:"unique"`
 	Password  string `json:"password"`
 	FirstName string `json:"firstName"`
 	LastName  string `json:"lastName"`
-	Role      string `json:"role" gorm:"default:'lecturer'"`
+	Role      string `json:"role" gorm:"default:'LECTURER'"`
 }
 
 type UserRepository interface {
