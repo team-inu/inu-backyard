@@ -57,16 +57,18 @@ func (c scoreController) GetByAssignmentId(ctx *fiber.Ctx) error {
 
 func (c scoreController) CreateMany(ctx *fiber.Ctx) error {
 	var payload request.BulkCreateScoreRequestPayload
-
 	if ok, err := c.Validator.Validate(&payload, ctx); !ok {
 		return err
 	}
 
+	user := ctx.Locals("user").(*entity.User)
+
 	err := c.ScoreUseCase.CreateMany(
-		payload.UserId,
+		user.Id,
 		payload.AssignmentId,
 		payload.StudentScores,
 	)
+
 	if err != nil {
 		return err
 	}

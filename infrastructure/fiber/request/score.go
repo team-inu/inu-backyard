@@ -11,7 +11,6 @@ type CreateScoreRequestPayload struct {
 
 type BulkCreateScoreRequestPayload struct {
 	StudentScores []entity.StudentScore `json:"studentScores" validate:"dive"`
-	UserId        string                `json:"userId" validate:"required"`
 	AssignmentId  string                `json:"assignmentId" validate:"required"`
 }
 
