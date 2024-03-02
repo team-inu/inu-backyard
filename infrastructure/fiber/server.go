@@ -285,7 +285,7 @@ func (f *fiberServer) initController() error {
 
 	// clo by assignment route
 	cloByAssignment := assignment.Group("/:assignmentId/clos/")
-
+	cloByAssignment.Post("/", assignmentController.CreateLinkCourseLearningOutcome)
 	cloByAssignment.Delete("/:cloId", assignmentController.DeleteLinkCourseLearningOutcome)
 
 	// programme route
