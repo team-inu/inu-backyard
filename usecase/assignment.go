@@ -143,3 +143,26 @@ func (u assignmentUseCase) Delete(id string) error {
 
 	return nil
 }
+
+func (u assignmentUseCase) DeleteLinkCourseLearningOutcome(assignmentId string, courseLearningOutcomeId string) error {
+	assignment, err := u.GetById(assignmentId)
+	if err != nil {
+		return errs.New(errs.SameCode, "cannot get assignment id %s while unlink clo", assignmentId, err)
+	} else if assignment == nil {
+		return errs.New(errs.ErrAssignmentNotFound, "assignment id %s not found while unlink clo", assignmentId)
+	}
+
+	clo, err := u.courseLearningOutcomeUseCase.GetById(courseLearningOutcomeId)
+	if err != nil {
+		return errs.New(errs.SameCode, "cannot get clo id %s while unlink clo", courseLearningOutcomeId, err)
+	} else if clo == nil {
+		return errs.New(errs.ErrCLONotFound, "clo id %s not found while unlink clo", courseLearningOutcomeId)
+	}
+
+	err = u.assignmentRepo.DeleteLinkCourseLearningOutcome(assignmentId, courseLearningOutcomeId)
+	if err != nil {
+		return errs.New(errs.ErrUnLinkSubPLO, "cannot delete link CLO and assignment", err)
+	}
+
+	return nil
+}

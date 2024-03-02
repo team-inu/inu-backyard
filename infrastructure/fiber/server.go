@@ -243,6 +243,7 @@ func (f *fiberServer) initController() error {
 	app.Post("/assignments", assignmentController.Create)
 	app.Patch("/assignments/:assignmentId", assignmentController.Update)
 	app.Delete("/assignments/:assignmentId", assignmentController.Delete)
+	app.Delete("/assignments/:assignmentId/clos/:cloId", assignmentController.DeleteLinkCourseLearningOutcome)
 	app.Get("/assignments/:assignmentId/scores", scoreController.GetByAssignmentId)
 
 	app.Get("/programmes", programmeController.GetAll)

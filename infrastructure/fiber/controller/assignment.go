@@ -120,3 +120,15 @@ func (c assignmentController) Delete(ctx *fiber.Ctx) error {
 
 	return response.NewSuccessResponse(ctx, fiber.StatusOK, nil)
 }
+
+func (c assignmentController) DeleteLinkCourseLearningOutcome(ctx *fiber.Ctx) error {
+	assignmentId := ctx.Params("assignmentId")
+	cloId := ctx.Params("cloId")
+
+	err := c.AssignmentUseCase.DeleteLinkCourseLearningOutcome(assignmentId, cloId)
+	if err != nil {
+		return err
+	}
+
+	return response.NewSuccessResponse(ctx, fiber.StatusOK, nil)
+}

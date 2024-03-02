@@ -103,3 +103,14 @@ func (r assignmentRepositoryGorm) Delete(id string) error {
 
 	return nil
 }
+
+func (r assignmentRepositoryGorm) DeleteLinkCourseLearningOutcome(assignmentId string, courseLearningOutcomeId string) error {
+	err := r.gorm.Exec("DELETE FROM `clo_assignment` WHERE course_learning_outcome_id = ? AND assignment_id = ?", courseLearningOutcomeId, assignmentId).Error
+
+	fmt.Println(err)
+	if err != nil {
+		return fmt.Errorf("cannot delete link between assignment and clo: %w", err)
+	}
+
+	return nil
+}

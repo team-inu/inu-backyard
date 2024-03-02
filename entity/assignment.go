@@ -22,6 +22,7 @@ type AssignmentRepository interface {
 	CreateMany(assignment []Assignment) error
 	Update(id string, assignment *Assignment) error
 	Delete(id string) error
+	DeleteLinkCourseLearningOutcome(assignmentId string, courseLearningOutcomeId string) error
 }
 
 type AssignmentUseCase interface {
@@ -31,4 +32,5 @@ type AssignmentUseCase interface {
 	Create(name string, description string, maxScore int, weight int, expectedScorePercentage float64, expectedPassingStudentPercentage float64, courseLearningOutcomeIds []string) error
 	Update(id string, name string, description string, maxScore int, weight int, expectedScorePercentage float64, expectedPassingStudentPercentage float64) error
 	Delete(id string) error
+	DeleteLinkCourseLearningOutcome(assignmentId string, courseLearningOutcomeId string) error
 }
