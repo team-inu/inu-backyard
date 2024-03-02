@@ -204,7 +204,7 @@ func (f *fiberServer) initController() error {
 	clo.Delete("/:cloId", courseLearningOutcomeController.Delete)
 
 	// sub program learning outcome by course learning outcome route
-	subPloByClo := api.Group("/clos/:cloId/subplos")
+	subPloByClo := clo.Group("/:cloId/subplos")
 
 	subPloByClo.Post("/", courseLearningOutcomeController.CreateLinkSubProgramLearningOutcome)
 	subPloByClo.Delete("/:subploId", courseLearningOutcomeController.DeleteLinkSubProgramLearningOutcome)
@@ -284,7 +284,7 @@ func (f *fiberServer) initController() error {
 	assignment.Get("/:assignmentId/scores", scoreController.GetByAssignmentId)
 
 	// clo by assignment route
-	cloByAssignment := api.Group("/assignments/:assignmentId/clos/")
+	cloByAssignment := assignment.Group("/:assignmentId/clos/")
 
 	cloByAssignment.Delete("/:cloId", assignmentController.DeleteLinkCourseLearningOutcome)
 
