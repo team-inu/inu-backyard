@@ -144,6 +144,38 @@ func (u assignmentUseCase) Delete(id string) error {
 	return nil
 }
 
+func (u assignmentUseCase) CreateLinkCourseLearningOutcome(assignmentId string, courseLearningOutcomeIds []string) error {
+	assignment, err := u.GetById(assignmentId)
+	if err != nil {
+		return errs.New(errs.SameCode, "cannot get assignment id %s while link clo", assignmentId, err)
+	}
+
+	if assignment == nil {
+		return errs.New(errs.ErrAssignmentNotFound, "assignment id %s not found while link clo", assignmentId)
+	}
+
+	duplicateCloIds := slice.GetDuplicateValue(courseLearningOutcomeIds)
+	if len(duplicateCloIds) != 0 {
+		return errs.New(errs.ErrCreateAssignment, "duplicate clo ids %v", duplicateCloIds)
+	}
+
+	nonExistedCloIds, err := u.courseLearningOutcomeUseCase.FilterNonExisted(courseLearningOutcomeIds)
+	if err != nil {
+		return errs.New(errs.SameCode, "cannot get non existed clo ids while link clo")
+	}
+
+	if len(nonExistedCloIds) != 0 {
+		return errs.New(errs.ErrCreateAssignment, "there are non exist clo ids %v", nonExistedCloIds)
+	}
+
+	err = u.assignmentRepo.CreateLinkCourseLearningOutcome(assignmentId, courseLearningOutcomeIds)
+	if err != nil {
+		return errs.New(errs.ErrCreateAssignment, "cannot create link CLO and assignment", err)
+	}
+
+	return nil
+}
+
 func (u assignmentUseCase) DeleteLinkCourseLearningOutcome(assignmentId string, courseLearningOutcomeId string) error {
 	assignment, err := u.GetById(assignmentId)
 	if err != nil {

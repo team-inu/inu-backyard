@@ -121,6 +121,22 @@ func (c assignmentController) Delete(ctx *fiber.Ctx) error {
 	return response.NewSuccessResponse(ctx, fiber.StatusOK, nil)
 }
 
+func (c assignmentController) CreateLinkCourseLearningOutcome(ctx *fiber.Ctx) error {
+	assignmentId := ctx.Params("assignmentId")
+	var payload request.CreateLinkCourseLearningOutcomePayload
+
+	if ok, err := c.Validator.Validate(&payload, ctx); !ok {
+		return err
+	}
+
+	err := c.AssignmentUseCase.CreateLinkCourseLearningOutcome(assignmentId, payload.CourseLearningOutcomeIds)
+	if err != nil {
+		return err
+	}
+
+	return response.NewSuccessResponse(ctx, fiber.StatusCreated, nil)
+}
+
 func (c assignmentController) DeleteLinkCourseLearningOutcome(ctx *fiber.Ctx) error {
 	assignmentId := ctx.Params("assignmentId")
 	cloId := ctx.Params("cloId")

@@ -30,3 +30,7 @@ type UpdateAssignmentRequestPayload struct {
 	ExpectedPassingStudentPercentage float64 `json:"expectedPassingStudentPercentage"`
 	ExpectedScorePercentage          float64 `json:"expectedScorePercentage"`
 }
+
+type CreateLinkCourseLearningOutcomePayload struct {
+	CourseLearningOutcomeIds []string `json:"courseLearningOutcomeIds" validate:"required"`
+}

@@ -104,6 +104,23 @@ func (r assignmentRepositoryGorm) Delete(id string) error {
 	return nil
 }
 
+func (r assignmentRepositoryGorm) CreateLinkCourseLearningOutcome(assignmentId string, courseLearningOutcomeIds []string) error {
+	var query string
+	for _, cloId := range courseLearningOutcomeIds {
+		query += fmt.Sprintf("('%s', '%s'),", assignmentId, cloId)
+	}
+
+	query = query[:len(query)-1]
+
+	err := r.gorm.Exec(fmt.Sprintf("INSERT INTO `clo_assignment` (assignment_id, course_learning_outcome_id) VALUES %s", query)).Error
+
+	if err != nil {
+		return fmt.Errorf("cannot create link between assignment and clo: %w", err)
+	}
+
+	return nil
+}
+
 func (r assignmentRepositoryGorm) DeleteLinkCourseLearningOutcome(assignmentId string, courseLearningOutcomeId string) error {
 	err := r.gorm.Exec("DELETE FROM `clo_assignment` WHERE course_learning_outcome_id = ? AND assignment_id = ?", courseLearningOutcomeId, assignmentId).Error
 
