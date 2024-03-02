@@ -155,7 +155,7 @@ func (c studentController) Update(ctx *fiber.Ctx) error {
 		School:         payload.School,
 		Year:           payload.Year,
 		Admission:      payload.Admission,
-		Remark:         payload.Remark,
+		Remark:         *payload.Remark,
 		City:           payload.City,
 		Email:          payload.Email,
 	})

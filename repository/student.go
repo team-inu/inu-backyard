@@ -75,7 +75,23 @@ func (r studentRepositoryGorm) CreateMany(students []entity.Student) error {
 }
 
 func (r studentRepositoryGorm) Update(id string, student *entity.Student) error {
-	err := r.gorm.Model(&entity.Student{}).Where("id = ?", id).Updates(student).Error
+	err := r.gorm.Model(&entity.Student{}).Where("id = ?", id).Updates(map[string]interface{}{
+		"id":              student.Id,
+		"first_name":      student.FirstName,
+		"last_name":       student.LastName,
+		"gpax":            student.GPAX,
+		"math_gpa":        student.MathGPA,
+		"eng_gpa":         student.EngGPA,
+		"sci_gpa":         student.SciGPA,
+		"school":          student.School,
+		"city":            student.City,
+		"email":           student.Email,
+		"year":            student.Year,
+		"admission":       student.Admission,
+		"remark":          student.Remark,
+		"programme_name":  student.ProgrammeName,
+		"department_name": student.DepartmentName,
+	}).Error
 	if err != nil {
 		return fmt.Errorf("cannot update student: %w", err)
 	}

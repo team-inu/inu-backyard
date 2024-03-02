@@ -99,7 +99,14 @@ func (u studentUseCase) CreateMany(students []entity.Student) error {
 }
 
 func (u studentUseCase) Update(id string, student *entity.Student) error {
-	err := u.studentRepo.Update(id, student)
+	existStudent, err := u.GetById(id)
+	if err != nil {
+		return errs.New(errs.SameCode, "cannot get student id %s to update", id, err)
+	} else if existStudent == nil {
+		return errs.New(errs.ErrSubPLONotFound, "cannot get student id %s to update", id)
+	}
+
+	err = u.studentRepo.Update(id, student)
 
 	if err != nil {
 		return errs.New(errs.ErrUpdateStudent, "cannot update student by id %s", student.Id, err)
@@ -109,7 +116,14 @@ func (u studentUseCase) Update(id string, student *entity.Student) error {
 }
 
 func (u studentUseCase) Delete(id string) error {
-	err := u.studentRepo.Delete(id)
+	existStudent, err := u.GetById(id)
+	if err != nil {
+		return errs.New(errs.SameCode, "cannot get student id %s to delete", id, err)
+	} else if existStudent == nil {
+		return errs.New(errs.ErrSubPLONotFound, "cannot get student id %s to delete", id)
+	}
+
+	err = u.studentRepo.Delete(id)
 	if err != nil {
 		return errs.New(errs.ErrDeleteSubPLO, "cannot delete student", err)
 	}
