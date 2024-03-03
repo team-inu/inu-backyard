@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: inu-backyard-service
+spec:
+  selector:
+    app: inu
+    type: backend
+  ports:
+    - protocol: TCP
+      port: 3001
+      targetPort: 3001
