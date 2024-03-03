@@ -4,54 +4,177 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/team-inu/inu-backyard/entity"
 	"github.com/team-inu/inu-backyard/infrastructure/fiber/request"
+	"github.com/team-inu/inu-backyard/infrastructure/fiber/response"
 	"github.com/team-inu/inu-backyard/internal/validator"
 )
 
 type studentController struct {
-	StudentUseCase entity.StudentUseCase
-	Validator      validator.Validator
+	studentUseCase entity.StudentUseCase
+	Validator      validator.PayloadValidator
 }
 
-func NewStudentController(studentUseCase entity.StudentUseCase) *studentController {
+func NewStudentController(validator validator.PayloadValidator, studentUseCase entity.StudentUseCase) *studentController {
 	return &studentController{
-		StudentUseCase: studentUseCase,
-		Validator:      validator.NewPayloadValidator(),
+		studentUseCase: studentUseCase,
+		Validator:      validator,
 	}
 }
 
 func (c studentController) GetAll(ctx *fiber.Ctx) error {
-	students, err := c.StudentUseCase.GetAll()
+	students, err := c.studentUseCase.GetAll()
 	if err != nil {
 		return err
 	}
 
-	return ctx.JSON(students)
+	return response.NewSuccessResponse(ctx, fiber.StatusOK, students)
 }
 
-func (c studentController) GetByID(ctx *fiber.Ctx) error {
-	studentID := ctx.Params("studentID")
+func (c studentController) GetById(ctx *fiber.Ctx) error {
+	studentId := ctx.Params("studentId")
 
-	student, _ := c.StudentUseCase.GetByID(studentID)
+	student, err := c.studentUseCase.GetById(studentId)
 
-	return ctx.JSON(student)
+	if err != nil {
+		return err
+	}
+
+	if student == nil {
+		return response.NewSuccessResponse(ctx, fiber.StatusNotFound, student)
+	}
+
+	return response.NewSuccessResponse(ctx, fiber.StatusOK, student)
+}
+
+func (c studentController) GetStudents(ctx *fiber.Ctx) error {
+	var payload request.GetStudentsByParamsPayload
+
+	if ok, err := c.Validator.Validate(&payload, ctx); !ok {
+		return err
+	}
+
+	students, err := c.studentUseCase.GetByParams(&entity.Student{
+		ProgrammeName:  payload.ProgrammeName,
+		DepartmentName: payload.DepartmentName,
+		Year:           payload.Year,
+	}, -1, -1)
+
+	if err != nil {
+		return err
+	}
+
+	return response.NewSuccessResponse(ctx, fiber.StatusOK, students)
 }
 
 func (c studentController) Create(ctx *fiber.Ctx) error {
-	var student request.CreateStudentRequestBody
-	err := ctx.BodyParser(&student)
+	var payload request.CreateStudentPayload
+
+	if ok, err := c.Validator.Validate(&payload, ctx); !ok {
+		return err
+	}
+
+	err := c.studentUseCase.CreateMany([]entity.Student{
+		{
+			Id:             payload.KmuttId,
+			FirstName:      payload.FirstName,
+			LastName:       payload.LastName,
+			Email:          payload.Email,
+			ProgrammeName:  payload.ProgrammeName,
+			DepartmentName: payload.DepartmentName,
+			GPAX:           payload.GPAX,
+			MathGPA:        payload.MathGPA,
+			EngGPA:         payload.EngGPA,
+			SciGPA:         payload.SciGPA,
+			School:         payload.School,
+			City:           payload.City,
+			Year:           payload.Year,
+			Admission:      payload.Admission,
+			Remark:         payload.Remark,
+		},
+	})
 	if err != nil {
 		return err
 	}
 
-	validationErrors := c.Validator.Struct(student)
-	if len(validationErrors) > 0 {
-		return ctx.JSON(validationErrors)
+	return response.NewSuccessResponse(ctx, fiber.StatusCreated, nil)
+}
+
+func (c studentController) CreateMany(ctx *fiber.Ctx) error {
+	var payload request.CreateBulkStudentsPayload
+
+	if ok, err := c.Validator.Validate(&payload, ctx); !ok {
+		return err
 	}
 
-	createdStudent, err := c.StudentUseCase.Create(student.KmuttID, student.Name, student.FirstName, student.LastName)
+	newStudent := make([]entity.Student, 0, len(payload.Students))
+	for _, student := range payload.Students {
+		newStudent = append(newStudent, entity.Student{
+			Id:             student.KmuttId,
+			FirstName:      student.FirstName,
+			LastName:       student.LastName,
+			ProgrammeName:  student.ProgrammeName,
+			DepartmentName: student.DepartmentName,
+			GPAX:           student.GPAX,
+			MathGPA:        student.MathGPA,
+			EngGPA:         student.EngGPA,
+			SciGPA:         student.SciGPA,
+			School:         student.School,
+			Year:           student.Year,
+			Admission:      student.Admission,
+			Remark:         student.Remark,
+			City:           student.City,
+		})
+	}
+
+	err := c.studentUseCase.CreateMany(newStudent)
 	if err != nil {
 		return err
 	}
 
-	return ctx.JSON(createdStudent)
+	return response.NewSuccessResponse(ctx, fiber.StatusCreated, nil)
+}
+
+func (c studentController) Update(ctx *fiber.Ctx) error {
+	var payload request.UpdateStudentPayload
+
+	if ok, err := c.Validator.Validate(&payload, ctx); !ok {
+		return err
+	}
+
+	id := ctx.Params("studentId")
+
+	err := c.studentUseCase.Update(id, &entity.Student{
+		Id:             payload.KmuttId,
+		FirstName:      payload.FirstName,
+		LastName:       payload.LastName,
+		ProgrammeName:  payload.ProgrammeName,
+		DepartmentName: payload.DepartmentName,
+		GPAX:           payload.GPAX,
+		MathGPA:        payload.MathGPA,
+		EngGPA:         payload.EngGPA,
+		SciGPA:         payload.SciGPA,
+		School:         payload.School,
+		Year:           payload.Year,
+		Admission:      payload.Admission,
+		Remark:         *payload.Remark,
+		City:           payload.City,
+		Email:          payload.Email,
+	})
+
+	if err != nil {
+		return err
+	}
+
+	return response.NewSuccessResponse(ctx, fiber.StatusOK, nil)
+}
+
+func (c studentController) Delete(ctx *fiber.Ctx) error {
+	id := ctx.Params("studentId")
+
+	err := c.studentUseCase.Delete(id)
+
+	if err != nil {
+		return err
+	}
+
+	return response.NewSuccessResponse(ctx, fiber.StatusOK, nil)
 }

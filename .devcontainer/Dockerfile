@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/devcontainers/go:0-1.20
+FROM mcr.microsoft.com/devcontainers/go:1.22
 
 RUN go install github.com/cosmtrek/air@latest
 
