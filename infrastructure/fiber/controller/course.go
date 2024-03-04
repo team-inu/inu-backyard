@@ -1,8 +1,6 @@
 package controller
 
 import (
-	"fmt"
-
 	"github.com/gofiber/fiber/v2"
 	"github.com/team-inu/inu-backyard/entity"
 	"github.com/team-inu/inu-backyard/infrastructure/fiber/request"
@@ -53,7 +51,6 @@ func (c courseController) Create(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	fmt.Println(payload.Description[0])
 	err := c.courseUseCase.Create(
 		payload.SemesterId,
 		payload.UserId,
@@ -79,13 +76,14 @@ func (c courseController) Update(ctx *fiber.Ctx) error {
 
 	id := ctx.Params("courseId")
 
-	err := c.courseUseCase.Update(id, &entity.Course{
-		Name:       payload.Name,
-		Code:       payload.Code,
-		SemesterId: payload.SemesterId,
-		UserId:     payload.UserId,
-	})
-
+	err := c.courseUseCase.Update(
+		id,
+		payload.Name,
+		payload.Code,
+		payload.Curriculum,
+		payload.Description,
+		*payload.CriteriaGrade,
+	)
 	if err != nil {
 		return err
 	}

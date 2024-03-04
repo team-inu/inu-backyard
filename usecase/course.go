@@ -88,7 +88,7 @@ func (u courseUseCase) Create(semesterId string, userId string, name string, cod
 	return nil
 }
 
-func (u courseUseCase) Update(id string, course *entity.Course) error {
+func (u courseUseCase) Update(id string, name string, code string, curriculum string, description string, criteriaGrade entity.CriteriaGrade) error {
 	existCourse, err := u.GetById(id)
 	if err != nil {
 		return errs.New(errs.SameCode, "cannot get course id %s to update", id, err)
@@ -96,9 +96,19 @@ func (u courseUseCase) Update(id string, course *entity.Course) error {
 		return errs.New(errs.ErrCourseNotFound, "cannot get course id %s to update", id)
 	}
 
-	err = u.courseRepo.Update(id, course)
+	if !criteriaGrade.IsValid() {
+		return errs.New(errs.ErrCreateCourse, "invalid criteria grade")
+	}
+
+	err = u.courseRepo.Update(id, &entity.Course{
+		Name:          name,
+		Code:          code,
+		Curriculum:    curriculum,
+		Description:   description,
+		CriteriaGrade: criteriaGrade,
+	})
 	if err != nil {
-		return errs.New(errs.ErrUpdateCourse, "cannot update course by id %s", course.Id, err)
+		return errs.New(errs.ErrUpdateCourse, "cannot update course by id %s", id, err)
 	}
 
 	return nil

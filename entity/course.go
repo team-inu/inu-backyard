@@ -12,7 +12,14 @@ type CriteriaGrade struct {
 }
 
 func (c CriteriaGrade) IsValid() bool {
-	return c.A >= 0 && c.BP >= 0 && c.B >= 0 && c.CP >= 0 && c.C >= 0 && c.DP >= 0 && c.D >= 0 && c.F >= 0
+	return c.A >= c.BP &&
+		c.BP >= c.B &&
+		c.B >= c.CP &&
+		c.CP >= c.C &&
+		c.C >= c.DP &&
+		c.DP >= c.D &&
+		c.D >= c.F &&
+		c.F >= 0
 }
 
 type Course struct {
@@ -24,9 +31,9 @@ type Course struct {
 	// TODO: Add academic year and graduated year
 	// AcademicYear  string `json:"academicYear"`
 	// GraduatedYear string `json:"graduatedYear"`
-	SemesterId string `json:"semesterId"`
-	UserId     string `json:"userId"`
-	CriteriaGrade
+	SemesterId    string `json:"semesterId"`
+	UserId        string `json:"userId"`
+	CriteriaGrade CriteriaGrade
 
 	Semester Semester
 	User     User
@@ -45,6 +52,6 @@ type CourseUseCase interface {
 	GetById(id string) (*Course, error)
 	GetByUserId(userId string) ([]Course, error)
 	Create(semesterId string, userId string, name string, code string, curriculum string, description string, criteriaGrade CriteriaGrade) error
-	Update(id string, course *Course) error
+	Update(id string, name string, code string, curriculum string, description string, criteriaGrade CriteriaGrade) error
 	Delete(id string) error
 }

@@ -13,8 +13,9 @@ type CreateCourseRequestPayload struct {
 }
 
 type UpdateCourseRequestPayload struct {
-	Name       string `json:"name"`
-	Code       string `json:"code"`
-	SemesterId string `json:"semesterId"`
-	UserId     string `json:"userId"`
+	Name          string                `json:"name" validate:"required"`
+	Code          string                `json:"code" validate:"required"`
+	Curriculum    string                `json:"curriculum" validate:"required"`
+	Description   string                `json:"description" validate:"required"`
+	CriteriaGrade *entity.CriteriaGrade `json:"criteriaGrade" validate:"required"`
 }
