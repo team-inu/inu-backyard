@@ -31,9 +31,9 @@ type Course struct {
 	// TODO: Add academic year and graduated year
 	// AcademicYear  string `json:"academicYear"`
 	// GraduatedYear string `json:"graduatedYear"`
-	SemesterId    string `json:"semesterId"`
-	UserId        string `json:"userId"`
-	CriteriaGrade CriteriaGrade
+	SemesterId string `json:"semesterId"`
+	UserId     string `json:"userId"`
+	CriteriaGrade
 
 	Semester Semester
 	User     User
