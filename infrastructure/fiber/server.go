@@ -52,6 +52,7 @@ type fiberServer struct {
 	gradeUseCase                  entity.GradeUseCase
 	sessionUseCase                entity.SessionUseCase
 	authUseCase                   entity.AuthUseCase
+	coursePortfolioUseCase        entity.CoursePortfolioUseCase
 }
 
 func NewFiberServer(
@@ -117,6 +118,7 @@ func (f *fiberServer) initUseCase() {
 	courseLearningOutcomeUseCase := usecase.NewCourseLearningOutcomeUseCase(f.courseLearningOutcomeRepository, courseUseCase, programOutcomeUseCase, programLearningOutcomeUseCase)
 	assignmentUseCase := usecase.NewAssignmentUseCase(f.assignmentRepository, courseLearningOutcomeUseCase, courseUseCase)
 	scoreUseCase := usecase.NewScoreUseCase(f.scoreRepository, enrollmentUseCase, assignmentUseCase, userUseCase, studentUseCase)
+	coursePortfolioUseCase := usecase.NewCoursePortfolioUseCase(courseUseCase, userUseCase, enrollmentUseCase)
 
 	f.assignmentUseCase = assignmentUseCase
 	f.authUseCase = authUseCase
@@ -134,6 +136,7 @@ func (f *fiberServer) initUseCase() {
 	f.semesterUseCase = semesterUseCase
 	f.sessionUseCase = sessionUseCase
 	f.studentUseCase = studentUseCase
+	f.coursePortfolioUseCase = coursePortfolioUseCase
 }
 
 func (f *fiberServer) initController() error {
@@ -167,6 +170,7 @@ func (f *fiberServer) initController() error {
 	semesterController := controller.NewSemesterController(validator, f.semesterUseCase)
 	enrollmentController := controller.NewEnrollmentController(validator, f.enrollmentUseCase)
 	gradeController := controller.NewGradeController(validator, f.gradeUseCase)
+	coursePortfolioController := controller.NewCoursePortfolioController(validator, f.coursePortfolioUseCase)
 	authController := controller.NewAuthController(validator, f.config.Client.Auth, f.authUseCase, f.userUseCase)
 
 	api := app.Group("/")
@@ -182,7 +186,7 @@ func (f *fiberServer) initController() error {
 	student.Delete("/:studentId", studentController.Delete)
 
 	// course route
-	course := api.Group("/courses", authMiddleware)
+	course := api.Group("/courses")
 
 	course.Get("/", courseController.GetAll)
 	course.Post("/", courseController.Create)
@@ -193,6 +197,7 @@ func (f *fiberServer) initController() error {
 	course.Get("/:courseId/clos", courseLearningOutcomeController.GetByCourseId)
 	course.Get("/:courseId/enrollments", enrollmentController.GetByCourseId)
 	course.Get("/:courseId/assignments", assignmentController.GetByCourseId)
+	course.Get("/:courseId/portfolio", coursePortfolioController.Generate)
 
 	// course learning outcome route
 	clo := api.Group("/clos", authMiddleware)
