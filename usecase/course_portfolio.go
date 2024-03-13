@@ -61,9 +61,26 @@ func (u coursePortfolioUseCase) Generate(courseId string) (*entity.CoursePortfol
 		TabeeOutcomes:     tabeeOutcomes,
 	}
 
+	courseDevelopment := entity.CourseDevelopment{
+		Plans:       make([]string, 0),
+		DoAndChecks: make([]string, 0),
+		Acts:        make([]string, 0),
+		SubjectComments: entity.SubjectComments{
+			UpstreamSubjects:   make([]entity.Subject, 0),
+			DownstreamSubjects: make([]entity.Subject, 0),
+		},
+	}
+
+	courseSummary := entity.CourseSummary{
+		TeachingMethods: make([]string, 0),
+		Objectives:      make([]string, 0),
+	}
+
 	coursePortfolio := &entity.CoursePortfolio{
-		CourseInfo:   courseInfo,
-		CourseResult: courseResult,
+		CourseInfo:        courseInfo,
+		CourseResult:      courseResult,
+		CourseSummary:     courseSummary,
+		CourseDevelopment: courseDevelopment,
 	}
 
 	return coursePortfolio, nil
@@ -71,10 +88,12 @@ func (u coursePortfolioUseCase) Generate(courseId string) (*entity.CoursePortfol
 
 // TODO: implement
 func (u coursePortfolioUseCase) CalculateGradeDistribution() (*entity.GradeDistribution, error) {
-	return &entity.GradeDistribution{}, nil
+	return &entity.GradeDistribution{
+		GradeFrequencies: make([]entity.GradeFrequency, 0),
+	}, nil
 }
 
 // TODO: implement
 func (u coursePortfolioUseCase) EvaluateTabeeOutcomes() ([]entity.TabeeOutcome, error) {
-	return nil, nil
+	return make([]entity.TabeeOutcome, 0), nil
 }

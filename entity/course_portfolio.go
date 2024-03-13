@@ -9,74 +9,75 @@ type CourseInfo struct {
 
 // [2] Summary
 type CourseSummary struct {
-	TeachingMethods []string
-	OnlineTool      string
-	Objectives      []string
+	TeachingMethods []string `json:"teachingMethod"`
+	OnlineTool      string   `json:"onlineTool"`
+	Objectives      []string `json:"objectives"`
 }
 
 // [3.1] Tabee Outcome
 type Assessment struct {
-	AssessmentTask        string
-	PassingCriteria       string
-	StudentPassPercentage string
+	AssessmentTask        string `json:"assessmentTask"`
+	PassingCriteria       string `json:"passingCriteria"`
+	StudentPassPercentage string `json:"studentPassPercentage"`
 }
 
 type CourseOutcome struct {
-	Name        string
-	Assessments []Assessment
+	Name        string       `json:"name"`
+	Assessments []Assessment `json:"assessments"`
 }
 
 type TabeeOutcome struct {
-	Name              string
-	CourseOutcomes    []CourseOutcome
-	MinimumPercentage string
+	Name              string          `json:"name"`
+	CourseOutcomes    []CourseOutcome `json:"courseOutcomes"`
+	MinimumPercentage string          `json:"minimumPercentage"`
 }
 
 // [3.2] Grade Distribution
 type GradeFrequency struct {
-	Name       string
-	GradeScore string
-	Frequency  string
+	Name       string `json:"name"`
+	GradeScore string `json:"gradeScore"`
+	Frequency  string `json:"frequency"`
 }
 
 type GradeDistribution struct {
-	StudentAmount  string
-	GPA            string
-	GradeFrequency GradeFrequency
+	StudentAmount    string           `json:"studentAmount"`
+	GPA              string           `json:"GPA"`
+	GradeFrequencies []GradeFrequency `json:"gradeFrequencies"`
 }
 
 // [3] Result
 type CourseResult struct {
-	TabeeOutcomes     []TabeeOutcome
-	GradeDistribution GradeDistribution
+	TabeeOutcomes     []TabeeOutcome    `json:"tabeeOutcomes"`
+	GradeDistribution GradeDistribution `json:"gradeDistribution"`
 }
 
 // [4.1] SubjectComments
 type Subject struct {
-	CourseName string
-	Comment    string
+	CourseName string `json:"courseName"`
+	Comment    string `json:"comments"`
 }
 
 type SubjectComments struct {
-	UpstreamSubjects   []Subject
-	DownstreamSubjects []Subject
+	UpstreamSubjects   []Subject `json:"upstreamSubjects"`
+	DownstreamSubjects []Subject `json:"downstreamSubjects"`
+	Other              string    `json:"other"`
 }
 
 // [4] Development
 type CourseDevelopment struct {
-	Plans           []string
-	DoAndChecks     []string
-	Acts            []string
-	SubjectComments SubjectComments
-	OtherComment    string
+	Plans           []string        `json:"plans"`
+	DoAndChecks     []string        `json:"doAndChecks"`
+	Acts            []string        `json:"acts"`
+	SubjectComments SubjectComments `json:"subjectComments"`
+	OtherComment    string          `json:"otherComment"`
 }
 
 // Course Portfolio
 type CoursePortfolio struct {
-	CourseInfo        CourseInfo
-	CourseSummary     CourseSummary
-	CourseResult      CourseResult
-	CourseDevelopment CourseDevelopment
+	CourseInfo        CourseInfo        `json:"info"`
+	CourseSummary     CourseSummary     `json:"summary"`
+	CourseResult      CourseResult      `json:"result"`
+	CourseDevelopment CourseDevelopment `json:"development"`
 }
 
 type CoursePortfolioUseCase interface {
