@@ -8,20 +8,29 @@ import (
 )
 
 type coursePortfolioUseCase struct {
-	CourseUseCase     entity.CourseUseCase
-	UserUseCase       entity.UserUseCase
-	EnrollmentUseCase entity.EnrollmentUseCase
+	CourseUseCase                entity.CourseUseCase
+	UserUseCase                  entity.UserUseCase
+	EnrollmentUseCase            entity.EnrollmentUseCase
+	AssignmentUseCase            entity.AssignmentUseCase
+	ScoreUseCase                 entity.ScoreUseCase
+	CourseLearningOutcomeUseCase entity.CourseLearningOutcomeUseCase
 }
 
 func NewCoursePortfolioUseCase(
 	courseUseCase entity.CourseUseCase,
 	userUseCase entity.UserUseCase,
 	enrollmentUseCase entity.EnrollmentUseCase,
+	assignmentUseCase entity.AssignmentUseCase,
+	scoreUseCase entity.ScoreUseCase,
+	courseLearningOutcomeUseCase entity.CourseLearningOutcomeUseCase,
 ) entity.CoursePortfolioUseCase {
 	return &coursePortfolioUseCase{
-		CourseUseCase:     courseUseCase,
-		UserUseCase:       userUseCase,
-		EnrollmentUseCase: enrollmentUseCase,
+		CourseUseCase:                courseUseCase,
+		UserUseCase:                  userUseCase,
+		EnrollmentUseCase:            enrollmentUseCase,
+		AssignmentUseCase:            assignmentUseCase,
+		ScoreUseCase:                 scoreUseCase,
+		CourseLearningOutcomeUseCase: courseLearningOutcomeUseCase,
 	}
 }
 
@@ -96,4 +105,9 @@ func (u coursePortfolioUseCase) CalculateGradeDistribution() (*entity.GradeDistr
 // TODO: implement
 func (u coursePortfolioUseCase) EvaluateTabeeOutcomes() ([]entity.TabeeOutcome, error) {
 	return make([]entity.TabeeOutcome, 0), nil
+}
+
+func (u coursePortfolioUseCase) AssignmentExpectedScorePercentage(courseId string) (float64, error) {
+
+	return 0, nil
 }
