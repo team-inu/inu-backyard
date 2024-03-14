@@ -22,15 +22,15 @@ func (c CriteriaGrade) IsValid() bool {
 		c.F >= 0
 }
 
+// TODO: Add academic year and graduated year
 type Course struct {
-	Id          string `json:"id" gorm:"primaryKey;type:char(255)"`
-	Name        string `json:"name"`
-	Code        string `json:"code"`
-	Curriculum  string `json:"curriculum"`
-	Description string `json:"description"`
-	// TODO: Add academic year and graduated year
-	// AcademicYear  string `json:"academicYear"`
-	// GraduatedYear string `json:"graduatedYear"`
+	Id                           string  `json:"id" gorm:"primaryKey;type:char(255)"`
+	Name                         string  `json:"name"`
+	Code                         string  `json:"code"`
+	Curriculum                   string  `json:"curriculum"`
+	Description                  string  `json:"description"`
+	ExpectedPassingCloPercentage float64 `json:"expectedPassingCloPercentage"`
+
 	SemesterId string `json:"semesterId"`
 	UserId     string `json:"userId"`
 	CriteriaGrade
@@ -51,7 +51,7 @@ type CourseUseCase interface {
 	GetAll() ([]Course, error)
 	GetById(id string) (*Course, error)
 	GetByUserId(userId string) ([]Course, error)
-	Create(semesterId string, userId string, name string, code string, curriculum string, description string, criteriaGrade CriteriaGrade) error
-	Update(id string, name string, code string, curriculum string, description string, criteriaGrade CriteriaGrade) error
+	Create(semesterId string, userId string, name string, code string, curriculum string, description string, expectedPassingCloPercentage float64, criteriaGrade CriteriaGrade) error
+	Update(id string, name string, code string, curriculum string, description string, expectedPassingCloPercentage float64, criteriaGrade CriteriaGrade) error
 	Delete(id string) error
 }

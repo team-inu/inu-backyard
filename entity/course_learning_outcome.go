@@ -20,7 +20,6 @@ type CreateCourseLearningOutcomeDto struct {
 	Code                                string
 	Description                         string
 	ExpectedPassingAssignmentPercentage float64
-	ExpectedScorePercentage             float64
 	ExpectedPassingStudentPercentage    float64
 	Status                              string
 	SubProgramLearningOutcomeIds        []string
@@ -32,7 +31,6 @@ type UpdateCourseLeaningOutcomeDto struct {
 	Code                                string
 	Description                         string
 	ExpectedPassingAssignmentPercentage float64
-	ExpectedScorePercentage             float64
 	ExpectedPassingStudentPercentage    float64
 	Status                              string
 	ProgramOutcomeId                    string

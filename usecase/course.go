@@ -50,7 +50,7 @@ func (u courseUseCase) GetByUserId(userId string) ([]entity.Course, error) {
 	return course, nil
 }
 
-func (u courseUseCase) Create(semesterId string, userId string, name string, code string, curriculum string, description string, criteriaGrade entity.CriteriaGrade) error {
+func (u courseUseCase) Create(semesterId string, userId string, name string, code string, curriculum string, description string, expectedPassingCloPercentage float64, criteriaGrade entity.CriteriaGrade) error {
 	semester, err := u.semesterUseCase.GetById(semesterId)
 	if err != nil {
 		return errs.New(errs.SameCode, "cannot get semester id %s while creating course", semesterId, err)
@@ -88,7 +88,7 @@ func (u courseUseCase) Create(semesterId string, userId string, name string, cod
 	return nil
 }
 
-func (u courseUseCase) Update(id string, name string, code string, curriculum string, description string, criteriaGrade entity.CriteriaGrade) error {
+func (u courseUseCase) Update(id string, name string, code string, curriculum string, description string, expectedPassingCloPercentage float64, criteriaGrade entity.CriteriaGrade) error {
 	existCourse, err := u.GetById(id)
 	if err != nil {
 		return errs.New(errs.SameCode, "cannot get course id %s to update", id, err)
