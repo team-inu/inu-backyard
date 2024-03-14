@@ -5,7 +5,6 @@ type CourseLearningOutcome struct {
 	Code                                string  `json:"code"`
 	Description                         string  `json:"description"`
 	ExpectedPassingAssignmentPercentage float64 `json:"expectedPassingAssignmentPercentage"`
-	ExpectedScorePercentage             float64 `json:"expectedScorePercentage"`
 	ExpectedPassingStudentPercentage    float64 `json:"expectedPassingStudentPercentage"`
 	Status                              string  `json:"status"`
 	ProgramOutcomeId                    string  `json:"programOutcomeId"`
