@@ -101,11 +101,12 @@ func (u courseUseCase) Update(id string, name string, code string, curriculum st
 	}
 
 	err = u.courseRepo.Update(id, &entity.Course{
-		Name:          name,
-		Code:          code,
-		Curriculum:    curriculum,
-		Description:   description,
-		CriteriaGrade: criteriaGrade,
+		Name:                         name,
+		Code:                         code,
+		Curriculum:                   curriculum,
+		Description:                  description,
+		CriteriaGrade:                criteriaGrade,
+		ExpectedPassingCloPercentage: expectedPassingCloPercentage,
 	})
 	if err != nil {
 		return errs.New(errs.ErrUpdateCourse, "cannot update course by id %s", id, err)
