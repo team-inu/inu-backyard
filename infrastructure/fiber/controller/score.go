@@ -47,12 +47,12 @@ func (c scoreController) GetById(ctx *fiber.Ctx) error {
 func (c scoreController) GetByAssignmentId(ctx *fiber.Ctx) error {
 	assignmentId := ctx.Params("assignmentId")
 
-	scores, err := c.ScoreUseCase.GetByAssignmentId(assignmentId)
+	assignmentScore, err := c.ScoreUseCase.GetByAssignmentId(assignmentId)
 	if err != nil {
 		return err
 	}
 
-	return response.NewSuccessResponse(ctx, fiber.StatusOK, scores)
+	return response.NewSuccessResponse(ctx, fiber.StatusOK, assignmentScore)
 }
 
 func (c scoreController) CreateMany(ctx *fiber.Ctx) error {
