@@ -41,14 +41,14 @@ func (r courseLearningOutcomeRepositoryGorm) GetById(id string) (*entity.CourseL
 	return &clo, nil
 }
 
-func (r courseLearningOutcomeRepositoryGorm) GetByCourseId(courseId string) ([]entity.CourseLearningOutcome, error) {
-	var clos []entity.CourseLearningOutcome
-	err := r.gorm.Where("course_id = ?", courseId).Find(&clos).Error
+func (r courseLearningOutcomeRepositoryGorm) GetByCourseId(courseId string) ([]entity.CourseLearningOutcomeWithPO, error) {
+	var clos []entity.CourseLearningOutcomeWithPO
+	err := r.gorm.Raw("SELECT clo.*, po.id, po.name as program_outcome_name FROM course_learning_outcome AS clo INNER JOIN program_outcome as po ON clo.program_outcome_id = po.id WHERE clo.course_id = ?", courseId).Scan(&clos).Error
 
 	if err == gorm.ErrRecordNotFound {
 		return nil, nil
 	} else if err != nil {
-		return nil, fmt.Errorf("cannot query to get CLO by course id: %w", err)
+		return nil, fmt.Errorf("cannot query to get CLOs by course id: %w", err)
 	}
 
 	return clos, nil
@@ -103,7 +103,6 @@ func (r courseLearningOutcomeRepositoryGorm) DeleteLinkSubProgramLearningOutcome
 	// fmt.Println(id, subProgramLearningOutcomeId)
 	err := r.gorm.Exec("DELETE FROM `clo_subplo` WHERE course_learning_outcome_id = ? AND sub_program_learning_outcome_id = ?", id, subProgramLearningOutcomeId).Error
 
-	fmt.Println(err)
 	if err != nil {
 		return fmt.Errorf("cannot delete link between CLO and SPLO: %w", err)
 	}

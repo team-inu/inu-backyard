@@ -16,6 +16,11 @@ type CourseLearningOutcome struct {
 	Course                     Course                       `json:"-"`
 }
 
+type CourseLearningOutcomeWithPO struct {
+	CourseLearningOutcome
+	ProgramOutcomeName string `json:"programOutcomeName"`
+}
+
 type CreateCourseLearningOutcomeDto struct {
 	Code                                string
 	Description                         string
@@ -39,7 +44,7 @@ type UpdateCourseLeaningOutcomeDto struct {
 type CourseLearningOutcomeRepository interface {
 	GetAll() ([]CourseLearningOutcome, error)
 	GetById(id string) (*CourseLearningOutcome, error)
-	GetByCourseId(courseId string) ([]CourseLearningOutcome, error)
+	GetByCourseId(courseId string) ([]CourseLearningOutcomeWithPO, error)
 	Create(courseLearningOutcome *CourseLearningOutcome) error
 	CreateLinkSubProgramLearningOutcome(id string, subProgramLearningOutcomeId []string) error
 	Update(id string, courseLearningOutcome *CourseLearningOutcome) error
@@ -51,7 +56,7 @@ type CourseLearningOutcomeRepository interface {
 type CourseLearningOutcomeUseCase interface {
 	GetAll() ([]CourseLearningOutcome, error)
 	GetById(id string) (*CourseLearningOutcome, error)
-	GetByCourseId(courseId string) ([]CourseLearningOutcome, error)
+	GetByCourseId(courseId string) ([]CourseLearningOutcomeWithPO, error)
 	Create(dto CreateCourseLearningOutcomeDto) error
 	CreateLinkSubProgramLearningOutcome(id string, subProgramLearningOutcomeId []string) error
 	Update(id string, dto UpdateCourseLeaningOutcomeDto) error
