@@ -22,6 +22,45 @@ func (c CriteriaGrade) IsValid() bool {
 		c.F >= 0
 }
 
+func (c CriteriaGrade) CalculateCriteriaWeight(maxScore float64) CriteriaGrade {
+	percentage := maxScore / 100
+
+	criteriaGrade := CriteriaGrade{
+		A:  c.A * percentage,
+		BP: c.BP * percentage,
+		B:  c.B * percentage,
+		CP: c.CP * percentage,
+		C:  c.C * percentage,
+		DP: c.DP * percentage,
+		D:  c.D * percentage,
+		F:  c.F * percentage,
+	}
+	return criteriaGrade
+}
+
+func (c CriteriaGrade) GradeToGPA(grade string) float64 {
+	switch grade {
+	case "A":
+		return 4.0
+	case "BP":
+		return 3.5
+	case "B":
+		return 3.0
+	case "CP":
+		return 2.5
+	case "C":
+		return 2.0
+	case "DP":
+		return 1.5
+	case "D":
+		return 1.0
+	case "F":
+		return 0
+	default:
+		return 0
+	}
+}
+
 // TODO: Add academic year and graduated year
 type Course struct {
 	Id                           string  `json:"id" gorm:"primaryKey;type:char(255)"`

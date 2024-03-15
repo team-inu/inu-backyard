@@ -34,14 +34,14 @@ type TabeeOutcome struct {
 
 // [3.2] Grade Distribution
 type GradeFrequency struct {
-	Name       string `json:"name"`
-	GradeScore string `json:"gradeScore"`
-	Frequency  string `json:"frequency"`
+	Name       string  `json:"name"`
+	GradeScore float64 `json:"gradeScore"`
+	Frequency  int     `json:"frequency"`
 }
 
 type GradeDistribution struct {
-	StudentAmount    string           `json:"studentAmount"`
-	GPA              string           `json:"GPA"`
+	StudentAmount    int              `json:"studentAmount"`
+	GPA              float64          `json:"GPA"`
 	GradeFrequencies []GradeFrequency `json:"gradeFrequencies"`
 }
 
@@ -82,6 +82,6 @@ type CoursePortfolio struct {
 
 type CoursePortfolioUseCase interface {
 	Generate(courseId string) (*CoursePortfolio, error)
-	CalculateGradeDistribution() (*GradeDistribution, error)
+	CalculateGradeDistribution(courseId string) (*GradeDistribution, error)
 	EvaluateTabeeOutcomes() ([]TabeeOutcome, error)
 }

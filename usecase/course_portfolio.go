@@ -55,7 +55,7 @@ func (u coursePortfolioUseCase) Generate(courseId string) (*entity.CoursePortfol
 		Lecturers: []string{fmt.Sprintf("%s %s", lecturer.FirstName, lecturer.LastName)},
 	}
 
-	gradeDistribution, err := u.CalculateGradeDistribution()
+	gradeDistribution, err := u.CalculateGradeDistribution(courseId)
 	if err != nil {
 		return nil, errs.New(errs.SameCode, "cannot calculate grade distribution while generate course portfolio", err)
 	}
@@ -95,10 +95,148 @@ func (u coursePortfolioUseCase) Generate(courseId string) (*entity.CoursePortfol
 	return coursePortfolio, nil
 }
 
-// TODO: implement
-func (u coursePortfolioUseCase) CalculateGradeDistribution() (*entity.GradeDistribution, error) {
+func (u coursePortfolioUseCase) CalculateGradeDistribution(courseId string) (*entity.GradeDistribution, error) {
+	type studentScore struct {
+		studentId string
+		score     float64
+		weight    int
+	}
+
+	course, err := u.CourseUseCase.GetById(courseId)
+	if err != nil {
+		return nil, errs.New(errs.SameCode, "cannot get course by id %s while calculate grade distribution", courseId, err)
+	} else if course == nil {
+		return nil, errs.New(errs.ErrCourseNotFound, "course id %s not found while calculate grade distribution", courseId)
+	}
+
+	assignments, err := u.AssignmentUseCase.GetByCourseId(courseId)
+	if err != nil {
+		return nil, errs.New(errs.SameCode, "cannot get assignments by course id %s while calculate grade distribution", courseId, err)
+	}
+
+	cumulativeWeight := 0
+	for _, assignment := range assignments {
+		cumulativeWeight += assignment.Weight
+	}
+
+	cumulativeWeightedMaxScore := 0
+	for _, assignment := range assignments {
+		cumulativeWeightedMaxScore += assignment.MaxScore * assignment.Weight / cumulativeWeight
+	}
+
+	studentScoresByAssignmentId := make(map[string][]studentScore, 0)
+	for _, assignment := range assignments {
+		scores, err := u.ScoreUseCase.GetByAssignmentId(assignment.Id)
+		if err != nil {
+			return nil, errs.New(errs.SameCode, "cannot get scores by assignment id %s while calculate grade distribution", assignment.Id, err)
+		}
+
+		for _, score := range scores.Scores {
+			studentScoresByAssignmentId[assignment.Id] = append(studentScoresByAssignmentId[assignment.Id], studentScore{
+				studentId: score.StudentId,
+				score:     score.Score,
+				weight:    assignment.Weight,
+			})
+		}
+	}
+
+	studentScoreByStudentId := make(map[string]float64, 0)
+
+	//calculate student scores
+	for _, assignmentScores := range studentScoresByAssignmentId {
+		for _, score := range assignmentScores {
+			studentScoreByStudentId[score.studentId] += (score.score * float64(score.weight) / float64(cumulativeWeight))
+		}
+	}
+
+	fmt.Println(studentScoreByStudentId)
+
+	for studentId, studentScore := range studentScoreByStudentId {
+		studentScoreByStudentId[studentId] = studentScore * 100 / float64(cumulativeWeightedMaxScore)
+	}
+
+	//calculate grade distribution
+	weightedCriteriaGrade := course.CriteriaGrade.CalculateCriteriaWeight(float64(cumulativeWeightedMaxScore))
+
+	frequenciesByGrade := make(map[string]int, 0)
+	fmt.Println("===")
+	for studentId, studentScore := range studentScoreByStudentId {
+		fmt.Println(studentId, studentScore, cumulativeWeightedMaxScore)
+		switch {
+		case studentScore >= weightedCriteriaGrade.A:
+			frequenciesByGrade["A"] += 1
+		case studentScore >= weightedCriteriaGrade.BP:
+			frequenciesByGrade["BP"] += 1
+		case studentScore >= weightedCriteriaGrade.B:
+			frequenciesByGrade["B"] += 1
+		case studentScore >= weightedCriteriaGrade.CP:
+			frequenciesByGrade["CP"] += 1
+		case studentScore >= weightedCriteriaGrade.C:
+			frequenciesByGrade["C"] += 1
+		case studentScore >= weightedCriteriaGrade.DP:
+			frequenciesByGrade["DP"] += 1
+		case studentScore >= weightedCriteriaGrade.D:
+			frequenciesByGrade["D"] += 1
+		default:
+			frequenciesByGrade["F"] += 1
+		}
+	}
+	fmt.Println("===================")
+
+	gradeFrequencies := []entity.GradeFrequency{
+		{
+			Name:       "A",
+			GradeScore: weightedCriteriaGrade.A,
+			Frequency:  frequenciesByGrade["A"],
+		},
+		{
+			Name:       "BP",
+			GradeScore: weightedCriteriaGrade.BP,
+			Frequency:  frequenciesByGrade["BP"],
+		},
+		{
+			Name:       "B",
+			GradeScore: weightedCriteriaGrade.B,
+			Frequency:  frequenciesByGrade["B"],
+		},
+		{
+			Name:       "CP",
+			GradeScore: weightedCriteriaGrade.CP,
+			Frequency:  frequenciesByGrade["CP"],
+		},
+		{
+			Name:       "C",
+			GradeScore: weightedCriteriaGrade.C,
+			Frequency:  frequenciesByGrade["C"],
+		},
+		{
+			Name:       "DP",
+			GradeScore: weightedCriteriaGrade.DP,
+			Frequency:  frequenciesByGrade["DP"],
+		},
+		{
+			Name:       "D",
+			GradeScore: weightedCriteriaGrade.D,
+			Frequency:  frequenciesByGrade["D"],
+		},
+		{
+			Name:       "F",
+			GradeScore: weightedCriteriaGrade.F,
+			Frequency:  frequenciesByGrade["F"],
+		},
+	}
+
+	studentAmount := len(studentScoreByStudentId)
+
+	gpa := 0.0
+	for grade, frequency := range frequenciesByGrade {
+		gpa += float64(frequency) * course.CriteriaGrade.GradeToGPA(grade)
+	}
+
 	return &entity.GradeDistribution{
-		GradeFrequencies: make([]entity.GradeFrequency, 0),
+		GradeFrequencies: gradeFrequencies,
+		StudentAmount:    studentAmount,
+		GPA:              gpa / float64(studentAmount),
 	}, nil
 }
 
