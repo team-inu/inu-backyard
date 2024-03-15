@@ -8,6 +8,7 @@ import (
 )
 
 type coursePortfolioUseCase struct {
+	CoursePortfolioRepository    entity.CoursePortfolioRepository
 	CourseUseCase                entity.CourseUseCase
 	UserUseCase                  entity.UserUseCase
 	EnrollmentUseCase            entity.EnrollmentUseCase
@@ -17,6 +18,7 @@ type coursePortfolioUseCase struct {
 }
 
 func NewCoursePortfolioUseCase(
+	coursePortfolioRepository entity.CoursePortfolioRepository,
 	courseUseCase entity.CourseUseCase,
 	userUseCase entity.UserUseCase,
 	enrollmentUseCase entity.EnrollmentUseCase,
@@ -25,6 +27,7 @@ func NewCoursePortfolioUseCase(
 	courseLearningOutcomeUseCase entity.CourseLearningOutcomeUseCase,
 ) entity.CoursePortfolioUseCase {
 	return &coursePortfolioUseCase{
+		CoursePortfolioRepository:    coursePortfolioRepository,
 		CourseUseCase:                courseUseCase,
 		UserUseCase:                  userUseCase,
 		EnrollmentUseCase:            enrollmentUseCase,
@@ -60,7 +63,7 @@ func (u coursePortfolioUseCase) Generate(courseId string) (*entity.CoursePortfol
 		return nil, errs.New(errs.SameCode, "cannot calculate grade distribution while generate course portfolio", err)
 	}
 
-	tabeeOutcomes, err := u.EvaluateTabeeOutcomes()
+	tabeeOutcomes, err := u.EvaluateTabeeOutcomes(courseId)
 	if err != nil {
 		return nil, errs.New(errs.SameCode, "cannot evaluate tabee outcomes while generate course portfolio", err)
 	}
@@ -149,8 +152,6 @@ func (u coursePortfolioUseCase) CalculateGradeDistribution(courseId string) (*en
 		}
 	}
 
-	fmt.Println(studentScoreByStudentId)
-
 	for studentId, studentScore := range studentScoreByStudentId {
 		studentScoreByStudentId[studentId] = studentScore * 100 / float64(cumulativeWeightedMaxScore)
 	}
@@ -159,9 +160,7 @@ func (u coursePortfolioUseCase) CalculateGradeDistribution(courseId string) (*en
 	weightedCriteriaGrade := course.CriteriaGrade.CalculateCriteriaWeight(float64(cumulativeWeightedMaxScore))
 
 	frequenciesByGrade := make(map[string]int, 0)
-	fmt.Println("===")
-	for studentId, studentScore := range studentScoreByStudentId {
-		fmt.Println(studentId, studentScore, cumulativeWeightedMaxScore)
+	for _, studentScore := range studentScoreByStudentId {
 		switch {
 		case studentScore >= weightedCriteriaGrade.A:
 			frequenciesByGrade["A"] += 1
@@ -181,7 +180,6 @@ func (u coursePortfolioUseCase) CalculateGradeDistribution(courseId string) (*en
 			frequenciesByGrade["F"] += 1
 		}
 	}
-	fmt.Println("===================")
 
 	gradeFrequencies := []entity.GradeFrequency{
 		{
@@ -240,12 +238,6 @@ func (u coursePortfolioUseCase) CalculateGradeDistribution(courseId string) (*en
 	}, nil
 }
 
-// TODO: implement
-func (u coursePortfolioUseCase) EvaluateTabeeOutcomes() ([]entity.TabeeOutcome, error) {
-	return make([]entity.TabeeOutcome, 0), nil
-}
-
-func (u coursePortfolioUseCase) AssignmentExpectedScorePercentage(courseId string) (float64, error) {
-
-	return 0, nil
+func (u coursePortfolioUseCase) EvaluateTabeeOutcomes(courseId string) ([]entity.TabeeOutcome, error) {
+	return nil, nil
 }

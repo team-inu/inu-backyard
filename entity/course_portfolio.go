@@ -16,9 +16,9 @@ type CourseSummary struct {
 
 // [3.1] Tabee Outcome
 type Assessment struct {
-	AssessmentTask        string `json:"assessmentTask"`
-	PassingCriteria       string `json:"passingCriteria"`
-	StudentPassPercentage string `json:"studentPassPercentage"`
+	AssessmentTask        string  `json:"assessmentTask"`
+	PassingCriteria       string  `json:"passingCriteria"`
+	StudentPassPercentage float64 `json:"studentPassPercentage"`
 }
 
 type CourseOutcome struct {
@@ -80,8 +80,30 @@ type CoursePortfolio struct {
 	CourseDevelopment CourseDevelopment `json:"development"`
 }
 
+type AssignmentPercentage struct {
+	PassingPercentage       float64
+	AssignmentId            string `gorm:"column:a_id"`
+	CourseLearningOutcomeId string `gorm:"column:c_id"`
+}
+
+type PoPercentage struct {
+	PassingPercentage float64
+	ProgramOutcomeId  string `gorm:"column:p_id"`
+}
+
+type CloPercentage struct {
+	PassingPercentage       float64
+	CourseLearningOutcomeId string `gorm:"column:c_id"`
+}
+
+type CoursePortfolioRepository interface {
+	EvaluatePassingAssignmentPercentage(courseId string) ([]AssignmentPercentage, error)
+	EvaluatePassingPoPercentage(courseId string) ([]PoPercentage, error)
+	EvaluatePassingCloPercentage(courseId string) ([]CloPercentage, error)
+}
+
 type CoursePortfolioUseCase interface {
 	Generate(courseId string) (*CoursePortfolio, error)
 	CalculateGradeDistribution(courseId string) (*GradeDistribution, error)
-	EvaluateTabeeOutcomes() ([]TabeeOutcome, error)
+	EvaluateTabeeOutcomes(courseId string) ([]TabeeOutcome, error)
 }
