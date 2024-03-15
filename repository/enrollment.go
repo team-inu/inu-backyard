@@ -54,7 +54,6 @@ func (r enrollmentRepositoryGorm) GetById(id string) (*entity.Enrollment, error)
 
 func (r enrollmentRepositoryGorm) GetByCourseId(courseId string) ([]entity.Enrollment, error) {
 	var enrollments []entity.Enrollment
-	fmt.Println(courseId)
 	err := r.gorm.
 		Model(&enrollments).
 		Select("enrollment.*, student.first_name, student.last_name, student.email").
@@ -63,7 +62,6 @@ func (r enrollmentRepositoryGorm) GetByCourseId(courseId string) ([]entity.Enrol
 		Scan(&enrollments).
 		Error
 
-	fmt.Println(err)
 	if err == gorm.ErrRecordNotFound {
 		return nil, nil
 	} else if err != nil {

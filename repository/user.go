@@ -93,7 +93,6 @@ func (r userRepositoryGorm) Create(user *entity.User) error {
 
 func (r userRepositoryGorm) CreateMany(users []entity.User) error {
 	err := r.gorm.Create(&users).Error
-	fmt.Println(err)
 	if err != nil {
 		return fmt.Errorf("cannot create users: %w", err)
 	}

@@ -16,8 +16,6 @@ func NewSessionRepository(gorm *gorm.DB) entity.SessionRepository {
 }
 
 func (r *sessionRepository) Create(session *entity.Session) error {
-	fmt.Println(session.UserId)
-
 	err := r.gorm.Create(session).Error
 
 	if err != nil {
