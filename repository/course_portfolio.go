@@ -18,7 +18,7 @@ func NewCoursePortfolioRepositoryGorm(gorm *gorm.DB) entity.CoursePortfolioRepos
 type TabeeSelector string
 
 const (
-	TabeeSelectorAssignment TabeeSelector = "student_passing_assignment_percentage"
+	TabeeSelectorAssignment TabeeSelector = "result_student_passing_assignment_percentage"
 	TabeeSelectorPo         TabeeSelector = "student_passing_po_percentage"
 	TabeeSelectorClo        TabeeSelector = "student_passing_clo_percentage"
 )
@@ -75,6 +75,7 @@ func (r coursePortfolioRepositoryGorm) evaluateTabeeOutcomes(courseId string, se
 			),
 			assignments AS (
 				SELECT
+					assignment.name,
 					assignment.max_score,
 					assignment.expected_score_percentage,
 					clos.expected_passing_assignment_percentage,
@@ -147,7 +148,7 @@ func (r coursePortfolioRepositoryGorm) evaluateTabeeOutcomes(courseId string, se
 			student_passing_clo AS (
 				SELECT
 					student_assignment_pass_count.pass_count >= (clos.expected_passing_assignment_percentage / 100 * assignments_count.count)
-					AS pass_count,
+					AS pass,
 					clos.program_outcome_id,
 					clos.id AS clo_id,
 					student_assignment_pass_count.student_id
@@ -157,7 +158,7 @@ func (r coursePortfolioRepositoryGorm) evaluateTabeeOutcomes(courseId string, se
 					JOIN student_assignment_pass_count ON clos.id = student_assignment_pass_count.c_id
 			),
 			total_clo_pass AS (
-				SELECT SUM(pass_count) AS count, clo_id FROM student_passing_clo GROUP BY clo_id
+				SELECT SUM(pass) AS count, clo_id FROM student_passing_clo GROUP BY clo_id
 			),
 			student_passing_clo_percentage AS (
 				SELECT
@@ -166,9 +167,9 @@ func (r coursePortfolioRepositoryGorm) evaluateTabeeOutcomes(courseId string, se
 					total_clo_pass
 					JOIN student_count ON total_clo_pass.clo_id = student_count.c_id
 			),
-			student_po_passing_count AS (
+			student_clo_passing_count_by_po AS (
 				SELECT
-					SUM(pass_count) AS pass_count,
+					SUM(pass) AS pass_count,
 					student_id,
 					program_outcome_id
 				FROM
@@ -187,12 +188,12 @@ func (r coursePortfolioRepositoryGorm) evaluateTabeeOutcomes(courseId string, se
 			),
 			student_passing_po AS (
 				SELECT
-					(pass_count > target_course.expected_passing_clo_percentage / 100 * clo_count_by_po.clo_count) AS pass,
+					(pass_count >= target_course.expected_passing_clo_percentage / 100 * clo_count_by_po.clo_count) AS pass,
 					clo_count_by_po.p_id,
-					student_po_passing_count.student_id
+					student_clo_passing_count_by_po.student_id
 				FROM
 					clo_count_by_po
-					JOIN student_po_passing_count ON clo_count_by_po.p_id = student_po_passing_count.program_outcome_id,
+					JOIN student_clo_passing_count_by_po ON clo_count_by_po.p_id = student_clo_passing_count_by_po.program_outcome_id,
 					target_course
 			),
 			total_po_pass AS (
@@ -209,7 +210,7 @@ func (r coursePortfolioRepositoryGorm) evaluateTabeeOutcomes(courseId string, se
 					COUNT(*) AS count,
 					program_outcome_id
 				FROM
-					student_po_passing_count
+					student_clo_passing_count_by_po
 				GROUP BY
 					program_outcome_id
 			),
@@ -220,7 +221,95 @@ func (r coursePortfolioRepositoryGorm) evaluateTabeeOutcomes(courseId string, se
 				FROM
 					total_po_pass
 					JOIN student_count_by_po ON student_count_by_po.program_outcome_id = total_po_pass.p_id
-			)
+			),
+			plos AS (
+				SELECT
+					clos.id AS c_id,
+					sub_program_learning_outcome.id AS splo_id,
+					sub_program_learning_outcome.program_learning_outcome_id AS plo_id
+				FROM
+					clos
+					JOIN clo_subplo ON clos.id = clo_subplo.course_learning_outcome_id
+					JOIN sub_program_learning_outcome ON clo_subplo.sub_program_learning_outcome_id = sub_program_learning_outcome.id
+			),
+			distinct_plos AS (
+				SELECT
+					DISTINCT
+					c_id,
+					plo_id
+				FROM
+					plos
+			),
+			student_passing_clo_with_plo AS (
+				SELECT
+					pass,
+					c_id,
+					student_id,
+					plo_id
+				FROM
+					student_passing_clo
+					JOIN distinct_plos ON student_passing_clo.clo_id = distinct_plos.c_id
+			),
+			student_clo_passing_count_by_plo AS (
+				SELECT
+					SUM(pass) AS pass_count,
+					plo_id,
+					student_id
+				FROM
+					student_passing_clo_with_plo
+				GROUP BY
+					plo_id, student_id
+			),
+			clo_count_by_plo AS (
+				SELECT
+					COUNT(*) AS clo_count,
+					plo_id
+				FROM
+					distinct_plos
+				GROUP BY
+					plo_id
+			),
+			student_passing_plo AS (
+				SELECT
+					(pass_count >= target_course.expected_passing_clo_percentage / 100 * clo_count_by_plo.clo_count) AS pass,
+					clo_count_by_plo.plo_id,
+					student_clo_passing_count_by_plo.student_id
+				FROM
+					clo_count_by_plo
+					JOIN student_clo_passing_count_by_plo ON clo_count_by_plo.plo_id = student_clo_passing_count_by_plo.plo_id,
+					target_course
+			),
+			total_plo_pass AS (
+				SELECT
+					SUM(pass) AS count,
+					plo_id
+				FROM
+					student_passing_plo
+				GROUP BY
+					plo_id
+			),
+			student_count_by_plo AS (
+				SELECT
+					COUNT(*) AS count,
+					plo_id
+				FROM
+					student_clo_passing_count_by_plo
+				GROUP BY
+					plo_id
+			),
+			student_passing_plo_percentage AS (
+				SELECT
+					total_plo_pass.count / student_count_by_plo.count * 100 AS passing_percentage,
+					total_plo_pass.plo_id
+				FROM
+					total_plo_pass
+					JOIN student_count_by_plo ON student_count_by_plo.plo_id = total_plo_pass.plo_id
+			),
+			result_student_passing_assignment_percentage AS (
+                SELECT assignments.name, assignments.expected_score_percentage, student_passing_assignment_percentage.*
+                FROM assignments
+                JOIN student_passing_assignment_percentage ON assignments.a_id = student_passing_assignment_percentage.a_id AND assignments.c_id = student_passing_assignment_percentage.c_id
+            )
 		SELECT *
 		FROM %s;
 	`

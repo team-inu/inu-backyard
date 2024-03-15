@@ -239,5 +239,59 @@ func (u coursePortfolioUseCase) CalculateGradeDistribution(courseId string) (*en
 }
 
 func (u coursePortfolioUseCase) EvaluateTabeeOutcomes(courseId string) ([]entity.TabeeOutcome, error) {
-	return nil, nil
+	assignmentPercentages, err := u.CoursePortfolioRepository.EvaluatePassingAssignmentPercentage(courseId)
+	if err != nil {
+		return nil, errs.New(errs.SameCode, "cannot evaluate passing assignment percentage by course id %s while evaluate tabee outcome", courseId, err)
+	}
+
+	assessmentsByCloId := make(map[string][]entity.Assessment, len(assignmentPercentages))
+	for _, assignmentPercentage := range assignmentPercentages {
+
+		cloId := assignmentPercentage.CourseLearningOutcomeId
+
+		assessmentsByCloId[cloId] = append(assessmentsByCloId[cloId], entity.Assessment{
+			AssessmentTask:        assignmentPercentage.Name,
+			PassingCriteria:       assignmentPercentage.ExpectedScorePercentage,
+			StudentPassPercentage: assignmentPercentage.PassingPercentage,
+		})
+	}
+
+	clos, err := u.CourseLearningOutcomeUseCase.GetByCourseId(courseId)
+	if err != nil {
+		return nil, errs.New(errs.SameCode, "cannot get clo while evaluate tabee outcome", err)
+	}
+
+	courseOutcomeByPoId := make(map[string][]entity.CourseOutcome, 0)
+	for _, clo := range clos {
+		courseOutcomeByPoId[clo.ProgramOutcomeId] = append(courseOutcomeByPoId[clo.ProgramOutcomeId], entity.CourseOutcome{
+			Name:        clo.Description,
+			Assessments: assessmentsByCloId[clo.Id],
+		})
+	}
+
+	passingPoPercentages, err := u.CoursePortfolioRepository.EvaluatePassingPoPercentage(courseId)
+	if err != nil {
+		return nil, errs.New(errs.SameCode, "cannot evaluate passing po percentage by course id %s while evaluate tabee outcome", courseId, err)
+	}
+
+	passingPoPercentageByPoId := make(map[string]float64, len(passingPoPercentages))
+	for _, passingPoPercentage := range passingPoPercentages {
+		passingPoPercentageByPoId[passingPoPercentage.ProgramOutcomeId] = passingPoPercentage.PassingPercentage
+	}
+
+	tabeeOutcomesByPoId := make(map[string][]entity.TabeeOutcome, 0)
+	for _, clo := range clos {
+		tabeeOutcomesByPoId[clo.ProgramOutcomeId] = append(tabeeOutcomesByPoId[clo.ProgramOutcomeId], entity.TabeeOutcome{
+			Name:              clo.ProgramOutcomeName,
+			CourseOutcomes:    courseOutcomeByPoId[clo.ProgramOutcomeId],
+			MinimumPercentage: passingPoPercentageByPoId[clo.ProgramOutcomeId],
+		})
+	}
+
+	tabeeOutcomes := make([]entity.TabeeOutcome, 0, len(tabeeOutcomesByPoId))
+	for _, tabeeOutcome := range tabeeOutcomesByPoId {
+		tabeeOutcomes = append(tabeeOutcomes, tabeeOutcome...)
+	}
+
+	return tabeeOutcomes, nil
 }

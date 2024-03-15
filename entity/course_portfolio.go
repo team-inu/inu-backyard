@@ -17,7 +17,7 @@ type CourseSummary struct {
 // [3.1] Tabee Outcome
 type Assessment struct {
 	AssessmentTask        string  `json:"assessmentTask"`
-	PassingCriteria       string  `json:"passingCriteria"`
+	PassingCriteria       float64 `json:"passingCriteria"`
 	StudentPassPercentage float64 `json:"studentPassPercentage"`
 }
 
@@ -29,7 +29,7 @@ type CourseOutcome struct {
 type TabeeOutcome struct {
 	Name              string          `json:"name"`
 	CourseOutcomes    []CourseOutcome `json:"courseOutcomes"`
-	MinimumPercentage string          `json:"minimumPercentage"`
+	MinimumPercentage float64         `json:"minimumPercentage"`
 }
 
 // [3.2] Grade Distribution
@@ -81,8 +81,10 @@ type CoursePortfolio struct {
 }
 
 type AssignmentPercentage struct {
-	PassingPercentage       float64
 	AssignmentId            string `gorm:"column:a_id"`
+	Name                    string
+	ExpectedScorePercentage float64
+	PassingPercentage       float64
 	CourseLearningOutcomeId string `gorm:"column:c_id"`
 }
 
