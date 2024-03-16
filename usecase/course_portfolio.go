@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"fmt"
+	"math"
 
 	"github.com/team-inu/inu-backyard/entity"
 	errs "github.com/team-inu/inu-backyard/entity/error"
@@ -143,7 +144,7 @@ func (u coursePortfolioUseCase) CalculateGradeDistribution(courseId string) (*en
 		}
 	}
 
-	studentScoreByStudentId := make(map[string]float64, 0)
+	studentScoreByStudentId := make(map[string]float64)
 
 	//calculate student scores
 	for _, assignmentScores := range studentScoresByAssignmentId {
@@ -156,10 +157,23 @@ func (u coursePortfolioUseCase) CalculateGradeDistribution(courseId string) (*en
 		studentScoreByStudentId[studentId] = studentScore * 100 / float64(cumulativeWeightedMaxScore)
 	}
 
-	//calculate grade distribution
+	frequencyByScore := make(map[int]int)
+	for _, score := range studentScoreByStudentId {
+		roundedScore := int(math.Round(score))
+		frequencyByScore[roundedScore]++
+	}
+
+	scoreFrequencies := make([]entity.ScoreFrequency, 0, len(frequencyByScore))
+	for score, frequency := range frequencyByScore {
+		scoreFrequencies = append(scoreFrequencies, entity.ScoreFrequency{
+			Score:     score,
+			Frequency: frequency,
+		})
+	}
+
 	weightedCriteriaGrade := course.CriteriaGrade.CalculateCriteriaWeight(float64(cumulativeWeightedMaxScore))
 
-	frequenciesByGrade := make(map[string]int, 0)
+	frequenciesByGrade := make(map[string]int)
 	for _, studentScore := range studentScoreByStudentId {
 		switch {
 		case studentScore >= weightedCriteriaGrade.A:
@@ -235,6 +249,7 @@ func (u coursePortfolioUseCase) CalculateGradeDistribution(courseId string) (*en
 		GradeFrequencies: gradeFrequencies,
 		StudentAmount:    studentAmount,
 		GPA:              gpa / float64(studentAmount),
+		ScoreFrequencies: scoreFrequencies,
 	}, nil
 }
 

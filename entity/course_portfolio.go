@@ -39,10 +39,16 @@ type GradeFrequency struct {
 	Frequency  int     `json:"frequency"`
 }
 
+type ScoreFrequency struct {
+	Score     int `json:"score"`
+	Frequency int `json:"frequency"`
+}
+
 type GradeDistribution struct {
 	StudentAmount    int              `json:"studentAmount"`
 	GPA              float64          `json:"GPA"`
 	GradeFrequencies []GradeFrequency `json:"gradeFrequencies"`
+	ScoreFrequencies []ScoreFrequency `json:"scoreFrequencies"`
 }
 
 // [3] Result
