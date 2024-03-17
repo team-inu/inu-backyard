@@ -50,7 +50,11 @@ func (u courseUseCase) GetByUserId(userId string) ([]entity.Course, error) {
 	return course, nil
 }
 
-func (u courseUseCase) Create(semesterId string, userId string, name string, code string, curriculum string, description string, expectedPassingCloPercentage float64, criteriaGrade entity.CriteriaGrade) error {
+func (u courseUseCase) Create(user entity.User, semesterId string, userId string, name string, code string, curriculum string, description string, expectedPassingCloPercentage float64, criteriaGrade entity.CriteriaGrade) error {
+	if !user.IsRoles([]entity.UserRole{entity.UserRoleHeadOfCurriculum}) {
+		return errs.New(errs.ErrCreateCourse, "no permission to create course")
+	}
+
 	semester, err := u.semesterUseCase.GetById(semesterId)
 	if err != nil {
 		return errs.New(errs.SameCode, "cannot get semester id %s while creating course", semesterId, err)
@@ -58,10 +62,10 @@ func (u courseUseCase) Create(semesterId string, userId string, name string, cod
 		return errs.New(errs.ErrSemesterNotFound, "semester id %s not found while creating course", semesterId)
 	}
 
-	user, err := u.userUseCase.GetById(userId)
+	lecturer, err := u.userUseCase.GetById(userId)
 	if err != nil {
 		return errs.New(errs.SameCode, "cannot get user id %s while creating course", userId, err)
-	} else if user == nil {
+	} else if lecturer == nil {
 		return errs.New(errs.ErrUserNotFound, "user id %s not found while creating course", userId)
 	}
 
@@ -88,12 +92,16 @@ func (u courseUseCase) Create(semesterId string, userId string, name string, cod
 	return nil
 }
 
-func (u courseUseCase) Update(id string, name string, code string, curriculum string, description string, expectedPassingCloPercentage float64, criteriaGrade entity.CriteriaGrade) error {
+func (u courseUseCase) Update(user entity.User, id string, name string, code string, curriculum string, description string, expectedPassingCloPercentage float64, criteriaGrade entity.CriteriaGrade) error {
 	existCourse, err := u.GetById(id)
 	if err != nil {
 		return errs.New(errs.SameCode, "cannot get course id %s to update", id, err)
 	} else if existCourse == nil {
 		return errs.New(errs.ErrCourseNotFound, "cannot get course id %s to update", id)
+	}
+
+	if !user.IsRoles([]entity.UserRole{entity.UserRoleHeadOfCurriculum}) && user.Id != existCourse.UserId {
+		return errs.New(errs.ErrCreateCourse, "No permission to edit this course")
 	}
 
 	if !criteriaGrade.IsValid() {
@@ -115,7 +123,11 @@ func (u courseUseCase) Update(id string, name string, code string, curriculum st
 	return nil
 }
 
-func (u courseUseCase) Delete(id string) error {
+func (u courseUseCase) Delete(user entity.User, id string) error {
+	if !user.IsRoles([]entity.UserRole{entity.UserRoleHeadOfCurriculum}) {
+		return errs.New(errs.ErrCreateCourse, "no permission to create course")
+	}
+
 	err := u.courseRepo.Delete(id)
 	if err != nil {
 		return errs.New(errs.ErrDeleteCourse, "cannot delete course", err)

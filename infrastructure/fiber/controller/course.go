@@ -62,7 +62,10 @@ func (c courseController) Create(ctx *fiber.Ctx) error {
 		return err
 	}
 
+	user := middleware.GetUserFromCtx(ctx)
+
 	err := c.courseUseCase.Create(
+		*user,
 		payload.SemesterId,
 		payload.UserId,
 		payload.Name,
@@ -88,7 +91,10 @@ func (c courseController) Update(ctx *fiber.Ctx) error {
 
 	id := ctx.Params("courseId")
 
+	user := middleware.GetUserFromCtx(ctx)
+
 	err := c.courseUseCase.Update(
+		*user,
 		id,
 		payload.Name,
 		payload.Code,
@@ -107,7 +113,9 @@ func (c courseController) Update(ctx *fiber.Ctx) error {
 func (c courseController) Delete(ctx *fiber.Ctx) error {
 	id := ctx.Params("courseId")
 
-	err := c.courseUseCase.Delete(id)
+	user := middleware.GetUserFromCtx(ctx)
+
+	err := c.courseUseCase.Delete(*user, id)
 
 	if err != nil {
 		return err
