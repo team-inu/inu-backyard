@@ -3,6 +3,7 @@ package controller
 import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/team-inu/inu-backyard/entity"
+	"github.com/team-inu/inu-backyard/infrastructure/fiber/middleware"
 	"github.com/team-inu/inu-backyard/infrastructure/fiber/request"
 	"github.com/team-inu/inu-backyard/infrastructure/fiber/response"
 	"github.com/team-inu/inu-backyard/internal/validator"
@@ -21,7 +22,17 @@ func NewCourseController(validator validator.PayloadValidator, courseUseCase ent
 }
 
 func (c courseController) GetAll(ctx *fiber.Ctx) error {
-	courses, err := c.courseUseCase.GetAll()
+	user := middleware.GetUserFromCtx(ctx)
+
+	var courses []entity.Course
+	var err error
+
+	if user.IsRoles([]entity.UserRole{entity.UserRoleHeadOfCurriculum, entity.UserRoleModerator, entity.UserRoleTABEEManager}) {
+		courses, err = c.courseUseCase.GetAll()
+	} else {
+		courses, err = c.courseUseCase.GetByUserId(user.Id)
+	}
+
 	if err != nil {
 		return err
 	}
