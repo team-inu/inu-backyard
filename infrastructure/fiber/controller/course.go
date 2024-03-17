@@ -1,10 +1,9 @@
 package controller
 
 import (
-	"fmt"
-
 	"github.com/gofiber/fiber/v2"
 	"github.com/team-inu/inu-backyard/entity"
+	"github.com/team-inu/inu-backyard/infrastructure/fiber/middleware"
 	"github.com/team-inu/inu-backyard/infrastructure/fiber/request"
 	"github.com/team-inu/inu-backyard/infrastructure/fiber/response"
 	"github.com/team-inu/inu-backyard/internal/validator"
@@ -23,7 +22,17 @@ func NewCourseController(validator validator.PayloadValidator, courseUseCase ent
 }
 
 func (c courseController) GetAll(ctx *fiber.Ctx) error {
-	courses, err := c.courseUseCase.GetAll()
+	user := middleware.GetUserFromCtx(ctx)
+
+	var courses []entity.Course
+	var err error
+
+	if user.IsRoles([]entity.UserRole{entity.UserRoleHeadOfCurriculum, entity.UserRoleModerator, entity.UserRoleTABEEManager}) {
+		courses, err = c.courseUseCase.GetAll()
+	} else {
+		courses, err = c.courseUseCase.GetByUserId(user.Id)
+	}
+
 	if err != nil {
 		return err
 	}
@@ -53,15 +62,18 @@ func (c courseController) Create(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	fmt.Println(payload.Description[0])
+	user := middleware.GetUserFromCtx(ctx)
+
 	err := c.courseUseCase.Create(
+		*user,
 		payload.SemesterId,
 		payload.UserId,
 		payload.Name,
 		payload.Code,
 		payload.Curriculum,
 		payload.Description,
-		*payload.CriteriaGrade,
+		payload.ExpectedPassingCloPercentage,
+		payload.CriteriaGrade,
 	)
 	if err != nil {
 		return err
@@ -79,13 +91,18 @@ func (c courseController) Update(ctx *fiber.Ctx) error {
 
 	id := ctx.Params("courseId")
 
-	err := c.courseUseCase.Update(id, &entity.Course{
-		Name:       payload.Name,
-		Code:       payload.Code,
-		SemesterId: payload.SemesterId,
-		UserId:     payload.UserId,
-	})
+	user := middleware.GetUserFromCtx(ctx)
 
+	err := c.courseUseCase.Update(
+		*user,
+		id,
+		payload.Name,
+		payload.Code,
+		payload.Curriculum,
+		payload.Description,
+		payload.ExpectedPassingCloPercentage,
+		payload.CriteriaGrade,
+	)
 	if err != nil {
 		return err
 	}
@@ -96,7 +113,9 @@ func (c courseController) Update(ctx *fiber.Ctx) error {
 func (c courseController) Delete(ctx *fiber.Ctx) error {
 	id := ctx.Params("courseId")
 
-	err := c.courseUseCase.Delete(id)
+	user := middleware.GetUserFromCtx(ctx)
+
+	err := c.courseUseCase.Delete(*user, id)
 
 	if err != nil {
 		return err

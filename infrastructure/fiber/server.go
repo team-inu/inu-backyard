@@ -35,6 +35,7 @@ type fiberServer struct {
 	enrollmentRepository             entity.EnrollmentRepository
 	gradeRepository                  entity.GradeRepository
 	sessionRepository                entity.SessionRepository
+	coursePortfolioRepository        entity.CoursePortfolioRepository
 
 	studentUseCase                entity.StudentUseCase
 	courseUseCase                 entity.CourseUseCase
@@ -52,6 +53,7 @@ type fiberServer struct {
 	gradeUseCase                  entity.GradeUseCase
 	sessionUseCase                entity.SessionUseCase
 	authUseCase                   entity.AuthUseCase
+	coursePortfolioUseCase        entity.CoursePortfolioUseCase
 }
 
 func NewFiberServer(
@@ -96,6 +98,7 @@ func (f *fiberServer) initRepository() (err error) {
 	f.enrollmentRepository = repository.NewEnrollmentRepositoryGorm(f.gorm)
 	f.gradeRepository = repository.NewGradeRepositoryGorm(f.gorm)
 	f.sessionRepository = repository.NewSessionRepository(f.gorm)
+	f.coursePortfolioRepository = repository.NewCoursePortfolioRepositoryGorm(f.gorm)
 
 	return nil
 }
@@ -116,7 +119,8 @@ func (f *fiberServer) initUseCase() {
 	programOutcomeUseCase := usecase.NewProgramOutcomeUseCase(f.programOutcomeRepository, semesterUseCase)
 	courseLearningOutcomeUseCase := usecase.NewCourseLearningOutcomeUseCase(f.courseLearningOutcomeRepository, courseUseCase, programOutcomeUseCase, programLearningOutcomeUseCase)
 	assignmentUseCase := usecase.NewAssignmentUseCase(f.assignmentRepository, courseLearningOutcomeUseCase, courseUseCase)
-	scoreUseCase := usecase.NewScoreUseCase(f.scoreRepository, enrollmentUseCase, assignmentUseCase, userUseCase, studentUseCase)
+	scoreUseCase := usecase.NewScoreUseCase(f.scoreRepository, enrollmentUseCase, assignmentUseCase, courseUseCase, userUseCase, studentUseCase)
+	coursePortfolioUseCase := usecase.NewCoursePortfolioUseCase(f.coursePortfolioRepository, courseUseCase, userUseCase, enrollmentUseCase, assignmentUseCase, scoreUseCase, courseLearningOutcomeUseCase)
 
 	f.assignmentUseCase = assignmentUseCase
 	f.authUseCase = authUseCase
@@ -134,6 +138,7 @@ func (f *fiberServer) initUseCase() {
 	f.semesterUseCase = semesterUseCase
 	f.sessionUseCase = sessionUseCase
 	f.studentUseCase = studentUseCase
+	f.coursePortfolioUseCase = coursePortfolioUseCase
 }
 
 func (f *fiberServer) initController() error {
@@ -167,6 +172,7 @@ func (f *fiberServer) initController() error {
 	semesterController := controller.NewSemesterController(validator, f.semesterUseCase)
 	enrollmentController := controller.NewEnrollmentController(validator, f.enrollmentUseCase)
 	gradeController := controller.NewGradeController(validator, f.gradeUseCase)
+	coursePortfolioController := controller.NewCoursePortfolioController(validator, f.coursePortfolioUseCase)
 	authController := controller.NewAuthController(validator, f.config.Client.Auth, f.authUseCase, f.userUseCase)
 
 	api := app.Group("/")
@@ -193,6 +199,7 @@ func (f *fiberServer) initController() error {
 	course.Get("/:courseId/clos", courseLearningOutcomeController.GetByCourseId)
 	course.Get("/:courseId/enrollments", enrollmentController.GetByCourseId)
 	course.Get("/:courseId/assignments", assignmentController.GetByCourseId)
+	course.Get("/:courseId/portfolio", coursePortfolioController.Generate)
 
 	// course learning outcome route
 	clo := api.Group("/clos", authMiddleware)
@@ -204,7 +211,7 @@ func (f *fiberServer) initController() error {
 	clo.Delete("/:cloId", courseLearningOutcomeController.Delete)
 
 	// sub program learning outcome by course learning outcome route
-	subPloByClo := clo.Group("/:cloId/subplos")
+	subPloByClo := clo.Group("/:cloId/subplos", authMiddleware)
 
 	subPloByClo.Post("/", courseLearningOutcomeController.CreateLinkSubProgramLearningOutcome)
 	subPloByClo.Delete("/:subploId", courseLearningOutcomeController.DeleteLinkSubProgramLearningOutcome)
@@ -284,7 +291,7 @@ func (f *fiberServer) initController() error {
 	assignment.Get("/:assignmentId/scores", scoreController.GetByAssignmentId)
 
 	// clo by assignment route
-	cloByAssignment := assignment.Group("/:assignmentId/clos/")
+	cloByAssignment := assignment.Group("/:assignmentId/clos/", authMiddleware)
 	cloByAssignment.Post("/", assignmentController.CreateLinkCourseLearningOutcome)
 	cloByAssignment.Delete("/:cloId", assignmentController.DeleteLinkCourseLearningOutcome)
 
@@ -328,7 +335,7 @@ func (f *fiberServer) initController() error {
 	auth := app.Group("/auth")
 
 	auth.Post("/login", authController.SignIn)
-	auth.Get("/logout", authController.SignOut)
+	auth.Get("/logout", authMiddleware, authController.SignOut)
 	auth.Get("/me", authMiddleware, authController.Me)
 
 	app.Get("/metrics", monitor.New())

@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
@@ -59,8 +58,6 @@ func (c AuthController) SignIn(ctx *fiber.Ctx) error {
 }
 
 func (c AuthController) SignOut(ctx *fiber.Ctx) error {
-	fmt.Println(c.config.Session.CookieName)
-
 	sid := ctx.Cookies(c.config.Session.CookieName)
 	cookie, err := c.authUseCase.SignOut(sid)
 	if err != nil {

@@ -66,7 +66,6 @@ func (r studentRepositoryGorm) Create(student *entity.Student) error {
 
 func (r studentRepositoryGorm) CreateMany(students []entity.Student) error {
 	err := r.gorm.Create(&students).Error
-	fmt.Println(err)
 	if err != nil {
 		return fmt.Errorf("cannot create student: %w", err)
 	}

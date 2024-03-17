@@ -60,6 +60,33 @@ func (r assignmentRepositoryGorm) GetByCourseId(courseId string) ([]entity.Assig
 	return clos, nil
 }
 
+func (r assignmentRepositoryGorm) GetPassingStudentPercentage(assignmentId string) (float64, error) {
+	var passingStudentPercentage float64
+
+	query := `
+		WITH
+			scores AS (SELECT score FROM score WHERE assignment_id = ?),
+			scores_count AS (SELECT COUNT(score) AS count FROM scores),
+			passing_score AS (SELECT expected_score_percentage FROM assignment WHERE id = ?),
+			passing_student AS (
+				SELECT COUNT(*) as count
+				FROM scores, passing_score
+				WHERE scores.score > passing_score.expected_score_percentage
+			)
+		SELECT
+			passing_student.count / scores_count.count * 100 AS assignment_passing_student_percentage
+		FROM
+			passing_student, scores_count;
+	`
+
+	err := r.gorm.Raw(query, assignmentId, assignmentId).Find(&passingStudentPercentage).Error
+	if err != nil {
+		return 0, fmt.Errorf("cannot query to get passingStudentPercentage: %w", err)
+	}
+
+	return passingStudentPercentage, nil
+}
+
 func (r assignmentRepositoryGorm) Create(assignment *entity.Assignment) error {
 	err := r.gorm.Create(&assignment).Error
 	if err != nil {
@@ -124,7 +151,6 @@ func (r assignmentRepositoryGorm) CreateLinkCourseLearningOutcome(assignmentId s
 func (r assignmentRepositoryGorm) DeleteLinkCourseLearningOutcome(assignmentId string, courseLearningOutcomeId string) error {
 	err := r.gorm.Exec("DELETE FROM `clo_assignment` WHERE course_learning_outcome_id = ? AND assignment_id = ?", courseLearningOutcomeId, assignmentId).Error
 
-	fmt.Println(err)
 	if err != nil {
 		return fmt.Errorf("cannot delete link between assignment and clo: %w", err)
 	}

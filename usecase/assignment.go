@@ -60,6 +60,15 @@ func (u assignmentUseCase) GetByCourseId(courseId string) ([]entity.Assignment, 
 	return assignment, nil
 }
 
+func (u assignmentUseCase) GetPassingStudentPercentage(assignmentId string) (float64, error) {
+	passingStudentPercentage, err := u.assignmentRepo.GetPassingStudentPercentage(assignmentId)
+	if err != nil {
+		return 0, errs.New(errs.SameCode, "cannot get passingStudentPercentage by assignment id %s", assignmentId, err)
+	}
+
+	return passingStudentPercentage, nil
+}
+
 func (u assignmentUseCase) Create(name string, description string, maxScore int, weight int, expectedScorePercentage float64, expectedPassingStudentPercentage float64, courseLearningOutcomeIds []string) error {
 	if len(courseLearningOutcomeIds) == 0 {
 		return errs.New(errs.ErrCreateAssignment, "assignment must have at least one clo")

@@ -10,12 +10,22 @@ const (
 )
 
 type User struct {
-	Id        string `json:"id" gorm:"primaryKey;type:char(255)"`
-	Email     string `json:"email" gorm:"unique"`
-	Password  string `json:"password"`
-	FirstName string `json:"firstName"`
-	LastName  string `json:"lastName"`
-	Role      string `json:"role" gorm:"default:'LECTURER'"`
+	Id        string   `json:"id" gorm:"primaryKey;type:char(255)"`
+	Email     string   `json:"email" gorm:"unique"`
+	Password  string   `json:"password"`
+	FirstName string   `json:"firstName"`
+	LastName  string   `json:"lastName"`
+	Role      UserRole `json:"role" gorm:"default:'LECTURER'"`
+}
+
+func (u User) IsRoles(expectedRoles []UserRole) bool {
+	for _, expectedRole := range expectedRoles {
+		if u.Role == expectedRole {
+			return true
+		}
+	}
+
+	return false
 }
 
 type UserRepository interface {

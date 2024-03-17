@@ -12,18 +12,64 @@ type CriteriaGrade struct {
 }
 
 func (c CriteriaGrade) IsValid() bool {
-	return c.A >= 0 && c.BP >= 0 && c.B >= 0 && c.CP >= 0 && c.C >= 0 && c.DP >= 0 && c.D >= 0 && c.F >= 0
+	return c.A >= c.BP &&
+		c.BP >= c.B &&
+		c.B >= c.CP &&
+		c.CP >= c.C &&
+		c.C >= c.DP &&
+		c.DP >= c.D &&
+		c.D >= c.F &&
+		c.F >= 0
 }
 
+func (c CriteriaGrade) CalculateCriteriaWeight(maxScore float64) CriteriaGrade {
+	percentage := maxScore / 100
+
+	criteriaGrade := CriteriaGrade{
+		A:  c.A * percentage,
+		BP: c.BP * percentage,
+		B:  c.B * percentage,
+		CP: c.CP * percentage,
+		C:  c.C * percentage,
+		DP: c.DP * percentage,
+		D:  c.D * percentage,
+		F:  c.F * percentage,
+	}
+	return criteriaGrade
+}
+
+func (c CriteriaGrade) GradeToGPA(grade string) float64 {
+	switch grade {
+	case "A":
+		return 4.0
+	case "BP":
+		return 3.5
+	case "B":
+		return 3.0
+	case "CP":
+		return 2.5
+	case "C":
+		return 2.0
+	case "DP":
+		return 1.5
+	case "D":
+		return 1.0
+	case "F":
+		return 0
+	default:
+		return 0
+	}
+}
+
+// TODO: Add academic year and graduated year
 type Course struct {
-	Id          string `json:"id" gorm:"primaryKey;type:char(255)"`
-	Name        string `json:"name"`
-	Code        string `json:"code"`
-	Curriculum  string `json:"curriculum"`
-	Description string `json:"description"`
-	// TODO: Add academic year and graduated year
-	// AcademicYear  string `json:"academicYear"`
-	// GraduatedYear string `json:"graduatedYear"`
+	Id                           string  `json:"id" gorm:"primaryKey;type:char(255)"`
+	Name                         string  `json:"name"`
+	Code                         string  `json:"code"`
+	Curriculum                   string  `json:"curriculum"`
+	Description                  string  `json:"description"`
+	ExpectedPassingCloPercentage float64 `json:"expectedPassingCloPercentage"`
+
 	SemesterId string `json:"semesterId"`
 	UserId     string `json:"userId"`
 	CriteriaGrade
@@ -44,7 +90,7 @@ type CourseUseCase interface {
 	GetAll() ([]Course, error)
 	GetById(id string) (*Course, error)
 	GetByUserId(userId string) ([]Course, error)
-	Create(semesterId string, userId string, name string, code string, curriculum string, description string, criteriaGrade CriteriaGrade) error
-	Update(id string, course *Course) error
-	Delete(id string) error
+	Create(user User, semesterId string, userId string, name string, code string, curriculum string, description string, expectedPassingCloPercentage float64, criteriaGrade CriteriaGrade) error
+	Update(user User, id string, name string, code string, curriculum string, description string, expectedPassingCloPercentage float64, criteriaGrade CriteriaGrade) error
+	Delete(user User, id string) error
 }

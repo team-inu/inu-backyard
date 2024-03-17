@@ -43,7 +43,7 @@ func (r courseRepositoryGorm) GetById(id string) (*entity.Course, error) {
 
 func (r courseRepositoryGorm) GetByUserId(userId string) ([]entity.Course, error) {
 	var courses []entity.Course
-	err := r.gorm.Where("user_id = ?", userId).First(&courses).Error
+	err := r.gorm.Where("user_id = ?", userId).Find(&courses).Error
 
 	if err == gorm.ErrRecordNotFound {
 		return nil, nil

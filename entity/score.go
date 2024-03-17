@@ -21,6 +21,12 @@ type StudentScore struct {
 	Score     float64 `json:"score" validate:"required"`
 }
 
+type AssignmentScore struct {
+	Scores          []Score `json:"scores"`
+	SubmittedAmount int     `json:"submittedAmount"`
+	EnrolledAmount  int     `json:"enrolledAmount"`
+}
+
 type ScoreRepository interface {
 	GetAll() ([]Score, error)
 	GetById(id string) (*Score, error)
@@ -37,11 +43,11 @@ type ScoreRepository interface {
 type ScoreUseCase interface {
 	GetAll() ([]Score, error)
 	GetById(id string) (*Score, error)
-	GetByAssignmentId(assignmentId string) ([]Score, error)
+	GetByAssignmentId(assignmentId string) (*AssignmentScore, error)
 	GetByUserId(userId string) ([]Score, error)
 	GetByStudentId(studentId string) ([]Score, error)
 	CreateMany(userId string, assignmentId string, studentScores []StudentScore) error
-	Update(scoreId string, score float64) error
-	Delete(id string) error
+	Update(user User, scoreId string, score float64) error
+	Delete(user User, id string) error
 	FilterSubmittedScoreStudents(assignmentId string, studentIds []string) ([]string, error)
 }

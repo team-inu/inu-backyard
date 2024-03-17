@@ -18,6 +18,7 @@ type AssignmentRepository interface {
 	GetById(id string) (*Assignment, error)
 	GetByParams(params *Assignment, limit int, offset int) ([]Assignment, error)
 	GetByCourseId(courseId string) ([]Assignment, error)
+	GetPassingStudentPercentage(assignmentId string) (float64, error)
 	Create(assignment *Assignment) error
 	CreateMany(assignment []Assignment) error
 	CreateLinkCourseLearningOutcome(assignmentId string, courseLearningOutcomeId []string) error
@@ -30,6 +31,7 @@ type AssignmentUseCase interface {
 	GetById(id string) (*Assignment, error)
 	GetByParams(params *Assignment, limit int, offset int) ([]Assignment, error)
 	GetByCourseId(courseId string) ([]Assignment, error)
+	GetPassingStudentPercentage(assignmentId string) (float64, error)
 	Create(name string, description string, maxScore int, weight int, expectedScorePercentage float64, expectedPassingStudentPercentage float64, courseLearningOutcomeIds []string) error
 	CreateLinkCourseLearningOutcome(assignmentId string, courseLearningOutcomeId []string) error
 	Update(id string, name string, description string, maxScore int, weight int, expectedScorePercentage float64, expectedPassingStudentPercentage float64) error
