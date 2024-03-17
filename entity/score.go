@@ -47,7 +47,7 @@ type ScoreUseCase interface {
 	GetByUserId(userId string) ([]Score, error)
 	GetByStudentId(studentId string) ([]Score, error)
 	CreateMany(userId string, assignmentId string, studentScores []StudentScore) error
-	Update(scoreId string, score float64) error
-	Delete(id string) error
+	Update(user User, scoreId string, score float64) error
+	Delete(user User, id string) error
 	FilterSubmittedScoreStudents(assignmentId string, studentIds []string) ([]string, error)
 }

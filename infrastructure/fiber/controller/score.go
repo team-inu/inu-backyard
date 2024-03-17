@@ -3,6 +3,7 @@ package controller
 import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/team-inu/inu-backyard/entity"
+	"github.com/team-inu/inu-backyard/infrastructure/fiber/middleware"
 	"github.com/team-inu/inu-backyard/infrastructure/fiber/request"
 	"github.com/team-inu/inu-backyard/infrastructure/fiber/response"
 	"github.com/team-inu/inu-backyard/internal/validator"
@@ -21,7 +22,17 @@ func NewScoreController(validator validator.PayloadValidator, scoreUseCase entit
 }
 
 func (c scoreController) GetAll(ctx *fiber.Ctx) error {
-	scores, err := c.ScoreUseCase.GetAll()
+	user := middleware.GetUserFromCtx(ctx)
+
+	var scores []entity.Score
+	var err error
+
+	if user.IsRoles([]entity.UserRole{entity.UserRoleHeadOfCurriculum, entity.UserRoleModerator, entity.UserRoleTABEEManager}) {
+		scores, err = c.ScoreUseCase.GetAll()
+	} else {
+		scores, err = c.ScoreUseCase.GetByUserId(user.Id)
+	}
+
 	if err != nil {
 		return err
 	}
@@ -84,7 +95,9 @@ func (c scoreController) Delete(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	err = c.ScoreUseCase.Delete(scoreId)
+	user := middleware.GetUserFromCtx(ctx)
+
+	err = c.ScoreUseCase.Delete(*user, scoreId)
 	if err != nil {
 		return err
 	}
@@ -105,7 +118,9 @@ func (c scoreController) Update(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	err = c.ScoreUseCase.Update(scoreId, payload.Score)
+	user := middleware.GetUserFromCtx(ctx)
+
+	err = c.ScoreUseCase.Update(*user, scoreId, payload.Score)
 	if err != nil {
 		return err
 	}

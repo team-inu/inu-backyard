@@ -11,6 +11,7 @@ type scoreUseCase struct {
 	scoreRepo         entity.ScoreRepository
 	enrollmentUseCase entity.EnrollmentUseCase
 	assignmentUseCase entity.AssignmentUseCase
+	courseUseCase     entity.CourseUseCase
 	userUseCase       entity.UserUseCase
 	studentUseCase    entity.StudentUseCase
 }
@@ -19,6 +20,7 @@ func NewScoreUseCase(
 	scoreRepo entity.ScoreRepository,
 	enrollmentUseCase entity.EnrollmentUseCase,
 	assignmentUseCase entity.AssignmentUseCase,
+	courseUseCase entity.CourseUseCase,
 	userUseCase entity.UserUseCase,
 	studentUsecase entity.StudentUseCase,
 ) entity.ScoreUseCase {
@@ -26,6 +28,7 @@ func NewScoreUseCase(
 		scoreRepo:         scoreRepo,
 		enrollmentUseCase: enrollmentUseCase,
 		assignmentUseCase: assignmentUseCase,
+		courseUseCase:     courseUseCase,
 		userUseCase:       userUseCase,
 		studentUseCase:    studentUsecase,
 	}
@@ -127,6 +130,17 @@ func (u scoreUseCase) CreateMany(userId string, assignmentId string, studentScor
 		return errs.New(errs.ErrAssignmentNotFound, "cannot get assignment id %s to create score", assignmentId)
 	}
 
+	course, err := u.courseUseCase.GetById(assignment.CourseId)
+	if err != nil {
+		return errs.New(errs.SameCode, "cannot get course id %s to create score", assignment.CourseId, err)
+	} else if course == nil {
+		return errs.New(errs.ErrCourseNotFound, "cannot get course id %s to create score", assignment.CourseId)
+	}
+
+	if user.IsRoles([]entity.UserRole{entity.UserRoleLecturer}) && user.Id != course.UserId {
+		return errs.New(errs.ErrDeleteScore, "no permission to create score")
+	}
+
 	for _, studentScore := range studentScores {
 		if studentScore.Score > float64(assignment.MaxScore) {
 			return errs.New(errs.ErrCreateScore, "score %f of student id %s is more than max score of assignment (score: %d)", studentScore.Score, studentScore.StudentId, assignment.MaxScore)
@@ -175,13 +189,18 @@ func (u scoreUseCase) CreateMany(userId string, assignmentId string, studentScor
 	return nil
 }
 
-func (u scoreUseCase) Update(scoreId string, score float64) error {
+func (u scoreUseCase) Update(user entity.User, scoreId string, score float64) error {
 	existScore, err := u.GetById(scoreId)
 	if err != nil {
 		return errs.New(errs.SameCode, "cannot get score by id %s ", scoreId, err)
 	} else if existScore == nil {
 		return errs.New(errs.ErrScoreNotFound, "score not found", err)
 	}
+
+	if user.IsRoles([]entity.UserRole{entity.UserRoleLecturer}) && user.Id != existScore.UserId {
+		return errs.New(errs.ErrUpdateScore, "no permission to update score")
+	}
+
 	err = u.scoreRepo.Update(scoreId, &entity.Score{
 		Score:        score,
 		StudentId:    existScore.StudentId,
@@ -195,13 +214,18 @@ func (u scoreUseCase) Update(scoreId string, score float64) error {
 	return nil
 }
 
-func (u scoreUseCase) Delete(id string) error {
+func (u scoreUseCase) Delete(user entity.User, id string) error {
 	existScore, err := u.GetById(id)
 	if err != nil {
 		return errs.New(errs.SameCode, "cannot get score by id %s ", id, err)
 	} else if existScore == nil {
 		return errs.New(errs.ErrScoreNotFound, "score not found to delete")
 	}
+
+	if user.IsRoles([]entity.UserRole{entity.UserRoleLecturer}) && user.Id != existScore.UserId {
+		return errs.New(errs.ErrDeleteScore, "no permission to delete score")
+	}
+
 	err = u.scoreRepo.Delete(id)
 	if err != nil {
 		return errs.New(errs.ErrDeleteScore, "cannot delete score by id %s", id, err)
