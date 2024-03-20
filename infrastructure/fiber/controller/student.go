@@ -1,6 +1,8 @@
 package controller
 
 import (
+	"fmt"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/team-inu/inu-backyard/entity"
 	"github.com/team-inu/inu-backyard/infrastructure/fiber/request"
@@ -80,10 +82,10 @@ func (c studentController) Create(ctx *fiber.Ctx) error {
 			Email:          payload.Email,
 			ProgrammeName:  payload.ProgrammeName,
 			DepartmentName: payload.DepartmentName,
-			GPAX:           payload.GPAX,
-			MathGPA:        payload.MathGPA,
-			EngGPA:         payload.EngGPA,
-			SciGPA:         payload.SciGPA,
+			GPAX:           *payload.GPAX,
+			MathGPA:        *payload.MathGPA,
+			EngGPA:         *payload.EngGPA,
+			SciGPA:         *payload.SciGPA,
 			School:         payload.School,
 			City:           payload.City,
 			Year:           payload.Year,
@@ -113,10 +115,10 @@ func (c studentController) CreateMany(ctx *fiber.Ctx) error {
 			LastName:       student.LastName,
 			ProgrammeName:  student.ProgrammeName,
 			DepartmentName: student.DepartmentName,
-			GPAX:           student.GPAX,
-			MathGPA:        student.MathGPA,
-			EngGPA:         student.EngGPA,
-			SciGPA:         student.SciGPA,
+			GPAX:           *student.GPAX,
+			MathGPA:        *student.MathGPA,
+			EngGPA:         *student.EngGPA,
+			SciGPA:         *student.SciGPA,
 			School:         student.School,
 			Year:           student.Year,
 			Admission:      student.Admission,
@@ -135,23 +137,22 @@ func (c studentController) CreateMany(ctx *fiber.Ctx) error {
 
 func (c studentController) Update(ctx *fiber.Ctx) error {
 	var payload request.UpdateStudentPayload
-
 	if ok, err := c.Validator.Validate(&payload, ctx); !ok {
 		return err
 	}
+	fmt.Println("sadfadsfadfsafdsfdsadfs")
 
 	id := ctx.Params("studentId")
-
 	err := c.studentUseCase.Update(id, &entity.Student{
 		Id:             payload.KmuttId,
 		FirstName:      payload.FirstName,
 		LastName:       payload.LastName,
 		ProgrammeName:  payload.ProgrammeName,
 		DepartmentName: payload.DepartmentName,
-		GPAX:           payload.GPAX,
-		MathGPA:        payload.MathGPA,
-		EngGPA:         payload.EngGPA,
-		SciGPA:         payload.SciGPA,
+		GPAX:           *payload.GPAX,
+		MathGPA:        *payload.MathGPA,
+		EngGPA:         *payload.EngGPA,
+		SciGPA:         *payload.SciGPA,
 		School:         payload.School,
 		Year:           payload.Year,
 		Admission:      payload.Admission,
