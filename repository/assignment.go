@@ -49,7 +49,7 @@ func (r assignmentRepositoryGorm) GetByParams(params *entity.Assignment, limit i
 
 func (r assignmentRepositoryGorm) GetByCourseId(courseId string) ([]entity.Assignment, error) {
 	var clos []entity.Assignment
-	err := r.gorm.Raw("SELECT DISTINCT a.*, clo.course_id FROM clo_assignment AS clo_a INNER JOIN course_learning_outcome AS clo ON clo_a.course_learning_outcome_id = clo.id INNER JOIN assignment AS a ON a.id = clo_a.assignment_id WHERE clo.course_id = ?", courseId).Find(&clos).Error
+	err := r.gorm.Raw("SELECT DISTINCT a.*, clo.course_id FROM clo_assignment AS clo_a INNER JOIN course_learning_outcome AS clo ON clo_a.course_learning_outcome_id = clo.id INNER JOIN assignment AS a ON a.id = clo_a.assignment_id WHERE clo.course_id = ?", courseId).Scan(&clos).Error
 
 	if err == gorm.ErrRecordNotFound {
 		return nil, nil
@@ -79,7 +79,7 @@ func (r assignmentRepositoryGorm) GetPassingStudentPercentage(assignmentId strin
 			passing_student, scores_count;
 	`
 
-	err := r.gorm.Raw(query, assignmentId, assignmentId).Find(&passingStudentPercentage).Error
+	err := r.gorm.Raw(query, assignmentId, assignmentId).Scan(&passingStudentPercentage).Error
 	if err != nil {
 		return 0, fmt.Errorf("cannot query to get passingStudentPercentage: %w", err)
 	}

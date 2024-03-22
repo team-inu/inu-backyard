@@ -240,15 +240,20 @@ func (u coursePortfolioUseCase) CalculateGradeDistribution(courseId string) (*en
 
 	studentAmount := len(studentScoreByStudentId)
 
-	gpa := 0.0
+	totalStudentGPA := 0.0
 	for grade, frequency := range frequenciesByGrade {
-		gpa += float64(frequency) * course.CriteriaGrade.GradeToGPA(grade)
+		totalStudentGPA += float64(frequency) * course.CriteriaGrade.GradeToGPA(grade)
+	}
+
+	gpa := 0.0
+	if totalStudentGPA != 0.0 {
+		gpa = totalStudentGPA / float64(studentAmount)
 	}
 
 	return &entity.GradeDistribution{
 		GradeFrequencies: gradeFrequencies,
 		StudentAmount:    studentAmount,
-		GPA:              gpa / float64(studentAmount),
+		GPA:              gpa,
 		ScoreFrequencies: scoreFrequencies,
 	}, nil
 }

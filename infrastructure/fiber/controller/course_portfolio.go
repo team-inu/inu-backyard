@@ -26,6 +26,5 @@ func (c coursePortfolioController) Generate(ctx *fiber.Ctx) error {
 	if err != nil {
 		return err
 	}
-
 	return response.NewSuccessResponse(ctx, fiber.StatusOK, coursePortfolio)
 }
