@@ -74,14 +74,15 @@ func (u courseUseCase) Create(user entity.User, semesterId string, userId string
 	}
 
 	course := entity.Course{
-		Id:            ulid.Make().String(),
-		SemesterId:    semesterId,
-		UserId:        userId,
-		Name:          name,
-		Code:          code,
-		Curriculum:    curriculum,
-		Description:   description,
-		CriteriaGrade: criteriaGrade,
+		Id:                           ulid.Make().String(),
+		SemesterId:                   semesterId,
+		UserId:                       userId,
+		Name:                         name,
+		Code:                         code,
+		Curriculum:                   curriculum,
+		Description:                  description,
+		ExpectedPassingCloPercentage: expectedPassingCloPercentage,
+		CriteriaGrade:                criteriaGrade,
 	}
 
 	err = u.courseRepo.Create(&course)
