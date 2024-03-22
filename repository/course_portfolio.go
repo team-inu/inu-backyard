@@ -316,7 +316,7 @@ func (r coursePortfolioRepositoryGorm) evaluateTabeeOutcomes(courseId string, se
 
 	query := fmt.Sprintf(template, selector)
 
-	err := r.gorm.Raw(query, courseId).Find(x).Error
+	err := r.gorm.Raw(query, courseId).Scan(x).Error
 	if err != nil {
 		return fmt.Errorf("cannot query to evaluate tabee outcomes: %w", err)
 	}
