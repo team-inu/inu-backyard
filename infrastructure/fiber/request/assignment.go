@@ -8,6 +8,7 @@ type CreateAssignmentPayload struct {
 	ExpectedScorePercentage          *float64 `json:"expectedScorePercentage" validate:"required"`
 	ExpectedPassingStudentPercentage *float64 `json:"expectedPassingStudentPercentage" validate:"required"`
 	CourseLearningOutcomeIds         []string `json:"courseLearningOutcomeIds" validate:"required"`
+	IsIncludedInClo                  bool     `json:"isIncludedInClo" validate:"required"`
 }
 
 type GetAssignmentsByParamsPayload struct {
@@ -29,6 +30,7 @@ type UpdateAssignmentRequestPayload struct {
 	MaxScore                         int     `json:"maxScore"`
 	ExpectedPassingStudentPercentage float64 `json:"expectedPassingStudentPercentage"`
 	ExpectedScorePercentage          float64 `json:"expectedScorePercentage"`
+	IsIncludedInClo                  bool    `json:"isIncludedInClo"`
 }
 
 type CreateLinkCourseLearningOutcomePayload struct {

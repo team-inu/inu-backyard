@@ -69,7 +69,7 @@ func (u assignmentUseCase) GetPassingStudentPercentage(assignmentId string) (flo
 	return passingStudentPercentage, nil
 }
 
-func (u assignmentUseCase) Create(name string, description string, maxScore int, weight int, expectedScorePercentage float64, expectedPassingStudentPercentage float64, courseLearningOutcomeIds []string) error {
+func (u assignmentUseCase) Create(name string, description string, maxScore int, weight int, expectedScorePercentage float64, expectedPassingStudentPercentage float64, courseLearningOutcomeIds []string, isIncludedInClo bool) error {
 	if len(courseLearningOutcomeIds) == 0 {
 		return errs.New(errs.ErrCreateAssignment, "assignment must have at least one clo")
 	}
@@ -102,6 +102,7 @@ func (u assignmentUseCase) Create(name string, description string, maxScore int,
 		ExpectedScorePercentage:          expectedScorePercentage,
 		ExpectedPassingStudentPercentage: expectedPassingStudentPercentage,
 		CourseLearningOutcomes:           courseLeaningOutcomes,
+		IsIncludedInClo:                  isIncludedInClo,
 	}
 
 	err = u.assignmentRepo.Create(&assignment)
@@ -112,7 +113,7 @@ func (u assignmentUseCase) Create(name string, description string, maxScore int,
 	return nil
 }
 
-func (u assignmentUseCase) Update(id string, name string, description string, maxScore int, weight int, expectedScorePercentage float64, expectedPassingStudentPercentage float64) error {
+func (u assignmentUseCase) Update(id string, name string, description string, maxScore int, weight int, expectedScorePercentage float64, expectedPassingStudentPercentage float64, isIncludedInClo bool) error {
 	existAssignment, err := u.GetById(id)
 	if err != nil {
 		return errs.New(errs.SameCode, "cannot get assignment id %s to update", id, err)
@@ -127,6 +128,7 @@ func (u assignmentUseCase) Update(id string, name string, description string, ma
 		Weight:                           weight,
 		ExpectedScorePercentage:          expectedScorePercentage,
 		ExpectedPassingStudentPercentage: expectedPassingStudentPercentage,
+		IsIncludedInClo:                  isIncludedInClo,
 	})
 
 	if err != nil {
