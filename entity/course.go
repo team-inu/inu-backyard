@@ -74,8 +74,8 @@ type Course struct {
 	UserId     string `json:"userId"`
 	CriteriaGrade
 
-	Semester Semester
-	User     User
+	Semester Semester `json:"semester"`
+	User     User     `json:"user"`
 }
 
 type CourseRepository interface {

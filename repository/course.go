@@ -17,7 +17,7 @@ func NewCourseRepositoryGorm(gorm *gorm.DB) entity.CourseRepository {
 
 func (r courseRepositoryGorm) GetAll() ([]entity.Course, error) {
 	var courses []entity.Course
-	err := r.gorm.Find(&courses).Error
+	err := r.gorm.Preload("User").Preload("Semester").Find(&courses).Error
 
 	if err == gorm.ErrRecordNotFound {
 		return nil, nil
