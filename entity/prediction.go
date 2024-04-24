@@ -15,13 +15,17 @@ type Prediction struct {
 }
 
 type PredictionRepository interface {
+	GetById(id string) (*Prediction, error)
 	GetAll() ([]Prediction, error)
 	GetLatest() (*Prediction, error)
 	CreatePrediction(prediction *Prediction) error
+	Update(id string, prediction *Prediction) error
 }
 
 type PredictionUseCase interface {
+	GetById(id string) (*Prediction, error)
 	GetAll() ([]Prediction, error)
 	GetLatest() (*Prediction, error)
 	CreatePrediction() (*string, error)
+	Update(id string, status PredictionStatus, result string) error
 }

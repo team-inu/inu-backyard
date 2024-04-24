@@ -119,7 +119,8 @@ const (
 	ErrSessionPrefix     = 21609
 	ErrDupSession        = 21610
 
-	ErrorPredictionNotFound = 21700
-	ErrorCreatePrediction   = 21701
-	ErrorUpdatePrediction   = 21702
+	ErrPredictionNotFound = 21700
+	ErrCreatePrediction   = 21701
+	ErrUpdatePrediction   = 21702
+	ErrQueryPrediction    = 21703
 )

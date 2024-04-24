@@ -124,7 +124,7 @@ func (f *fiberServer) initUseCase() {
 	assignmentUseCase := usecase.NewAssignmentUseCase(f.assignmentRepository, courseLearningOutcomeUseCase, courseUseCase)
 	scoreUseCase := usecase.NewScoreUseCase(f.scoreRepository, enrollmentUseCase, assignmentUseCase, courseUseCase, userUseCase, studentUseCase)
 	coursePortfolioUseCase := usecase.NewCoursePortfolioUseCase(f.coursePortfolioRepository, courseUseCase, userUseCase, enrollmentUseCase, assignmentUseCase, scoreUseCase, courseLearningOutcomeUseCase)
-	predictionUseCase := usecase.NewPredictionUseCase(f.predictionRepository)
+	predictionUseCase := usecase.NewPredictionUseCase(f.predictionRepository, f.config)
 
 	f.assignmentUseCase = assignmentUseCase
 	f.authUseCase = authUseCase
@@ -338,9 +338,9 @@ func (f *fiberServer) initController() error {
 	grade.Delete("/:gradeId", gradeController.Delete)
 
 	// prediction
-	prediction := api.Group("/prediction", authMiddleware)
+	prediction := api.Group("/prediction")
 
-	prediction.Post("/Train", predictionController.Train)
+	prediction.Get("/Train", predictionController.Train)
 
 	// authentication route
 	auth := app.Group("/auth")

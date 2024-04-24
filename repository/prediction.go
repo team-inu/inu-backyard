@@ -15,6 +15,28 @@ func NewPredictionRepositoryGorm(gorm *gorm.DB) entity.PredictionRepository {
 	return &predictionRepositoryGorm{gorm: gorm}
 }
 
+func (r predictionRepositoryGorm) Update(id string, prediction *entity.Prediction) error {
+	err := r.gorm.Model(&entity.Prediction{}).Where("id = ?", id).Updates(prediction).Error
+	if err != nil {
+		return fmt.Errorf("cannot update prediction: %w", err)
+	}
+
+	return nil
+}
+
+func (r predictionRepositoryGorm) GetById(id string) (*entity.Prediction, error) {
+	var prediction entity.Prediction
+
+	err := r.gorm.Where("id = ?", id).First(&prediction).Error
+	if err == gorm.ErrRecordNotFound {
+		return nil, nil
+	} else if err != nil {
+		return nil, fmt.Errorf("cannot query to get prediction by id: %w", err)
+	}
+
+	return &prediction, nil
+}
+
 func (r predictionRepositoryGorm) GetAll() ([]entity.Prediction, error) {
 	var predictions []entity.Prediction
 

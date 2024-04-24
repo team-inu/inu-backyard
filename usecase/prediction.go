@@ -1,25 +1,32 @@
 package usecase
 
 import (
+	"fmt"
 	"os/exec"
 
 	"github.com/oklog/ulid/v2"
 	"github.com/team-inu/inu-backyard/entity"
 	errs "github.com/team-inu/inu-backyard/entity/error"
+	"github.com/team-inu/inu-backyard/internal/config"
 )
 
 type predictionUseCase struct {
 	predictionRepo entity.PredictionRepository
+	config         config.FiberServerConfig
 }
 
-func NewPredictionUseCase(predictionRepo entity.PredictionRepository) entity.PredictionUseCase {
-	return &predictionUseCase{predictionRepo: predictionRepo}
+func NewPredictionUseCase(predictionRepo entity.PredictionRepository, config config.FiberServerConfig) entity.PredictionUseCase {
+	return &predictionUseCase{
+		predictionRepo: predictionRepo,
+		config:         config,
+	}
 }
 
 func (u predictionUseCase) GetAll() ([]entity.Prediction, error) {
+
 	predictions, err := u.predictionRepo.GetAll()
 	if err != nil {
-		return nil, errs.New(errs.ErrorPredictionNotFound, "cannot get all predictions", err)
+		return nil, errs.New(errs.ErrPredictionNotFound, "cannot get all predictions", err)
 	}
 
 	return predictions, nil
@@ -28,42 +35,69 @@ func (u predictionUseCase) GetAll() ([]entity.Prediction, error) {
 func (u predictionUseCase) GetLatest() (*entity.Prediction, error) {
 	prediction, err := u.predictionRepo.GetLatest()
 	if err != nil {
-		return nil, errs.New(errs.ErrorPredictionNotFound, "cannot get latest prediction", err)
+		return nil, errs.New(errs.ErrPredictionNotFound, "cannot get latest prediction", err)
 	}
 
 	return prediction, nil
 }
 
-func (u predictionUseCase) runTask(predictionId string) error {
-	cmd := exec.Command("python3", "predict.py", predictionId)
-
-	err := cmd.Run()
+func (u predictionUseCase) GetById(id string) (*entity.Prediction, error) {
+	prediction, err := u.predictionRepo.GetById(id)
 	if err != nil {
-		if err = u.UpdatePrediction("", entity.PredictionStatusFailed); err != nil {
-			return errs.New(errs.ErrorCreatePrediction, "xxx", err)
-		}
-
-		return errs.New(errs.ErrorUpdatePrediction, "cannot run python script", err)
+		return nil, errs.New(errs.ErrQueryPrediction, "cannot get prediction by id %s", id, err)
 	}
+
+	return prediction, nil
+}
+
+// TODO: add visibility
+func (u predictionUseCase) runTask(predictionId string) error {
+	cmd := exec.Command(
+		"python3",
+		"predict.py",
+		u.config.Database.User,
+		u.config.Database.Password,
+		u.config.Database.Host,
+		u.config.Database.Port,
+		u.config.Database.DatabaseName,
+		predictionId,
+	)
 
 	out, err := cmd.CombinedOutput()
 	if err != nil {
-		if err = u.UpdatePrediction("", entity.PredictionStatusFailed); err != nil {
-			return errs.New(errs.ErrorUpdatePrediction, "xxx", err)
+		fmt.Println(err)
+		if err = u.Update(predictionId, entity.PredictionStatusFailed, ""); err != nil {
+			return errs.New(errs.ErrUpdatePrediction, "xxx", err)
 		}
 
-		return errs.New(errs.ErrorUpdatePrediction, "cannot get output from python script", err)
+		return errs.New(errs.ErrUpdatePrediction, "cannot get output from python script", err)
 	}
 
-	err = u.UpdatePrediction(string(out), entity.PredictionStatusDone)
+	err = u.Update(predictionId, entity.PredictionStatusDone, string(out))
 	if err != nil {
-		return errs.New(errs.ErrorUpdatePrediction, "xxx", err)
+		return errs.New(errs.ErrUpdatePrediction, "xxx", err)
 	}
 
 	return nil
 }
 
-func (u predictionUseCase) UpdatePrediction(result string, status entity.PredictionStatus) error {
+func (u predictionUseCase) Update(predictionId string, status entity.PredictionStatus, result string) error {
+	existedPrediction, err := u.GetById(predictionId)
+	if err != nil {
+		return errs.New(errs.SameCode, "cannot get prediction id %s to update", predictionId, err)
+	} else if existedPrediction == nil {
+		return errs.New(errs.ErrPredictionNotFound, "prediction id %s not found to update", predictionId)
+	}
+
+	err = u.predictionRepo.Update(predictionId, &entity.Prediction{
+		Status: status,
+		Result: result,
+	})
+
+	if err != nil {
+		return errs.New(errs.ErrUpdatePrediction, "cannot update prediction by id %s", predictionId, err)
+	}
+
 	return nil
 }
 
@@ -76,12 +110,12 @@ func (u predictionUseCase) CreatePrediction() (*string, error) {
 		Result: "",
 	}
 
-	go u.runTask(id)
-
 	err := u.predictionRepo.CreatePrediction(prediction)
 	if err != nil {
-		return nil, errs.New(errs.ErrorCreatePrediction, "cannot create prediction", err)
+		return nil, errs.New(errs.ErrCreatePrediction, "cannot create prediction", err)
 	}
+
+	go u.runTask(id)
 
 	return &id, nil
 }
