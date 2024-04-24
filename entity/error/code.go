@@ -118,4 +118,8 @@ const (
 	ErrSignatureMismatch = 21608
 	ErrSessionPrefix     = 21609
 	ErrDupSession        = 21610
+
+	ErrorPredictionNotFound = 21700
+	ErrorCreatePrediction   = 21701
+	ErrorUpdatePrediction   = 21702
 )
