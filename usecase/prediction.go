@@ -1,7 +1,6 @@
 package usecase
 
 import (
-	"fmt"
 	"os/exec"
 
 	"github.com/oklog/ulid/v2"
@@ -63,19 +62,13 @@ func (u predictionUseCase) runTask(predictionId string) error {
 		predictionId,
 	)
 
-	out, err := cmd.CombinedOutput()
+	err := cmd.Run()
 	if err != nil {
-		fmt.Println(err)
 		if err = u.Update(predictionId, entity.PredictionStatusFailed, ""); err != nil {
-			return errs.New(errs.ErrUpdatePrediction, "xxx", err)
+			return errs.New(errs.ErrUpdatePrediction, "cannot update prediction status while facing unexpected error from python script", err)
 		}
 
-		return errs.New(errs.ErrUpdatePrediction, "cannot get output from python script", err)
-	}
-
-	err = u.Update(predictionId, entity.PredictionStatusDone, string(out))
-	if err != nil {
-		return errs.New(errs.ErrUpdatePrediction, "xxx", err)
+		return errs.New(errs.ErrUpdatePrediction, "found unexpected error when running python script", err)
 	}
 
 	return nil

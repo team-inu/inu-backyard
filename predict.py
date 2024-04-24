@@ -16,6 +16,8 @@ if __name__ == '__main__':
     database=sys.argv[5]
   )
 
+  time.sleep(10)
+
   db_cursor = mysql_connection.cursor()
   query = "UPDATE prediction SET status='DONE', result='some equation' WHERE id = %s"
   args = (sys.argv[6],)
