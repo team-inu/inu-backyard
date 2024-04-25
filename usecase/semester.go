@@ -22,6 +22,15 @@ func (u *semesterUseCase) GetAll() ([]entity.Semester, error) {
 	return semesters, nil
 }
 
+func (u *semesterUseCase) Get(year int, semesterSequence string) (*entity.Semester, error) {
+	semester, err := u.semesterRepository.Get(year, semesterSequence)
+	if err != nil {
+		return nil, errs.New(errs.ErrQuerySemester, "cannot query semester", err)
+	}
+
+	return semester, nil
+}
+
 func (u *semesterUseCase) GetById(id string) (*entity.Semester, error) {
 	semester, err := u.semesterRepository.GetById(id)
 	if err != nil {

@@ -18,6 +18,7 @@ type SemesterRepository interface {
 type SemesterUseCase interface {
 	GetAll() ([]Semester, error)
 	GetById(id string) (*Semester, error)
+	Get(year int, semesterSequence string) (*Semester, error)
 	Create(year int, semesterSequence string) error
 	Update(semester *Semester) error
 	Delete(id string) error
