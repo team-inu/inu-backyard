@@ -4,7 +4,7 @@ type Grade struct {
 	Id         string `gorm:"primaryKey;type:char(255)"`
 	StudentId  string
 	SemesterId string
-	Grade      string
+	Grade      float64
 
 	Semester Semester
 	Student  Student
@@ -12,7 +12,7 @@ type Grade struct {
 
 type StudentGrade struct {
 	StudentId string
-	Grade     string
+	Grade     float64
 }
 
 type GradeRepository interface {
@@ -29,7 +29,7 @@ type GradeUseCase interface {
 	GetAll() ([]Grade, error)
 	GetById(id string) (*Grade, error)
 	GetByStudentId(studentId string) ([]Grade, error)
-	Create(studentId string, year string, grade string) error
+	Create(studentId string, year string, grade float64) error
 	CreateMany(studentGrades []StudentGrade, year int, semesterSequence string) error
 	Update(id string, grade *Grade) error
 	Delete(id string) error

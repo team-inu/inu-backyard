@@ -50,7 +50,7 @@ func (u gradeUseCase) GetByStudentId(studentId string) ([]entity.Grade, error) {
 	return enrollment, nil
 }
 
-func (u gradeUseCase) Create(studentId string, year string, grade string) error {
+func (u gradeUseCase) Create(studentId string, year string, grade float64) error {
 	createdGrade := &entity.Grade{
 		Id:        ulid.Make().String(),
 		StudentId: studentId,
