@@ -28,6 +28,21 @@ func (r gradeRepositoryGorm) GetAll() ([]entity.Grade, error) {
 	return grades, nil
 }
 
+func (r gradeRepositoryGorm) FilterExisted(studentIds []string, year int, semesterSequence string) ([]string, error) {
+	existedStudentIds := make([]string, 0, len(studentIds))
+
+	query := "SELECT student_id FROM grade JOIN semester ON semester.id = grade.semester_id WHERE semester.semester_sequence = ? AND semester.year = ? AND student_id IN ?"
+
+	err := r.gorm.Raw(query, semesterSequence, year, studentIds).Scan(&existedStudentIds).Error
+	if err == gorm.ErrRecordNotFound {
+		return nil, nil
+	} else if err != nil {
+		return nil, fmt.Errorf("cannot query to get grade: %w", err)
+	}
+
+	return existedStudentIds, nil
+}
+
 func (r gradeRepositoryGorm) GetById(id string) (*entity.Grade, error) {
 	var grade *entity.Grade
 

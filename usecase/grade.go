@@ -65,6 +65,15 @@ func (u gradeUseCase) Create(studentId string, year string, grade float64) error
 	return nil
 }
 
+func (u gradeUseCase) FilterExisted(studentIds []string, year int, semesterSequence string) ([]string, error) {
+	grades, err := u.gradeRepo.FilterExisted(studentIds, year, semesterSequence)
+	if err != nil {
+		return nil, errs.New(errs.ErrQueryStudent, "cannot get grade", err)
+	}
+
+	return grades, nil
+}
+
 func (u gradeUseCase) CreateMany(studentGrades []entity.StudentGrade, year int, semesterSequence string) error {
 	if len(studentGrades) == 0 {
 		return errs.New(errs.ErrCreateGrade, "students must not be empty")
@@ -75,6 +84,13 @@ func (u gradeUseCase) CreateMany(studentGrades []entity.StudentGrade, year int, 
 		studentIds = append(studentIds, studentGrade.StudentId)
 	}
 
+	semester, err := u.semesterUseCase.Get(year, semesterSequence)
+	if err != nil {
+		return errs.New(errs.SameCode, "cannot get semester while creating grade")
+	} else if semester == nil {
+		return errs.New(errs.ErrSemesterNotFound, "semester not found while creating grade")
+	}
+
 	nonExistedStudents, err := u.studentUseCase.FilterNonExisted(studentIds)
 	if err != nil {
 		return errs.New(errs.SameCode, "cannot validate existed student while creating grade")
@@ -82,11 +98,11 @@ func (u gradeUseCase) CreateMany(studentGrades []entity.StudentGrade, year int, 
 		return errs.New(errs.ErrCreateGrade, "there are non existed students %v while creating grade", nonExistedStudents)
 	}
 
-	semester, err := u.semesterUseCase.Get(year, semesterSequence)
+	existedGradeStudents, err := u.FilterExisted(studentIds, year, semesterSequence)
 	if err != nil {
-		return errs.New(errs.SameCode, "cannot get semester while creating grade")
-	} else if semester == nil {
-		return errs.New(errs.ErrSemesterNotFound, "semester not found while creating grade")
+		return errs.New(errs.SameCode, "cannot get existed grade")
+	} else if len(existedGradeStudents) > 0 {
+		return errs.New(errs.ErrCreateGrade, "there are existed student %v in target semester while creating grade", existedGradeStudents)
 	}
 
 	grades := make([]entity.Grade, 0, len(studentGrades))
