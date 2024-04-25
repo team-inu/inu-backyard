@@ -61,6 +61,21 @@ func (c gradeController) Create(ctx *fiber.Ctx) error {
 	return response.NewSuccessResponse(ctx, fiber.StatusCreated, nil)
 }
 
+func (c gradeController) CreateMany(ctx *fiber.Ctx) error {
+	var payload request.CreateManyGradesPayload
+
+	if ok, err := c.Validator.Validate(&payload, ctx); !ok {
+		return err
+	}
+
+	err := c.gradeUseCase.CreateMany(payload.StudentGrade, payload.Year, payload.SemesterSequence)
+	if err != nil {
+		return err
+	}
+
+	return response.NewSuccessResponse(ctx, fiber.StatusCreated, nil)
+}
+
 func (c gradeController) Update(ctx *fiber.Ctx) error {
 	var payload request.UpdateGradePayload
 

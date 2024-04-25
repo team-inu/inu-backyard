@@ -7,12 +7,13 @@ import (
 )
 
 type gradeUseCase struct {
-	gradeRepo      entity.GradeRepository
-	studentUseCase entity.StudentUseCase
+	gradeRepo       entity.GradeRepository
+	studentUseCase  entity.StudentUseCase
+	semesterUseCase entity.SemesterUseCase
 }
 
-func NewGradeUseCase(gradeRepo entity.GradeRepository, studentUseCase entity.StudentUseCase) entity.GradeUseCase {
-	return &gradeUseCase{gradeRepo: gradeRepo, studentUseCase: studentUseCase}
+func NewGradeUseCase(gradeRepo entity.GradeRepository, studentUseCase entity.StudentUseCase, semesterUseCase entity.SemesterUseCase) entity.GradeUseCase {
+	return &gradeUseCase{gradeRepo: gradeRepo, studentUseCase: studentUseCase, semesterUseCase: semesterUseCase}
 }
 
 func (u gradeUseCase) GetAll() ([]entity.Grade, error) {
@@ -59,6 +60,48 @@ func (u gradeUseCase) Create(studentId string, year string, grade string) error 
 	err := u.gradeRepo.Create(createdGrade)
 	if err != nil {
 		return errs.New(errs.ErrCreateGrade, "cannot create grade", err)
+	}
+
+	return nil
+}
+
+func (u gradeUseCase) CreateMany(studentGrades []entity.StudentGrade, year int, semesterSequence string) error {
+	if len(studentGrades) == 0 {
+		return errs.New(errs.ErrCreateGrade, "students must not be empty")
+	}
+
+	studentIds := make([]string, 0, len(studentGrades))
+	for _, studentGrade := range studentGrades {
+		studentIds = append(studentIds, studentGrade.StudentId)
+	}
+
+	nonExistedStudents, err := u.studentUseCase.FilterNonExisted(studentIds)
+	if err != nil {
+		return errs.New(errs.SameCode, "cannot validate existed student while creating grade")
+	} else if len(nonExistedStudents) > 0 {
+		return errs.New(errs.ErrCreateGrade, "there are non existed students %v while creating grade", nonExistedStudents)
+	}
+
+	semester, err := u.semesterUseCase.Get(year, semesterSequence)
+	if err != nil {
+		return errs.New(errs.SameCode, "cannot get semester while creating grade")
+	} else if semester == nil {
+		return errs.New(errs.ErrSemesterNotFound, "semester not found while creating grade")
+	}
+
+	grades := make([]entity.Grade, 0, len(studentGrades))
+	for _, studentGrade := range studentGrades {
+		grades = append(grades, entity.Grade{
+			Id:         ulid.Make().String(),
+			StudentId:  studentGrade.StudentId,
+			Grade:      studentGrade.Grade,
+			SemesterId: semester.Id,
+		})
+	}
+
+	err = u.gradeRepo.CreateMany(grades)
+	if err != nil {
+		return errs.New(errs.ErrCreateGrade, "cannot create grade")
 	}
 
 	return nil

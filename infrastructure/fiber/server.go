@@ -116,7 +116,7 @@ func (f *fiberServer) initUseCase() {
 	semesterUseCase := usecase.NewSemesterUseCase(f.semesterRepository)
 	courseUseCase := usecase.NewCourseUseCase(f.courseRepository, semesterUseCase, userUseCase)
 	enrollmentUseCase := usecase.NewEnrollmentUseCase(f.enrollmentRepository, studentUseCase, courseUseCase)
-	gradeUseCase := usecase.NewGradeUseCase(f.gradeRepository, studentUseCase)
+	gradeUseCase := usecase.NewGradeUseCase(f.gradeRepository, studentUseCase, semesterUseCase)
 	sessionUseCase := usecase.NewSessionUseCase(f.sessionRepository, f.config.Client.Auth)
 	authUseCase := usecase.NewAuthUseCase(sessionUseCase, userUseCase)
 	programOutcomeUseCase := usecase.NewProgramOutcomeUseCase(f.programOutcomeRepository, semesterUseCase)
@@ -329,10 +329,10 @@ func (f *fiberServer) initController() error {
 	semester.Delete("/:semesterId", semesterController.Delete)
 
 	// grade route
-	grade := api.Group("/grades", authMiddleware)
+	grade := api.Group("/grades")
 
 	grade.Get("/", gradeController.GetAll)
-	grade.Post("/", gradeController.Create)
+	grade.Post("/", gradeController.CreateMany)
 	grade.Get("/:gradeId", gradeController.GetById)
 	grade.Patch("/:gradeId", gradeController.Update)
 	grade.Delete("/:gradeId", gradeController.Delete)

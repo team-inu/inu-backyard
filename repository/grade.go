@@ -64,6 +64,15 @@ func (r gradeRepositoryGorm) Create(grade *entity.Grade) error {
 	return nil
 }
 
+func (r gradeRepositoryGorm) CreateMany(grades []entity.Grade) error {
+	err := r.gorm.Create(&grades).Error
+	if err != nil {
+		return fmt.Errorf("cannot create grade: %w", err)
+	}
+
+	return nil
+}
+
 func (r gradeRepositoryGorm) Update(id string, grade *entity.Grade) error {
 	err := r.gorm.Model(&entity.Grade{}).Where("id = ?", id).Updates(grade).Error
 	if err != nil {
