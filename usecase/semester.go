@@ -31,7 +31,7 @@ func (u *semesterUseCase) GetById(id string) (*entity.Semester, error) {
 	return semester, nil
 }
 
-func (u *semesterUseCase) Create(year int, semesterSequence int) error {
+func (u *semesterUseCase) Create(year int, semesterSequence string) error {
 	semester, err := u.semesterRepository.Get(year, semesterSequence)
 	if err != nil {
 		return errs.New(errs.SameCode, "cannot check existing semester while creating new one")

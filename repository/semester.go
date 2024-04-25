@@ -23,7 +23,7 @@ func (r *SemesterRepository) GetAll() ([]entity.Semester, error) {
 	return semesters, nil
 }
 
-func (r *SemesterRepository) Get(year int, semesterSequence int) (*entity.Semester, error) {
+func (r *SemesterRepository) Get(year int, semesterSequence string) (*entity.Semester, error) {
 	var semester entity.Semester
 
 	err := r.gorm.First(&semester, "year = ? AND semester_sequence = ?", year, semesterSequence).Error
