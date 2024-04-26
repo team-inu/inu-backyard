@@ -59,7 +59,7 @@ func (r gradeRepositoryGorm) GetById(id string) (*entity.Grade, error) {
 
 func (r gradeRepositoryGorm) GetByStudentId(studentId string) ([]entity.Grade, error) {
 	var grades []entity.Grade
-	err := r.gorm.Where("student_id = ?", studentId).Find(&grades).Error
+	err := r.gorm.Preload("Semester").Where("student_id = ?", studentId).Find(&grades).Error
 
 	if err == gorm.ErrRecordNotFound {
 		return nil, nil

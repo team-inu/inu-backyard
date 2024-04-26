@@ -1,10 +1,10 @@
 package entity
 
 type Grade struct {
-	Id         string `gorm:"primaryKey;type:char(255)"`
-	StudentId  string
-	SemesterId string
-	Grade      float64
+	Id         string  `json:"id" gorm:"primaryKey;type:char(255)"`
+	StudentId  string  `json:"studentId"`
+	SemesterId string  `json:"semesterId"`
+	Grade      float64 `json:"grade"`
 
 	Semester *Semester `json:"semester,omitempty"`
 	Student  *Student  `json:"student,omitempty"`

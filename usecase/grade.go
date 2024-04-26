@@ -42,12 +42,12 @@ func (u gradeUseCase) GetByStudentId(studentId string) ([]entity.Grade, error) {
 		return nil, errs.New(errs.ErrQueryGrade, "student id %s not found while getting grades", studentId)
 	}
 
-	enrollment, err := u.gradeRepo.GetByStudentId(studentId)
+	grade, err := u.gradeRepo.GetByStudentId(studentId)
 	if err != nil {
 		return nil, errs.New(errs.ErrQueryGrade, "cannot get grades by student id %s", studentId, err)
 	}
 
-	return enrollment, nil
+	return grade, nil
 }
 
 func (u gradeUseCase) Create(studentId string, year string, grade float64) error {
