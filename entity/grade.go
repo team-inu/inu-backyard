@@ -6,8 +6,8 @@ type Grade struct {
 	SemesterId string
 	Grade      float64
 
-	Semester Semester
-	Student  Student
+	Semester *Semester `json:"semester,omitempty"`
+	Student  *Student  `json:"student,omitempty"`
 }
 
 type StudentGrade struct {
