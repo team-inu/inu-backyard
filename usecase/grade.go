@@ -39,7 +39,7 @@ func (u gradeUseCase) GetByStudentId(studentId string) ([]entity.Grade, error) {
 	if err != nil {
 		return nil, errs.New(errs.SameCode, "cannot get student id %s while get grades", student, err)
 	} else if student == nil {
-		return nil, errs.New(errs.ErrQueryGrade, "student id %s not found while getting grades", studentId, err)
+		return nil, errs.New(errs.ErrQueryGrade, "student id %s not found while getting grades", studentId)
 	}
 
 	enrollment, err := u.gradeRepo.GetByStudentId(studentId)

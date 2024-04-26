@@ -21,6 +21,15 @@ func NewGradeController(validator validator.PayloadValidator, gradeUseCase entit
 }
 
 func (c gradeController) GetAll(ctx *fiber.Ctx) error {
+	studentId := ctx.Query("studentId")
+	if studentId != "" {
+		grade, err := c.gradeUseCase.GetByStudentId(studentId)
+		if err != nil {
+			return err
+		}
+		return response.NewSuccessResponse(ctx, fiber.StatusOK, grade)
+	}
+
 	grades, err := c.gradeUseCase.GetAll()
 	if err != nil {
 		return err
