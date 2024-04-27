@@ -16,6 +16,7 @@ type coursePortfolioUseCase struct {
 	AssignmentUseCase            entity.AssignmentUseCase
 	ScoreUseCase                 entity.ScoreUseCase
 	CourseLearningOutcomeUseCase entity.CourseLearningOutcomeUseCase
+	CourseStreamUseCase          entity.CourseStreamsUseCase
 }
 
 func NewCoursePortfolioUseCase(
@@ -26,6 +27,7 @@ func NewCoursePortfolioUseCase(
 	assignmentUseCase entity.AssignmentUseCase,
 	scoreUseCase entity.ScoreUseCase,
 	courseLearningOutcomeUseCase entity.CourseLearningOutcomeUseCase,
+	courseStreamUseCase entity.CourseStreamsUseCase,
 ) entity.CoursePortfolioUseCase {
 	return &coursePortfolioUseCase{
 		CoursePortfolioRepository:    coursePortfolioRepository,
@@ -35,6 +37,7 @@ func NewCoursePortfolioUseCase(
 		AssignmentUseCase:            assignmentUseCase,
 		ScoreUseCase:                 scoreUseCase,
 		CourseLearningOutcomeUseCase: courseLearningOutcomeUseCase,
+		CourseStreamUseCase:          courseStreamUseCase,
 	}
 }
 
@@ -74,13 +77,39 @@ func (u coursePortfolioUseCase) Generate(courseId string) (*entity.CoursePortfol
 		TabeeOutcomes:     tabeeOutcomes,
 	}
 
+	courseStreams, err := u.CourseStreamUseCase.GetByTargetCourseId(courseId)
+	if err != nil {
+		return nil, errs.New(errs.SameCode, "cannot get course streams while generate course portfolio", err)
+	}
+
+	upstreamSubject := make([]entity.Subject, 0)
+	downStreamSubject := make([]entity.Subject, 0)
+
+	for _, stream := range courseStreams {
+		switch stream.StreamType {
+		case entity.DownCourseStreamType:
+			fmt.Println(stream.FromCourse)
+			upstreamSubject = append(upstreamSubject, entity.Subject{
+				CourseName: stream.FromCourse.Name,
+				Comment:    stream.Comment,
+			})
+
+		case entity.UpCourseStreamType:
+			downStreamSubject = append(downStreamSubject, entity.Subject{
+				CourseName: stream.FromCourse.Name,
+				Comment:    stream.Comment,
+			})
+
+		}
+	}
+
 	courseDevelopment := entity.CourseDevelopment{
 		Plans:       make([]string, 0),
 		DoAndChecks: make([]string, 0),
 		Acts:        make([]string, 0),
 		SubjectComments: entity.SubjectComments{
-			UpstreamSubjects:   make([]entity.Subject, 0),
-			DownstreamSubjects: make([]entity.Subject, 0),
+			UpstreamSubjects:   upstreamSubject,
+			DownstreamSubjects: downStreamSubject,
 		},
 	}
 

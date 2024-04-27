@@ -3,8 +3,8 @@ package entity
 type CourseStreamType string
 
 const (
-	UpCourseStreamType   CourseStreamType = "UpStream"
-	DownCourseStreamType CourseStreamType = "DownStream"
+	UpCourseStreamType   CourseStreamType = "UPSTREAM"
+	DownCourseStreamType CourseStreamType = "DOWNSTREAM"
 )
 
 type CourseStream struct {

@@ -49,7 +49,7 @@ func (r *courseStreamRepository) Delete(id string) error {
 
 func (r *courseStreamRepository) GetByQuery(query entity.CourseStream) ([]entity.CourseStream, error) {
 	var course []entity.CourseStream
-	err := r.gorm.Where(query).Find(&course).Error
+	err := r.gorm.Preload("FromCourse").Preload("TargetCourse").Where(query).Find(&course).Error
 
 	if err == gorm.ErrRecordNotFound {
 		return nil, nil
