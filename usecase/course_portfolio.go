@@ -52,7 +52,7 @@ func (u coursePortfolioUseCase) Generate(courseId string) (*entity.CoursePortfol
 	lecturer, err := u.UserUseCase.GetById(course.UserId)
 	if err != nil {
 		return nil, errs.New(errs.SameCode, "cannot get lecturer id %s while generate course portfolio", course.UserId, err)
-	} else if course == nil {
+	} else if lecturer == nil {
 		return nil, errs.New(errs.ErrCourseNotFound, "user id %s not found while generate course portfolio", course.UserId)
 	}
 
@@ -90,13 +90,13 @@ func (u coursePortfolioUseCase) Generate(courseId string) (*entity.CoursePortfol
 		case entity.DownCourseStreamType:
 			fmt.Println(stream.FromCourse)
 			upstreamSubject = append(upstreamSubject, entity.Subject{
-				CourseName: stream.FromCourse.Name,
+				CourseName: fmt.Sprintf("%s %s", stream.FromCourse.Code, stream.FromCourse.Name),
 				Comment:    stream.Comment,
 			})
 
 		case entity.UpCourseStreamType:
 			downStreamSubject = append(downStreamSubject, entity.Subject{
-				CourseName: stream.FromCourse.Name,
+				CourseName: fmt.Sprintf("%s %s", stream.TargetCourse.Code, stream.TargetCourse.Name),
 				Comment:    stream.Comment,
 			})
 
