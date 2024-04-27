@@ -344,7 +344,7 @@ func (f *fiberServer) initController() error {
 	grade.Delete("/:gradeId", gradeController.Delete)
 
 	// course stream route
-	courseStream := api.Group("/course-stream")
+	courseStream := api.Group("/course-streams")
 	courseStream.Get("/", courseStreamController.Get)
 	courseStream.Post("/", courseStreamController.Create)
 	courseStream.Delete("/:courseStreamId", courseStreamController.Delete)

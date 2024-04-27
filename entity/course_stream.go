@@ -8,11 +8,14 @@ const (
 )
 
 type CourseStream struct {
-	Id             string
-	FromCourseId   string
-	TargetCourseId string
-	StreamType     CourseStreamType
-	Comment        string
+	Id             string           `json:"id"`
+	StreamType     CourseStreamType `json:"streamType"`
+	Comment        string           `json:"comment"`
+	FromCourseId   string           `json:"fromCourseId"`
+	TargetCourseId string           `json:"targetCourseId"`
+
+	FromCourse   Course `json:"fromCourse" gorm:"foreignKey:FromCourseId"`
+	TargetCourse Course `json:"targetCourse" gorm:"foreignKey:TargetCourseId"`
 }
 
 type CourseStreamRepository interface {

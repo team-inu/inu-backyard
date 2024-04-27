@@ -30,7 +30,7 @@ func (r courseRepositoryGorm) GetAll() ([]entity.Course, error) {
 
 func (r courseRepositoryGorm) GetById(id string) (*entity.Course, error) {
 	var course entity.Course
-	err := r.gorm.Where("id = ?", id).First(&course).Error
+	err := r.gorm.Preload("User").Where("id = ?", id).First(&course).Error
 
 	if err == gorm.ErrRecordNotFound {
 		return nil, nil
