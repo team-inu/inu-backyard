@@ -53,7 +53,14 @@ func (u *courseStreamUseCase) Create(fromCourseId string, targetCourseId string,
 }
 
 func (u *courseStreamUseCase) Delete(id string) error {
-	err := u.courseStreamRepository.Delete(id)
+	courseStream, err := u.Get(id)
+	if err != nil {
+		return errs.New(errs.SameCode, "cannot validate course stream id %s to delete", id, err)
+	} else if courseStream == nil {
+		return errs.New(errs.ErrDeleteCourseStream, "course stream id %s not found while deleting", id)
+	}
+
+	err = u.courseStreamRepository.Delete(id)
 	if err != nil {
 		return errs.New(errs.ErrDeleteCourseStream, "cannot delete stream course", err)
 	}
