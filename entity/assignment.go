@@ -8,7 +8,7 @@ type Assignment struct {
 	Weight                           int     `json:"weight"`
 	ExpectedScorePercentage          float64 `json:"expectedScorePercentage"`
 	ExpectedPassingStudentPercentage float64 `json:"expectedPassingStudentPercentage"`
-	IsIncludedInClo                  bool    `json:"isIncludedInClo"`
+	IsIncludedInClo                  *bool   `json:"isIncludedInClo"`
 
 	CourseId string `json:"courseId" gorm:"->;-:migration"`
 
