@@ -21,16 +21,16 @@ COPY . .
 RUN go mod download
 
 RUN GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build \
-      -ldflags="-w -s" \
-      -o ./inu-backyard ./cmd/http_server/main.go
-
-RUN pip3 install -r requirements.txt
+    -ldflags="-w -s" \
+    -o ./inu-backyard ./cmd/http_server/main.go
 
 # Runner stage
-FROM scratch AS runner
+FROM alpine:3.14 AS runner
 WORKDIR /app
 
-COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
+RUN apt-get -y install python3 python3-pip
+RUN pip3 install -r requirements.txt
+
 COPY --from=builder /app/inu-backyard /
 
 EXPOSE 3001
