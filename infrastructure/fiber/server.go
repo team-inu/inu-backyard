@@ -36,6 +36,8 @@ type fiberServer struct {
 	gradeRepository                  entity.GradeRepository
 	sessionRepository                entity.SessionRepository
 	coursePortfolioRepository        entity.CoursePortfolioRepository
+	predictionRepository             entity.PredictionRepository
+	courseStreamRepository           entity.CourseStreamRepository
 
 	studentUseCase                entity.StudentUseCase
 	courseUseCase                 entity.CourseUseCase
@@ -54,6 +56,8 @@ type fiberServer struct {
 	sessionUseCase                entity.SessionUseCase
 	authUseCase                   entity.AuthUseCase
 	coursePortfolioUseCase        entity.CoursePortfolioUseCase
+	predictionUseCase             entity.PredictionUseCase
+	courseStreamUseCase           entity.CourseStreamsUseCase
 }
 
 func NewFiberServer(
@@ -99,6 +103,8 @@ func (f *fiberServer) initRepository() (err error) {
 	f.gradeRepository = repository.NewGradeRepositoryGorm(f.gorm)
 	f.sessionRepository = repository.NewSessionRepository(f.gorm)
 	f.coursePortfolioRepository = repository.NewCoursePortfolioRepositoryGorm(f.gorm)
+	f.predictionRepository = repository.NewPredictionRepositoryGorm(f.gorm)
+	f.courseStreamRepository = repository.NewCourseStreamRepository(f.gorm)
 
 	return nil
 }
@@ -113,14 +119,16 @@ func (f *fiberServer) initUseCase() {
 	semesterUseCase := usecase.NewSemesterUseCase(f.semesterRepository)
 	courseUseCase := usecase.NewCourseUseCase(f.courseRepository, semesterUseCase, userUseCase)
 	enrollmentUseCase := usecase.NewEnrollmentUseCase(f.enrollmentRepository, studentUseCase, courseUseCase)
-	gradeUseCase := usecase.NewGradeUseCase(f.gradeRepository, studentUseCase)
+	gradeUseCase := usecase.NewGradeUseCase(f.gradeRepository, studentUseCase, semesterUseCase)
 	sessionUseCase := usecase.NewSessionUseCase(f.sessionRepository, f.config.Client.Auth)
 	authUseCase := usecase.NewAuthUseCase(sessionUseCase, userUseCase)
 	programOutcomeUseCase := usecase.NewProgramOutcomeUseCase(f.programOutcomeRepository, semesterUseCase)
 	courseLearningOutcomeUseCase := usecase.NewCourseLearningOutcomeUseCase(f.courseLearningOutcomeRepository, courseUseCase, programOutcomeUseCase, programLearningOutcomeUseCase)
 	assignmentUseCase := usecase.NewAssignmentUseCase(f.assignmentRepository, courseLearningOutcomeUseCase, courseUseCase)
 	scoreUseCase := usecase.NewScoreUseCase(f.scoreRepository, enrollmentUseCase, assignmentUseCase, courseUseCase, userUseCase, studentUseCase)
-	coursePortfolioUseCase := usecase.NewCoursePortfolioUseCase(f.coursePortfolioRepository, courseUseCase, userUseCase, enrollmentUseCase, assignmentUseCase, scoreUseCase, courseLearningOutcomeUseCase)
+	courseStreamUseCase := usecase.NewCourseStreamUseCase(f.courseStreamRepository, courseUseCase)
+	coursePortfolioUseCase := usecase.NewCoursePortfolioUseCase(f.coursePortfolioRepository, courseUseCase, userUseCase, enrollmentUseCase, assignmentUseCase, scoreUseCase, courseLearningOutcomeUseCase, courseStreamUseCase)
+	predictionUseCase := usecase.NewPredictionUseCase(f.predictionRepository, f.config)
 
 	f.assignmentUseCase = assignmentUseCase
 	f.authUseCase = authUseCase
@@ -139,6 +147,8 @@ func (f *fiberServer) initUseCase() {
 	f.sessionUseCase = sessionUseCase
 	f.studentUseCase = studentUseCase
 	f.coursePortfolioUseCase = coursePortfolioUseCase
+	f.predictionUseCase = predictionUseCase
+	f.courseStreamUseCase = courseStreamUseCase
 }
 
 func (f *fiberServer) initController() error {
@@ -172,7 +182,9 @@ func (f *fiberServer) initController() error {
 	semesterController := controller.NewSemesterController(validator, f.semesterUseCase)
 	enrollmentController := controller.NewEnrollmentController(validator, f.enrollmentUseCase)
 	gradeController := controller.NewGradeController(validator, f.gradeUseCase)
+	predictionController := controller.NewPredictionController(validator, f.predictionUseCase)
 	coursePortfolioController := controller.NewCoursePortfolioController(validator, f.coursePortfolioUseCase)
+	courseStreamController := controller.NewCourseStreamController(validator, f.courseStreamUseCase)
 	authController := controller.NewAuthController(validator, f.config.Client.Auth, f.authUseCase, f.userUseCase)
 
 	api := app.Group("/")
@@ -323,13 +335,24 @@ func (f *fiberServer) initController() error {
 	semester.Delete("/:semesterId", semesterController.Delete)
 
 	// grade route
-	grade := api.Group("/grades", authMiddleware)
+	grade := api.Group("/grades")
 
 	grade.Get("/", gradeController.GetAll)
-	grade.Post("/", gradeController.Create)
+	grade.Post("/", gradeController.CreateMany)
 	grade.Get("/:gradeId", gradeController.GetById)
 	grade.Patch("/:gradeId", gradeController.Update)
 	grade.Delete("/:gradeId", gradeController.Delete)
+
+	// course stream route
+	courseStream := api.Group("/course-streams")
+	courseStream.Get("/", courseStreamController.Get)
+	courseStream.Post("/", courseStreamController.Create)
+	courseStream.Delete("/:courseStreamId", courseStreamController.Delete)
+
+	// prediction
+	prediction := api.Group("/prediction")
+
+	prediction.Get("/Train", predictionController.Train)
 
 	// authentication route
 	auth := app.Group("/auth")

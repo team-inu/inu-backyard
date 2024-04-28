@@ -1,18 +1,21 @@
 {
-	"name": "Go",
-	"service": "app",
-	"dockerComposeFile": "docker-compose.yml",
-	"workspaceFolder": "/workspace",
-	"remoteUser": "root",
-
-	"features": {},
-
-	"customizations": {
-		"vscode": {
-			"extensions": [
-				"streetsidesoftware.code-spell-checker",
-				"EditorConfig.EditorConfig"			
-			]
-		}
-	}
+  "name": "Go",
+  "service": "app",
+  "dockerComposeFile": "docker-compose.yml",
+  "workspaceFolder": "/workspace",
+  "remoteUser": "root",
+  "features": {
+    "ghcr.io/devcontainers/features/python:1.4.2": {
+      "version": "3.12.2"
+    }
+  },
+  "postCreateCommand": "pip3 install -r requirements.txt",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "streetsidesoftware.code-spell-checker",
+        "EditorConfig.EditorConfig"
+      ]
+    }
+  }
 }

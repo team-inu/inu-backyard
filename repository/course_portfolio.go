@@ -84,6 +84,7 @@ func (r coursePortfolioRepositoryGorm) evaluateTabeeOutcomes(courseId string, se
 				FROM clos
 				JOIN clo_assignment AS ca ON ca.course_learning_outcome_id = clos.id
 				JOIN assignment ON ca.assignment_id = assignment.id
+				WHERE assignment.is_included_in_clo IS True
 			),
 			scores AS (
 				SELECT *

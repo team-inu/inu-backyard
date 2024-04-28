@@ -22,6 +22,15 @@ func (u *semesterUseCase) GetAll() ([]entity.Semester, error) {
 	return semesters, nil
 }
 
+func (u *semesterUseCase) Get(year int, semesterSequence string) (*entity.Semester, error) {
+	semester, err := u.semesterRepository.Get(year, semesterSequence)
+	if err != nil {
+		return nil, errs.New(errs.ErrQuerySemester, "cannot query semester", err)
+	}
+
+	return semester, nil
+}
+
 func (u *semesterUseCase) GetById(id string) (*entity.Semester, error) {
 	semester, err := u.semesterRepository.GetById(id)
 	if err != nil {
@@ -31,7 +40,7 @@ func (u *semesterUseCase) GetById(id string) (*entity.Semester, error) {
 	return semester, nil
 }
 
-func (u *semesterUseCase) Create(year int, semesterSequence int) error {
+func (u *semesterUseCase) Create(year int, semesterSequence string) error {
 	semester, err := u.semesterRepository.Get(year, semesterSequence)
 	if err != nil {
 		return errs.New(errs.SameCode, "cannot check existing semester while creating new one")

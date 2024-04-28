@@ -8,6 +8,7 @@ type Assignment struct {
 	Weight                           int     `json:"weight"`
 	ExpectedScorePercentage          float64 `json:"expectedScorePercentage"`
 	ExpectedPassingStudentPercentage float64 `json:"expectedPassingStudentPercentage"`
+	IsIncludedInClo                  bool    `json:"isIncludedInClo"`
 
 	CourseId string `json:"courseId" gorm:"->;-:migration"`
 
@@ -32,9 +33,9 @@ type AssignmentUseCase interface {
 	GetByParams(params *Assignment, limit int, offset int) ([]Assignment, error)
 	GetByCourseId(courseId string) ([]Assignment, error)
 	GetPassingStudentPercentage(assignmentId string) (float64, error)
-	Create(name string, description string, maxScore int, weight int, expectedScorePercentage float64, expectedPassingStudentPercentage float64, courseLearningOutcomeIds []string) error
+	Create(name string, description string, maxScore int, weight int, expectedScorePercentage float64, expectedPassingStudentPercentage float64, courseLearningOutcomeIds []string, isIncludedInClo bool) error
 	CreateLinkCourseLearningOutcome(assignmentId string, courseLearningOutcomeId []string) error
-	Update(id string, name string, description string, maxScore int, weight int, expectedScorePercentage float64, expectedPassingStudentPercentage float64) error
+	Update(id string, name string, description string, maxScore int, weight int, expectedScorePercentage float64, expectedPassingStudentPercentage float64, isIncludedInClo bool) error
 	Delete(id string) error
 	DeleteLinkCourseLearningOutcome(assignmentId string, courseLearningOutcomeId string) error
 }

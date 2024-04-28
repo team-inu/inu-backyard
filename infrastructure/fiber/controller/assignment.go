@@ -85,6 +85,7 @@ func (c assignmentController) Create(ctx *fiber.Ctx) error {
 		*payload.ExpectedScorePercentage,
 		*payload.ExpectedPassingStudentPercentage,
 		payload.CourseLearningOutcomeIds,
+		payload.IsIncludedInClo,
 	)
 	if err != nil {
 		return err
@@ -101,7 +102,7 @@ func (c assignmentController) Update(ctx *fiber.Ctx) error {
 
 	id := ctx.Params("assignmentId")
 
-	err := c.AssignmentUseCase.Update(id, payload.Name, payload.Description, payload.MaxScore, payload.Weight, payload.ExpectedScorePercentage, payload.ExpectedPassingStudentPercentage)
+	err := c.AssignmentUseCase.Update(id, payload.Name, payload.Description, payload.MaxScore, payload.Weight, payload.ExpectedScorePercentage, payload.ExpectedPassingStudentPercentage, payload.IsIncludedInClo)
 	if err != nil {
 		return err
 	}
