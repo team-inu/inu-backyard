@@ -25,11 +25,14 @@ RUN GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build \
     -o ./inu-backyard ./cmd/http_server/main.go
 
 # Runner stage
-FROM alpine:3.14 AS runner
+FROM alpine:3.19 AS runner
 WORKDIR /app
 
-RUN apt-get -y install python3 python3-pip
-RUN pip3 install -r requirements.txt
+RUN apk add python3 py3-pip
+RUN apk add py3-scipy py3-scikit-learn
+
+COPY --from=builder /app/requirements.txt .
+RUN pip3 install $(grep -vE "scikit-learn|scipy" /app/requirements.txt) --break-system-packages
 
 COPY --from=builder /app/inu-backyard /
 
