@@ -17,8 +17,8 @@ type Score struct {
 }
 
 type StudentScore struct {
-	StudentId string  `json:"studentId" validate:"required"`
-	Score     float64 `json:"score" validate:"required"`
+	StudentId string   `json:"studentId" validate:"required"`
+	Score     *float64 `json:"score" validate:"required"`
 }
 
 type AssignmentScore struct {

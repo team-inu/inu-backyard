@@ -102,7 +102,7 @@ func (u assignmentUseCase) Create(name string, description string, maxScore int,
 		ExpectedScorePercentage:          expectedScorePercentage,
 		ExpectedPassingStudentPercentage: expectedPassingStudentPercentage,
 		CourseLearningOutcomes:           courseLeaningOutcomes,
-		IsIncludedInClo:                  isIncludedInClo,
+		IsIncludedInClo:                  &isIncludedInClo,
 	}
 
 	err = u.assignmentRepo.Create(&assignment)
@@ -128,7 +128,7 @@ func (u assignmentUseCase) Update(id string, name string, description string, ma
 		Weight:                           weight,
 		ExpectedScorePercentage:          expectedScorePercentage,
 		ExpectedPassingStudentPercentage: expectedPassingStudentPercentage,
-		IsIncludedInClo:                  isIncludedInClo,
+		IsIncludedInClo:                  &isIncludedInClo,
 	})
 
 	if err != nil {

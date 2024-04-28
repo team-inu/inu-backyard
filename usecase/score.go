@@ -142,7 +142,7 @@ func (u scoreUseCase) CreateMany(userId string, assignmentId string, studentScor
 	}
 
 	for _, studentScore := range studentScores {
-		if studentScore.Score > float64(assignment.MaxScore) {
+		if *studentScore.Score > float64(assignment.MaxScore) {
 			return errs.New(errs.ErrCreateScore, "score %f of student id %s is more than max score of assignment (score: %d)", studentScore.Score, studentScore.StudentId, assignment.MaxScore)
 		}
 	}
@@ -174,7 +174,7 @@ func (u scoreUseCase) CreateMany(userId string, assignmentId string, studentScor
 	for _, studentScore := range studentScores {
 		scores = append(scores, entity.Score{
 			Id:           ulid.Make().String(),
-			Score:        studentScore.Score,
+			Score:        *studentScore.Score,
 			StudentId:    studentScore.StudentId,
 			UserId:       userId,
 			AssignmentId: assignmentId,
