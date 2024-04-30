@@ -21,7 +21,7 @@ const (
 	TabeeSelectorAssignment         TabeeSelector = "result_student_passing_assignment_percentage"
 	TabeeSelectorPo                 TabeeSelector = "student_passing_po_percentage"
 	TabeeSelectorCloPercentage      TabeeSelector = "student_passing_clo_percentage"
-	TabeeSelectorCloPassingStudents TabeeSelector = "student_passing_clo"
+	TabeeSelectorCloPassingStudents TabeeSelector = "student_passing_clo_with_information"
 )
 
 func (r coursePortfolioRepositoryGorm) EvaluatePassingAssignmentPercentage(courseId string) ([]entity.AssignmentPercentage, error) {
@@ -57,8 +57,8 @@ func (r coursePortfolioRepositoryGorm) EvaluatePassingCloPercentage(courseId str
 	return res, nil
 }
 
-func (r coursePortfolioRepositoryGorm) EvaluatePassingCloStudent(courseId string) ([]entity.CloPassingStudent, error) {
-	var res = []entity.CloPassingStudent{}
+func (r coursePortfolioRepositoryGorm) EvaluatePassingCloStudents(courseId string) ([]entity.CloPassingStudentGorm, error) {
+	var res = []entity.CloPassingStudentGorm{}
 
 	err := r.evaluateTabeeOutcomes(courseId, TabeeSelectorCloPassingStudents, &res)
 	if err != nil {
@@ -322,7 +322,12 @@ func (r coursePortfolioRepositoryGorm) evaluateTabeeOutcomes(courseId string, se
                 SELECT assignments.name, assignments.expected_score_percentage, student_passing_assignment_percentage.*
                 FROM assignments
                 JOIN student_passing_assignment_percentage ON assignments.a_id = student_passing_assignment_percentage.a_id AND assignments.c_id = student_passing_assignment_percentage.c_id
-            )
+            ),
+			student_passing_clo_with_information AS (
+				SELECT student.first_name, student.last_name, student_passing_clo.student_id, student_passing_clo.pass, student_passing_clo.clo_id
+				FROM student_passing_clo
+				JOIN student ON student_passing_clo.student_id = student.id
+			)
 		SELECT *
 		FROM %s;
 	`

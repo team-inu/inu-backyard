@@ -353,10 +353,30 @@ func (u coursePortfolioUseCase) GetCloPassingStudentsByCourseId(courseId string)
 		return nil, errs.New(errs.ErrCourseNotFound, "course id %s not found while getting clo passing students", courseId, err)
 	}
 
-	records, err := u.CoursePortfolioRepository.EvaluatePassingCloStudent(courseId)
+	records, err := u.CoursePortfolioRepository.EvaluatePassingCloStudents(courseId)
 	if err != nil {
 		return nil, errs.New(errs.SameCode, "cannot evaluate passing clo student by course id %s", courseId, err)
 	}
 
-	return records, nil
+	closMap := make(map[string][]entity.StudentData)
+
+	for _, record := range records {
+		closMap[record.CourseLearningOutcomeId] = append(closMap[record.CourseLearningOutcomeId], entity.StudentData{
+			FirstName: record.FirstName,
+			LastName:  record.LastName,
+			StudentId: record.StudentId,
+			Pass:      record.Pass,
+		})
+	}
+
+	clos := make([]entity.CloPassingStudent, 0)
+
+	for cloId := range closMap {
+		clos = append(clos, entity.CloPassingStudent{
+			CourseLearningOutcomeId: cloId,
+			Students:                closMap[cloId],
+		})
+	}
+
+	return clos, nil
 }
