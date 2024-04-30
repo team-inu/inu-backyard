@@ -293,6 +293,8 @@ func (f *fiberServer) initController() error {
 	user.Delete("/:userId", userController.Delete)
 	user.Post("/bulk", userController.CreateMany)
 
+	user.Get("/:userId/course", courseController.GetByUserId)
+
 	// assignment route
 	assignment := api.Group("/assignments", authMiddleware)
 

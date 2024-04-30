@@ -55,6 +55,17 @@ func (c courseController) GetById(ctx *fiber.Ctx) error {
 	return response.NewSuccessResponse(ctx, fiber.StatusOK, course)
 }
 
+func (c courseController) GetByUserId(ctx *fiber.Ctx) error {
+	userId := ctx.Params("userId")
+
+	courses, err := c.courseUseCase.GetByUserId(userId)
+	if err != nil {
+		return err
+	}
+
+	return response.NewSuccessResponse(ctx, fiber.StatusOK, courses)
+}
+
 func (c courseController) Create(ctx *fiber.Ctx) error {
 	var payload request.CreateCourseRequestPayload
 
