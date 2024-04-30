@@ -104,14 +104,23 @@ type CloPercentage struct {
 	CourseLearningOutcomeId string `gorm:"column:c_id"`
 }
 
+type CloPassingStudent struct {
+	StudentId               string `json:"studentId"`
+	ProgramOutcomeId        string `json:"programOutcomeId"`
+	CourseLearningOutcomeId string `json:"courseLearningOutcomeId" gorm:"column:clo_id"`
+	Pass                    bool   `json:"pass"`
+}
+
 type CoursePortfolioRepository interface {
 	EvaluatePassingAssignmentPercentage(courseId string) ([]AssignmentPercentage, error)
 	EvaluatePassingPoPercentage(courseId string) ([]PoPercentage, error)
 	EvaluatePassingCloPercentage(courseId string) ([]CloPercentage, error)
+	EvaluatePassingCloStudent(courseId string) ([]CloPassingStudent, error)
 }
 
 type CoursePortfolioUseCase interface {
 	Generate(courseId string) (*CoursePortfolio, error)
 	CalculateGradeDistribution(courseId string) (*GradeDistribution, error)
 	EvaluateTabeeOutcomes(courseId string) ([]TabeeOutcome, error)
+	GetCloPassingStudentsByCourseId(courseId string) ([]CloPassingStudent, error)
 }

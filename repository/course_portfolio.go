@@ -18,9 +18,10 @@ func NewCoursePortfolioRepositoryGorm(gorm *gorm.DB) entity.CoursePortfolioRepos
 type TabeeSelector string
 
 const (
-	TabeeSelectorAssignment TabeeSelector = "result_student_passing_assignment_percentage"
-	TabeeSelectorPo         TabeeSelector = "student_passing_po_percentage"
-	TabeeSelectorClo        TabeeSelector = "student_passing_clo_percentage"
+	TabeeSelectorAssignment         TabeeSelector = "result_student_passing_assignment_percentage"
+	TabeeSelectorPo                 TabeeSelector = "student_passing_po_percentage"
+	TabeeSelectorCloPercentage      TabeeSelector = "student_passing_clo_percentage"
+	TabeeSelectorCloPassingStudents TabeeSelector = "student_passing_clo"
 )
 
 func (r coursePortfolioRepositoryGorm) EvaluatePassingAssignmentPercentage(courseId string) ([]entity.AssignmentPercentage, error) {
@@ -48,9 +49,20 @@ func (r coursePortfolioRepositoryGorm) EvaluatePassingPoPercentage(courseId stri
 func (r coursePortfolioRepositoryGorm) EvaluatePassingCloPercentage(courseId string) ([]entity.CloPercentage, error) {
 	var res = []entity.CloPercentage{}
 
-	err := r.evaluateTabeeOutcomes(courseId, TabeeSelectorClo, &res)
+	err := r.evaluateTabeeOutcomes(courseId, TabeeSelectorCloPercentage, &res)
 	if err != nil {
 		return nil, fmt.Errorf("cannot query to evaluate course learning outcome percentage: %w", err)
+	}
+
+	return res, nil
+}
+
+func (r coursePortfolioRepositoryGorm) EvaluatePassingCloStudent(courseId string) ([]entity.CloPassingStudent, error) {
+	var res = []entity.CloPassingStudent{}
+
+	err := r.evaluateTabeeOutcomes(courseId, TabeeSelectorCloPassingStudents, &res)
+	if err != nil {
+		return nil, fmt.Errorf("cannot query to evaluate course learning outcome passing students: %w", err)
 	}
 
 	return res, nil

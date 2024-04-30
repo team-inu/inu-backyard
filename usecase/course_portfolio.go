@@ -344,3 +344,19 @@ func (u coursePortfolioUseCase) EvaluateTabeeOutcomes(courseId string) ([]entity
 
 	return tabeeOutcomes, nil
 }
+
+func (u coursePortfolioUseCase) GetCloPassingStudentsByCourseId(courseId string) ([]entity.CloPassingStudent, error) {
+	course, err := u.CourseUseCase.GetById(courseId)
+	if err != nil {
+		return nil, errs.New(errs.SameCode, "cannot get course id %s while getting clo passing students", course, err)
+	} else if course == nil {
+		return nil, errs.New(errs.ErrCourseNotFound, "course id %s not found while getting clo passing students", courseId, err)
+	}
+
+	records, err := u.CoursePortfolioRepository.EvaluatePassingCloStudent(courseId)
+	if err != nil {
+		return nil, errs.New(errs.SameCode, "cannot evaluate passing clo student by course id %s", courseId, err)
+	}
+
+	return records, nil
+}
