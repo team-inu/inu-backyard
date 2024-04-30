@@ -19,5 +19,6 @@ type UpdateCourseRequestPayload struct {
 	Curriculum                   string  `json:"curriculum" validate:"required"`
 	Description                  string  `json:"description" validate:"required"`
 	ExpectedPassingCloPercentage float64 `json:"expectedPassingCloPercentage" validate:"required"`
+	IsPortfolioCompleted         *bool   `json:"isPortfolioCompleted" validate:"required"`
 	entity.CriteriaGrade
 }

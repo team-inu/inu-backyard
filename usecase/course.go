@@ -93,7 +93,7 @@ func (u courseUseCase) Create(user entity.User, semesterId string, userId string
 	return nil
 }
 
-func (u courseUseCase) Update(user entity.User, id string, name string, code string, curriculum string, description string, expectedPassingCloPercentage float64, criteriaGrade entity.CriteriaGrade) error {
+func (u courseUseCase) Update(user entity.User, id string, name string, code string, curriculum string, description string, expectedPassingCloPercentage float64, criteriaGrade entity.CriteriaGrade, isPortfolioCompleted bool) error {
 	existCourse, err := u.GetById(id)
 	if err != nil {
 		return errs.New(errs.SameCode, "cannot get course id %s to update", id, err)
@@ -116,6 +116,7 @@ func (u courseUseCase) Update(user entity.User, id string, name string, code str
 		Description:                  description,
 		CriteriaGrade:                criteriaGrade,
 		ExpectedPassingCloPercentage: expectedPassingCloPercentage,
+		IsPortfolioCompleted:         &isPortfolioCompleted,
 	})
 	if err != nil {
 		return errs.New(errs.ErrUpdateCourse, "cannot update course by id %s", id, err)

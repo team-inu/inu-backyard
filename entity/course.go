@@ -69,6 +69,7 @@ type Course struct {
 	Curriculum                   string  `json:"curriculum"`
 	Description                  string  `json:"description"`
 	ExpectedPassingCloPercentage float64 `json:"expectedPassingCloPercentage"`
+	IsPortfolioCompleted         *bool   `json:"isPortfolioCompleted" gorm:"default:false"`
 
 	SemesterId string `json:"semesterId"`
 	UserId     string `json:"userId"`
@@ -91,6 +92,6 @@ type CourseUseCase interface {
 	GetById(id string) (*Course, error)
 	GetByUserId(userId string) ([]Course, error)
 	Create(user User, semesterId string, userId string, name string, code string, curriculum string, description string, expectedPassingCloPercentage float64, criteriaGrade CriteriaGrade) error
-	Update(user User, id string, name string, code string, curriculum string, description string, expectedPassingCloPercentage float64, criteriaGrade CriteriaGrade) error
+	Update(user User, id string, name string, code string, curriculum string, description string, expectedPassingCloPercentage float64, criteriaGrade CriteriaGrade, isPortfolioCompleted bool) error
 	Delete(user User, id string) error
 }

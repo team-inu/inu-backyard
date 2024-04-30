@@ -102,6 +102,7 @@ func (c courseController) Update(ctx *fiber.Ctx) error {
 		payload.Description,
 		payload.ExpectedPassingCloPercentage,
 		payload.CriteriaGrade,
+		*payload.IsPortfolioCompleted,
 	)
 	if err != nil {
 		return err
