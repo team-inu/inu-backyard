@@ -6,6 +6,17 @@ import (
 	"github.com/team-inu/inu-backyard/infrastructure/fiber/response"
 )
 
+func (c assignmentController) GetGroupByCourseId(ctx *fiber.Ctx) error {
+	courseId := ctx.Params("courseId")
+
+	assignmentGroups, err := c.AssignmentUseCase.GetGroupByCourseId(courseId)
+	if err != nil {
+		return err
+	}
+
+	return response.NewSuccessResponse(ctx, fiber.StatusOK, assignmentGroups)
+}
+
 func (c assignmentController) CreateGroup(ctx *fiber.Ctx) error {
 	var payload request.CreateAssignmentGroupPayload
 	if ok, err := c.Validator.Validate(&payload, ctx); !ok {
