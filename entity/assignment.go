@@ -69,8 +69,8 @@ type AssignmentUseCase interface {
 	GetByCourseId(courseId string) ([]Assignment, error)
 	GetByGroupId(assignmentGroupId string) ([]Assignment, error)
 	GetPassingStudentPercentage(assignmentId string) (float64, error)
-	Create(assignmentGroupId string, name string, description string, maxScore int, weight int, expectedScorePercentage float64, expectedPassingStudentPercentage float64, courseLearningOutcomeIds []string, isIncludedInClo bool) error
-	Update(id string, name string, description string, maxScore int, weight int, expectedScorePercentage float64, expectedPassingStudentPercentage float64, isIncludedInClo bool) error
+	Create(assignmentGroupId string, name string, description string, maxScore int, expectedScorePercentage float64, expectedPassingStudentPercentage float64, courseLearningOutcomeIds []string, isIncludedInClo bool) error
+	Update(id string, name string, description string, maxScore int, expectedScorePercentage float64, expectedPassingStudentPercentage float64, isIncludedInClo bool) error
 	Delete(id string) error
 
 	CreateLinkCourseLearningOutcome(assignmentId string, courseLearningOutcomeId []string) error
