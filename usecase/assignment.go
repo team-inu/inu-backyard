@@ -69,7 +69,14 @@ func (u assignmentUseCase) GetPassingStudentPercentage(assignmentId string) (flo
 	return passingStudentPercentage, nil
 }
 
-func (u assignmentUseCase) Create(name string, description string, maxScore int, weight int, expectedScorePercentage float64, expectedPassingStudentPercentage float64, courseLearningOutcomeIds []string, isIncludedInClo bool) error {
+func (u assignmentUseCase) Create(assignmentGroupId string, name string, description string, maxScore int, weight int, expectedScorePercentage float64, expectedPassingStudentPercentage float64, courseLearningOutcomeIds []string, isIncludedInClo bool) error {
+	assignmentGroup, err := u.GetGroupByGroupId(assignmentGroupId)
+	if err != nil {
+		return errs.New(errs.SameCode, "cannot validate group id %s while creating assignment", assignmentGroupId, err)
+	} else if assignmentGroup == nil {
+		return errs.New(errs.ErrAssignmentNotFound, "assignment group id %s not found while creating assignment", assignmentGroupId)
+	}
+
 	if len(courseLearningOutcomeIds) == 0 {
 		return errs.New(errs.ErrCreateAssignment, "assignment must have at least one clo")
 	}
@@ -103,6 +110,7 @@ func (u assignmentUseCase) Create(name string, description string, maxScore int,
 		ExpectedPassingStudentPercentage: expectedPassingStudentPercentage,
 		CourseLearningOutcomes:           courseLeaningOutcomes,
 		IsIncludedInClo:                  &isIncludedInClo,
+		AssignmentGroupId:                assignmentGroupId,
 	}
 
 	err = u.assignmentRepo.Create(&assignment)
