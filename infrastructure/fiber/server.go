@@ -307,6 +307,7 @@ func (f *fiberServer) initController() error {
 
 	assignmentGroup := api.Group("/assignment-groups", authMiddleware)
 	assignmentGroup.Post("/", assignmentController.CreateGroup)
+	assignmentGroup.Patch("/:assignmentGroupId", assignmentController.UpdateGroup)
 
 	// clo by assignment route
 	cloByAssignment := assignment.Group("/:assignmentId/clos/", authMiddleware)

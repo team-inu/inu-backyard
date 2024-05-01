@@ -37,3 +37,19 @@ func (u assignmentUseCase) CreateGroup(name string, courseId string) error {
 
 	return nil
 }
+
+func (u assignmentUseCase) UpdateGroup(assignmentGroupId string, name string) error {
+	assignmentGroup, err := u.GetGroupByGroupId(assignmentGroupId)
+	if err != nil {
+		return errs.New(errs.SameCode, "cannot validate assignment group id %s to update", assignmentGroupId, err)
+	} else if assignmentGroup == nil {
+		return errs.New(errs.ErrAssignmentNotFound, "assignment group id %s to update not found", assignmentGroupId)
+	}
+
+	err = u.assignmentRepo.UpdateGroup(assignmentGroupId, &entity.AssignmentGroup{Name: name})
+	if err != nil {
+		return errs.New(errs.ErrUpdateAssignment, "cannot update assignment group id %s", assignmentGroupId)
+	}
+
+	return nil
+}

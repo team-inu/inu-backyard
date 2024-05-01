@@ -19,3 +19,19 @@ func (c assignmentController) CreateGroup(ctx *fiber.Ctx) error {
 
 	return response.NewSuccessResponse(ctx, fiber.StatusCreated, nil)
 }
+
+func (c assignmentController) UpdateGroup(ctx *fiber.Ctx) error {
+	var payload request.UpdateAssignmentGroupPayload
+	if ok, err := c.Validator.Validate(&payload, ctx); !ok {
+		return err
+	}
+
+	id := ctx.Params("assignmentGroupId")
+
+	err := c.AssignmentUseCase.UpdateGroup(id, payload.Name)
+	if err != nil {
+		return err
+	}
+
+	return response.NewSuccessResponse(ctx, fiber.StatusOK, nil)
+}

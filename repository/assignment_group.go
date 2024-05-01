@@ -41,3 +41,12 @@ func (r assignmentRepositoryGorm) CreateGroup(assignmentGroup *entity.Assignment
 
 	return nil
 }
+
+func (r assignmentRepositoryGorm) UpdateGroup(assignmentGroupId string, assignmentGroup *entity.AssignmentGroup) error {
+	err := r.gorm.Model(&entity.AssignmentGroup{}).Where("id = ?", assignmentGroupId).Updates(assignmentGroup).Error
+	if err != nil {
+		return fmt.Errorf("cannot update assignment group: %w", err)
+	}
+
+	return nil
+}
