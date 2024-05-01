@@ -124,11 +124,51 @@ type CloPassingStudentGorm struct {
 	CourseLearningOutcomeId string `gorm:"column:clo_id"`
 }
 
+type PloData struct {
+	Id              string `json:"id"`
+	Code            string `json:"code"`
+	DescriptionThai string `json:"descriptionThai"`
+	ProgramYear     int    `json:"programYear"`
+	Pass            bool   `json:"pass"`
+}
+
+type PloPassingStudentGorm struct {
+	Code                     string
+	DescriptionThai          string
+	ProgramYear              int
+	StudentId                string
+	Pass                     bool
+	ProgramLearningOutcomeId string `gorm:"column:plo_id"`
+}
+
+type PoData struct {
+	Id   string `json:"id"`
+	Code string `json:"code"`
+	Name string `json:"name"`
+	Pass bool   `json:"pass"`
+}
+
+type PoPassingStudentGorm struct {
+	Code             string
+	Name             string
+	StudentId        string
+	Pass             bool
+	ProgramOutcomeId string `gorm:"column:p_id"`
+}
+
+type StudentOutcomeStatus struct {
+	StudentId               string    `json:"studentId"`
+	ProgramLearningOutcomes []PloData `json:"programLearningOutcomes"`
+	ProgramOutcomes         []PoData  `json:"programOutcomes"`
+}
+
 type CoursePortfolioRepository interface {
 	EvaluatePassingAssignmentPercentage(courseId string) ([]AssignmentPercentage, error)
 	EvaluatePassingPoPercentage(courseId string) ([]PoPercentage, error)
 	EvaluatePassingCloPercentage(courseId string) ([]CloPercentage, error)
 	EvaluatePassingCloStudents(courseId string) ([]CloPassingStudentGorm, error)
+	EvaluatePassingPloStudents(courseId string) ([]PloPassingStudentGorm, error)
+	EvaluatePassingPoStudents(courseId string) ([]PoPassingStudentGorm, error)
 }
 
 type CoursePortfolioUseCase interface {
@@ -136,4 +176,5 @@ type CoursePortfolioUseCase interface {
 	CalculateGradeDistribution(courseId string) (*GradeDistribution, error)
 	EvaluateTabeeOutcomes(courseId string) ([]TabeeOutcome, error)
 	GetCloPassingStudentsByCourseId(courseId string) ([]CloPassingStudent, error)
+	GetStudentOutcomesStatusByCourseId(courseId string) ([]StudentOutcomeStatus, error)
 }

@@ -380,3 +380,63 @@ func (u coursePortfolioUseCase) GetCloPassingStudentsByCourseId(courseId string)
 
 	return clos, nil
 }
+
+func (u coursePortfolioUseCase) GetStudentOutcomesStatusByCourseId(courseId string) ([]entity.StudentOutcomeStatus, error) {
+	course, err := u.CourseUseCase.GetById(courseId)
+	if err != nil {
+		return nil, errs.New(errs.SameCode, "cannot get course id %s while getting clo passing students", course, err)
+	} else if course == nil {
+		return nil, errs.New(errs.ErrCourseNotFound, "course id %s not found while getting clo passing students", courseId, err)
+	}
+
+	ploRecords, err := u.CoursePortfolioRepository.EvaluatePassingPloStudents(courseId)
+	if err != nil {
+		return nil, errs.New(errs.SameCode, "cannot evaluate passing plo student by course id %s", courseId, err)
+	}
+
+	poRecords, err := u.CoursePortfolioRepository.EvaluatePassingPoStudents(courseId)
+	if err != nil {
+		return nil, errs.New(errs.SameCode, "cannot evaluate passing po student by course id %s", courseId, err)
+	}
+
+	studentPloMap := make(map[string][]entity.PloData)
+	studentPoMap := make(map[string][]entity.PoData)
+
+	for _, record := range ploRecords {
+		studentPloMap[record.StudentId] = append(studentPloMap[record.StudentId], entity.PloData{
+			Id:              record.ProgramLearningOutcomeId,
+			Code:            record.Code,
+			DescriptionThai: record.DescriptionThai,
+			ProgramYear:     record.ProgramYear,
+			Pass:            record.Pass,
+		})
+	}
+
+	for _, record := range poRecords {
+		studentPoMap[record.StudentId] = append(studentPoMap[record.StudentId], entity.PoData{
+			Id:   record.ProgramOutcomeId,
+			Code: record.Code,
+			Name: record.Name,
+			Pass: record.Pass,
+		})
+	}
+
+	if len(studentPloMap) != len(studentPoMap) {
+		return nil, errs.New(errs.SameCode, "number of students with plo is different from po by course id %s", courseId, err)
+	}
+
+	students := make([]entity.StudentOutcomeStatus, 0)
+
+	for studentId := range studentPloMap {
+		students = append(students, entity.StudentOutcomeStatus{
+			StudentId:               studentId,
+			ProgramLearningOutcomes: studentPloMap[studentId],
+		})
+	}
+
+	for i := range students {
+		students[i].ProgramOutcomes = studentPoMap[students[i].StudentId]
+	}
+
+	return students, nil
+}

@@ -22,6 +22,8 @@ const (
 	TabeeSelectorPo                 TabeeSelector = "student_passing_po_percentage"
 	TabeeSelectorCloPercentage      TabeeSelector = "student_passing_clo_percentage"
 	TabeeSelectorCloPassingStudents TabeeSelector = "student_passing_clo_with_information"
+	TabeeSelectorPloPassingStudents TabeeSelector = "student_passing_plo_with_information"
+	TabeeSelectorPoPassingStudents  TabeeSelector = "student_passing_po_with_information"
 )
 
 func (r coursePortfolioRepositoryGorm) EvaluatePassingAssignmentPercentage(courseId string) ([]entity.AssignmentPercentage, error) {
@@ -63,6 +65,28 @@ func (r coursePortfolioRepositoryGorm) EvaluatePassingCloStudents(courseId strin
 	err := r.evaluateTabeeOutcomes(courseId, TabeeSelectorCloPassingStudents, &res)
 	if err != nil {
 		return nil, fmt.Errorf("cannot query to evaluate course learning outcome passing students: %w", err)
+	}
+
+	return res, nil
+}
+
+func (r coursePortfolioRepositoryGorm) EvaluatePassingPloStudents(courseId string) ([]entity.PloPassingStudentGorm, error) {
+	var res = []entity.PloPassingStudentGorm{}
+
+	err := r.evaluateTabeeOutcomes(courseId, TabeeSelectorPloPassingStudents, &res)
+	if err != nil {
+		return nil, fmt.Errorf("cannot query to evaluate program learning outcome passing students: %w", err)
+	}
+
+	return res, nil
+}
+
+func (r coursePortfolioRepositoryGorm) EvaluatePassingPoStudents(courseId string) ([]entity.PoPassingStudentGorm, error) {
+	var res = []entity.PoPassingStudentGorm{}
+
+	err := r.evaluateTabeeOutcomes(courseId, TabeeSelectorPoPassingStudents, &res)
+	if err != nil {
+		return nil, fmt.Errorf("cannot query to evaluate program outcome passing students: %w", err)
 	}
 
 	return res, nil
@@ -327,6 +351,16 @@ func (r coursePortfolioRepositoryGorm) evaluateTabeeOutcomes(courseId string, se
 				SELECT student.first_name, student.last_name, student_passing_clo.student_id, student_passing_clo.pass, student_passing_clo.clo_id
 				FROM student_passing_clo
 				JOIN student ON student_passing_clo.student_id = student.id
+			),
+			student_passing_plo_with_information AS (
+				SELECT program_learning_outcome.code, program_learning_outcome.description_thai, program_learning_outcome.program_year, student_passing_plo.pass, student_passing_plo.plo_id, student_passing_plo.student_id
+				FROM student_passing_plo
+				JOIN program_learning_outcome ON student_passing_plo.plo_id = program_learning_outcome.id
+			),
+			student_passing_po_with_information AS (
+				SELECT program_outcome.code, program_outcome.name, student_passing_po.pass, student_passing_po.p_id, student_passing_po.student_id
+				FROM student_passing_po
+				JOIN program_outcome ON student_passing_po.p_id = program_outcome.id
 			)
 		SELECT *
 		FROM %s;

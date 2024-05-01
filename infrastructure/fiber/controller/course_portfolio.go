@@ -38,3 +38,13 @@ func (c coursePortfolioController) GetCloPassingStudentsByCourseId(ctx *fiber.Ct
 	}
 	return response.NewSuccessResponse(ctx, fiber.StatusOK, records)
 }
+
+func (c coursePortfolioController) GetStudentOutcomeStatusByCourseId(ctx *fiber.Ctx) error {
+	courseId := ctx.Params("courseId")
+
+	records, err := c.coursePortfolioUseCase.GetStudentOutcomesStatusByCourseId(courseId)
+	if err != nil {
+		return err
+	}
+	return response.NewSuccessResponse(ctx, fiber.StatusOK, records)
+}
