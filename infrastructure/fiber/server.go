@@ -299,7 +299,6 @@ func (f *fiberServer) initController() error {
 	// assignment route
 	assignment := api.Group("/assignments", authMiddleware)
 
-	assignment.Get("/", assignmentController.GetAssignments)
 	assignment.Post("/", assignmentController.Create)
 	assignment.Get("/:assignmentId", assignmentController.GetById)
 	assignment.Patch("/:assignmentId", assignmentController.Update)

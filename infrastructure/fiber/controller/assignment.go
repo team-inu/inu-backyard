@@ -36,24 +36,6 @@ func (c assignmentController) GetById(ctx *fiber.Ctx) error {
 	return response.NewSuccessResponse(ctx, fiber.StatusOK, assignment)
 }
 
-func (c assignmentController) GetAssignments(ctx *fiber.Ctx) error {
-	var payload request.GetAssignmentsByParamsPayload
-
-	if ok, err := c.Validator.Validate(&payload, ctx); !ok {
-		return err
-	}
-
-	assignments, err := c.AssignmentUseCase.GetByParams(&entity.Assignment{
-		// CourseLearningOutcomeId: payload.CourseLearningOutcomeId,
-	}, -1, -1)
-
-	if err != nil {
-		return err
-	}
-
-	return response.NewSuccessResponse(ctx, fiber.StatusOK, assignments)
-}
-
 func (c assignmentController) GetByCourseId(ctx *fiber.Ctx) error {
 	var payload request.GetAssignmentsByCourseIdPayload
 
@@ -71,9 +53,9 @@ func (c assignmentController) GetByCourseId(ctx *fiber.Ctx) error {
 }
 
 func (c assignmentController) GetByGroupId(ctx *fiber.Ctx) error {
-	courseId := ctx.Params("assignmentGroupId")
+	assignmentGroupId := ctx.Params("assignmentGroupId")
 
-	assignmentGroups, err := c.AssignmentUseCase.GetByGroupId(courseId)
+	assignmentGroups, err := c.AssignmentUseCase.GetByGroupId(assignmentGroupId)
 	if err != nil {
 		return err
 	}

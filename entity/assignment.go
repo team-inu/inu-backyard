@@ -45,8 +45,8 @@ func GenerateGroupByAssignmentId(assignmentGroups []AssignmentGroup, assignments
 
 type AssignmentRepository interface {
 	GetById(id string) (*Assignment, error)
-	GetByParams(params *Assignment, limit int, offset int) ([]Assignment, error)
 	GetByCourseId(courseId string) ([]Assignment, error)
+	GetByGroupId(groupId string) ([]Assignment, error)
 	GetPassingStudentPercentage(assignmentId string) (float64, error)
 	Create(assignment *Assignment) error
 	CreateMany(assignment []Assignment) error
@@ -65,7 +65,6 @@ type AssignmentRepository interface {
 
 type AssignmentUseCase interface {
 	GetById(id string) (*Assignment, error)
-	GetByParams(params *Assignment, limit int, offset int) ([]Assignment, error)
 	GetByCourseId(courseId string) ([]Assignment, error)
 	GetByGroupId(assignmentGroupId string) ([]Assignment, error)
 	GetPassingStudentPercentage(assignmentId string) (float64, error)

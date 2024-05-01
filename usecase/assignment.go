@@ -34,16 +34,6 @@ func (u assignmentUseCase) GetById(id string) (*entity.Assignment, error) {
 	return assignment, nil
 }
 
-func (u assignmentUseCase) GetByParams(params *entity.Assignment, limit int, offset int) ([]entity.Assignment, error) {
-	assignments, err := u.assignmentRepo.GetByParams(params, limit, offset)
-
-	if err != nil {
-		return nil, errs.New(errs.ErrQueryAssignment, "cannot get assignment by params", err)
-	}
-
-	return assignments, nil
-}
-
 func (u assignmentUseCase) GetByCourseId(courseId string) ([]entity.Assignment, error) {
 	course, err := u.courseUseCase.GetById(courseId)
 	if err != nil {
@@ -68,7 +58,7 @@ func (u assignmentUseCase) GetByGroupId(assignmentGroupId string) ([]entity.Assi
 		return nil, errs.New(errs.ErrAssignmentNotFound, "assignment group id %s not found while get assignments by group", assignmentGroupId)
 	}
 
-	assignments, err := u.assignmentRepo.GetByParams(&entity.Assignment{AssignmentGroupId: assignmentGroupId}, 0, 0)
+	assignments, err := u.assignmentRepo.GetByGroupId(assignmentGroupId)
 	if err != nil {
 		return nil, errs.New(errs.SameCode, "cannot get assignment by group id", nil)
 	}
