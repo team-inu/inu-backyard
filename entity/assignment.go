@@ -47,6 +47,7 @@ type AssignmentUseCase interface {
 	GetById(id string) (*Assignment, error)
 	GetByParams(params *Assignment, limit int, offset int) ([]Assignment, error)
 	GetByCourseId(courseId string) ([]Assignment, error)
+	GetByGroupId(assignmentGroupId string) ([]Assignment, error)
 	GetPassingStudentPercentage(assignmentId string) (float64, error)
 	Create(assignmentGroupId string, name string, description string, maxScore int, weight int, expectedScorePercentage float64, expectedPassingStudentPercentage float64, courseLearningOutcomeIds []string, isIncludedInClo bool) error
 	Update(id string, name string, description string, maxScore int, weight int, expectedScorePercentage float64, expectedPassingStudentPercentage float64, isIncludedInClo bool) error

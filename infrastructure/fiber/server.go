@@ -211,9 +211,9 @@ func (f *fiberServer) initController() error {
 	course.Get("/:courseId/clos", courseLearningOutcomeController.GetByCourseId)
 	course.Get("/:courseId/clos/students", coursePortfolioController.GetCloPassingStudentsByCourseId)
 	course.Get("/:courseId/enrollments", enrollmentController.GetByCourseId)
+	course.Get("/:courseId/portfolio", coursePortfolioController.Generate)
 	course.Get("/:courseId/assignments", assignmentController.GetByCourseId)
 	course.Get("/:courseId/assignment-groups", assignmentController.GetGroupByCourseId)
-	course.Get("/:courseId/portfolio", coursePortfolioController.Generate)
 
 	// course learning outcome route
 	clo := api.Group("/clos", authMiddleware)
@@ -310,6 +310,8 @@ func (f *fiberServer) initController() error {
 	assignmentGroup.Post("/", assignmentController.CreateGroup)
 	assignmentGroup.Patch("/:assignmentGroupId", assignmentController.UpdateGroup)
 	assignmentGroup.Delete("/:assignmentGroupId", assignmentController.DeleteGroup)
+
+	assignmentGroup.Get("/:assignmentGroupID/assignments", assignmentController.GetByGroupId)
 
 	// clo by assignment route
 	cloByAssignment := assignment.Group("/:assignmentId/clos/", authMiddleware)

@@ -70,6 +70,17 @@ func (c assignmentController) GetByCourseId(ctx *fiber.Ctx) error {
 	return response.NewSuccessResponse(ctx, fiber.StatusOK, assignments)
 }
 
+func (c assignmentController) GetByGroupId(ctx *fiber.Ctx) error {
+	courseId := ctx.Params("assignmentGroupId")
+
+	assignmentGroups, err := c.AssignmentUseCase.GetByGroupId(courseId)
+	if err != nil {
+		return err
+	}
+
+	return response.NewSuccessResponse(ctx, fiber.StatusOK, assignmentGroups)
+}
+
 func (c assignmentController) Create(ctx *fiber.Ctx) error {
 	var payload request.CreateAssignmentPayload
 

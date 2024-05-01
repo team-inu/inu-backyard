@@ -60,6 +60,22 @@ func (u assignmentUseCase) GetByCourseId(courseId string) ([]entity.Assignment, 
 	return assignment, nil
 }
 
+func (u assignmentUseCase) GetByGroupId(assignmentGroupId string) ([]entity.Assignment, error) {
+	assignmentGroup, err := u.GetGroupByGroupId(assignmentGroupId)
+	if err != nil {
+		return nil, errs.New(errs.SameCode, "cannot validate assignment group id %s while get assignments by group", assignmentGroupId, err)
+	} else if assignmentGroup == nil {
+		return nil, errs.New(errs.ErrAssignmentNotFound, "assignment group id %s not found while get assignments by group", assignmentGroupId)
+	}
+
+	assignments, err := u.assignmentRepo.GetByParams(&entity.Assignment{AssignmentGroupId: assignmentGroupId}, 0, 0)
+	if err != nil {
+		return nil, errs.New(errs.SameCode, "cannot get assignment by group id", nil)
+	}
+
+	return assignments, nil
+}
+
 func (u assignmentUseCase) GetPassingStudentPercentage(assignmentId string) (float64, error) {
 	passingStudentPercentage, err := u.assignmentRepo.GetPassingStudentPercentage(assignmentId)
 	if err != nil {
