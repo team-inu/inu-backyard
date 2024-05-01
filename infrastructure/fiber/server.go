@@ -305,6 +305,9 @@ func (f *fiberServer) initController() error {
 	assignment.Delete("/:assignmentId", assignmentController.Delete)
 	assignment.Get("/:assignmentId/scores", scoreController.GetByAssignmentId)
 
+	assignmentGroup := api.Group("/assignment-groups", authMiddleware)
+	assignmentGroup.Post("/", assignmentController.CreateGroup)
+
 	// clo by assignment route
 	cloByAssignment := assignment.Group("/:assignmentId/clos/", authMiddleware)
 	cloByAssignment.Post("/", assignmentController.CreateLinkCourseLearningOutcome)

@@ -9,6 +9,7 @@ type CreateAssignmentPayload struct {
 	ExpectedPassingStudentPercentage *float64 `json:"expectedPassingStudentPercentage" validate:"required"`
 	CourseLearningOutcomeIds         []string `json:"courseLearningOutcomeIds" validate:"required"`
 	IsIncludedInClo                  *bool    `json:"isIncludedInClo" validate:"required"`
+	AssignmentGroupId                string   `json:"assignmentGroupId" validate:"required"`
 }
 
 type GetAssignmentsByParamsPayload struct {

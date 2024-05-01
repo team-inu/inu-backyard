@@ -78,6 +78,7 @@ func (c assignmentController) Create(ctx *fiber.Ctx) error {
 	}
 
 	err := c.AssignmentUseCase.Create(
+		payload.AssignmentGroupId,
 		payload.Name,
 		payload.Description,
 		*payload.MaxScore,
