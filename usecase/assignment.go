@@ -121,7 +121,6 @@ func (u assignmentUseCase) Create(assignmentGroupId string, name string, descrip
 		Name:                             name,
 		Description:                      description,
 		MaxScore:                         maxScore,
-		Weight:                           weight,
 		ExpectedScorePercentage:          expectedScorePercentage,
 		ExpectedPassingStudentPercentage: expectedPassingStudentPercentage,
 		CourseLearningOutcomes:           courseLeaningOutcomes,
@@ -149,7 +148,6 @@ func (u assignmentUseCase) Update(id string, name string, description string, ma
 		Name:                             name,
 		Description:                      description,
 		MaxScore:                         maxScore,
-		Weight:                           weight,
 		ExpectedScorePercentage:          expectedScorePercentage,
 		ExpectedPassingStudentPercentage: expectedPassingStudentPercentage,
 		IsIncludedInClo:                  &isIncludedInClo,
@@ -207,7 +205,6 @@ func (u assignmentUseCase) CreateLinkCourseLearningOutcome(assignmentId string, 
 	if err != nil {
 		return errs.New(errs.ErrCreateAssignment, "cannot create link CLO and assignment", err)
 	}
-
 	return nil
 }
 

@@ -16,13 +16,31 @@ type Assignment struct {
 	Name                             string                   `json:"name"`
 	Description                      string                   `json:"description"`
 	MaxScore                         int                      `json:"maxScore"`
-	Weight                           int                      `json:"weight"`
 	ExpectedScorePercentage          float64                  `json:"expectedScorePercentage"`
 	ExpectedPassingStudentPercentage float64                  `json:"expectedPassingStudentPercentage"`
 	IsIncludedInClo                  *bool                    `json:"isIncludedInClo"`
 	AssignmentGroupId                string                   `json:"assignmentGroupId" gorm:"not null"`
 	CourseId                         string                   `json:"courseId" gorm:"->;-:migration"`
 	CourseLearningOutcomes           []*CourseLearningOutcome `gorm:"many2many:clo_assignment" json:"courseLearningOutcomes"`
+}
+
+func GenerateGroupByAssignmentId(assignmentGroups []AssignmentGroup, assignments []Assignment) map[string]*AssignmentGroup {
+	weightByAssignmentGroupId := make(map[string]*AssignmentGroup, len(assignmentGroups))
+	for _, assignmentGroup := range assignmentGroups {
+		weightByAssignmentGroupId[assignmentGroup.Id] = &assignmentGroup
+	}
+
+	weightByAssignmentId := make(map[string]*AssignmentGroup, len(assignments))
+	for _, assignment := range assignments {
+		assignmentGroup, ok := weightByAssignmentGroupId[assignment.AssignmentGroupId]
+		if !ok {
+			continue
+		}
+
+		weightByAssignmentId[assignment.Id] = assignmentGroup
+	}
+
+	return weightByAssignmentId
 }
 
 type AssignmentRepository interface {

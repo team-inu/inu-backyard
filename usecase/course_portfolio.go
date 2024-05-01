@@ -8,6 +8,7 @@ import (
 	errs "github.com/team-inu/inu-backyard/entity/error"
 )
 
+// TODO: refactor (real)
 type coursePortfolioUseCase struct {
 	CoursePortfolioRepository    entity.CoursePortfolioRepository
 	CourseUseCase                entity.CourseUseCase
@@ -142,19 +143,28 @@ func (u coursePortfolioUseCase) CalculateGradeDistribution(courseId string) (*en
 		return nil, errs.New(errs.ErrCourseNotFound, "course id %s not found while calculate grade distribution", courseId)
 	}
 
+	assignmentGroups, err := u.AssignmentUseCase.GetGroupByCourseId(courseId)
+	if err != nil {
+		return nil, errs.New(errs.SameCode, "cannot get assignment Group while calculate grade distribution", err)
+	}
+
 	assignments, err := u.AssignmentUseCase.GetByCourseId(courseId)
 	if err != nil {
 		return nil, errs.New(errs.SameCode, "cannot get assignments by course id %s while calculate grade distribution", courseId, err)
 	}
 
+	// TODO: refactor (real)
+	groupByAssignmentId := entity.GenerateGroupByAssignmentId(assignmentGroups, assignments)
+
 	cumulativeWeight := 0
 	for _, assignment := range assignments {
-		cumulativeWeight += assignment.Weight
+		cumulativeWeight += groupByAssignmentId[assignment.Id].Weight
 	}
 
 	cumulativeWeightedMaxScore := 0
 	for _, assignment := range assignments {
-		cumulativeWeightedMaxScore += assignment.MaxScore * assignment.Weight / cumulativeWeight
+		weight := groupByAssignmentId[assignment.Id].Weight
+		cumulativeWeightedMaxScore += assignment.MaxScore * weight / cumulativeWeight
 	}
 
 	studentScoresByAssignmentId := make(map[string][]studentScore, 0)
@@ -168,7 +178,7 @@ func (u coursePortfolioUseCase) CalculateGradeDistribution(courseId string) (*en
 			studentScoresByAssignmentId[assignment.Id] = append(studentScoresByAssignmentId[assignment.Id], studentScore{
 				studentId: score.StudentId,
 				score:     score.Score,
-				weight:    assignment.Weight,
+				weight:    groupByAssignmentId[assignment.Id].Weight,
 			})
 		}
 	}
