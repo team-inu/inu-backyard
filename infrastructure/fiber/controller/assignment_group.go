@@ -23,7 +23,7 @@ func (c assignmentController) CreateGroup(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	err := c.AssignmentUseCase.CreateGroup(payload.Name, payload.CourseId)
+	err := c.AssignmentUseCase.CreateGroup(payload.Name, payload.CourseId, payload.Weight)
 	if err != nil {
 		return err
 	}
@@ -39,7 +39,7 @@ func (c assignmentController) UpdateGroup(ctx *fiber.Ctx) error {
 
 	id := ctx.Params("assignmentGroupId")
 
-	err := c.AssignmentUseCase.UpdateGroup(id, payload.Name)
+	err := c.AssignmentUseCase.UpdateGroup(id, payload.Name, payload.Weight)
 	if err != nil {
 		return err
 	}

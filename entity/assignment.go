@@ -1,9 +1,11 @@
 package entity
 
 type AssignmentGroup struct {
-	Id          string       `json:"id" gorm:"primaryKey;type:char(255)"`
-	Name        string       `json:"name"`
-	CourseId    string       `json:"courseId"`
+	Id       string `json:"id" gorm:"primaryKey;type:char(255)"`
+	Name     string `json:"name"`
+	CourseId string `json:"courseId"`
+	Weight   int    `json:"weight"`
+
 	Assignments []Assignment `gorm:"foreignKey:AssignmentGroupId" json:"assignments,omitempty"`
 
 	Course *Course `json:",omitempty"`
@@ -58,7 +60,7 @@ type AssignmentUseCase interface {
 
 	GetGroupByGroupId(assignmentGroupId string) (*AssignmentGroup, error)
 	GetGroupByCourseId(courseId string) ([]AssignmentGroup, error)
-	CreateGroup(name string, courseId string) error
-	UpdateGroup(assignmentGroupId string, name string) error
+	CreateGroup(name string, courseId string, weight int) error
+	UpdateGroup(assignmentGroupId string, name string, weight int) error
 	DeleteGroup(assignmentGroupId string) error
 }
