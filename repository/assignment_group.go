@@ -50,3 +50,13 @@ func (r assignmentRepositoryGorm) UpdateGroup(assignmentGroupId string, assignme
 
 	return nil
 }
+
+func (r assignmentRepositoryGorm) DeleteGroup(assignmentGroupId string) error {
+	err := r.gorm.Delete(&entity.AssignmentGroup{Id: assignmentGroupId}).Error
+
+	if err != nil {
+		return fmt.Errorf("cannot delete assignment group: %w", err)
+	}
+
+	return nil
+}

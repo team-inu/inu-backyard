@@ -53,3 +53,19 @@ func (u assignmentUseCase) UpdateGroup(assignmentGroupId string, name string) er
 
 	return nil
 }
+
+func (u assignmentUseCase) DeleteGroup(assignmentGroupId string) error {
+	assignmentGroup, err := u.GetGroupByGroupId(assignmentGroupId)
+	if err != nil {
+		return errs.New(errs.SameCode, "cannot validate assignment group id %s to delete", assignmentGroupId, err)
+	} else if assignmentGroup == nil {
+		return errs.New(errs.ErrAssignmentNotFound, "assignment group id %s not found while deleting", assignmentGroupId)
+	}
+
+	err = u.assignmentRepo.DeleteGroup(assignmentGroupId)
+	if err != nil {
+		return errs.New(errs.ErrDeleteAssignment, "cannot delete assignment group", err)
+	}
+
+	return nil
+}

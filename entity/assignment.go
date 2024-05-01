@@ -40,6 +40,7 @@ type AssignmentRepository interface {
 	GetGroupByGroupId(assignmentGroupId string) (*AssignmentGroup, error)
 	CreateGroup(assignmentGroup *AssignmentGroup) error
 	UpdateGroup(assignmentGroupId string, assignmentGroup *AssignmentGroup) error
+	DeleteGroup(assignmentGroupId string) error
 }
 
 type AssignmentUseCase interface {
@@ -57,4 +58,5 @@ type AssignmentUseCase interface {
 	GetGroupByGroupId(assignmentGroupId string) (*AssignmentGroup, error)
 	CreateGroup(name string, courseId string) error
 	UpdateGroup(assignmentGroupId string, name string) error
+	DeleteGroup(assignmentGroupId string) error
 }

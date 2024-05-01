@@ -35,3 +35,14 @@ func (c assignmentController) UpdateGroup(ctx *fiber.Ctx) error {
 
 	return response.NewSuccessResponse(ctx, fiber.StatusOK, nil)
 }
+
+func (c assignmentController) DeleteGroup(ctx *fiber.Ctx) error {
+	id := ctx.Params("assignmentGroupId")
+
+	err := c.AssignmentUseCase.DeleteGroup(id)
+	if err != nil {
+		return err
+	}
+
+	return response.NewSuccessResponse(ctx, fiber.StatusOK, nil)
+}
