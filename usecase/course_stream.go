@@ -112,14 +112,14 @@ func (u *courseStreamUseCase) Get(id string) (*entity.CourseStream, error) {
 func (u *courseStreamUseCase) Update(id string, comment string) error {
 	courseStream, err := u.Get(id)
 	if err != nil {
-		return errs.New(errs.SameCode, "cannot validate stream course id %s to delete", id, err)
+		return errs.New(errs.SameCode, "cannot validate stream course id %s to update", id, err)
 	} else if courseStream == nil {
-		return errs.New(errs.ErrDeleteCourseStream, "stream course id %s to delete not found", id)
+		return errs.New(errs.ErrCourseStreamNotFound, "stream course id %s to update not found", id)
 	}
 
-	err = u.Delete(id)
+	err = u.courseStreamRepository.Update(id, &entity.CourseStream{Comment: comment})
 	if err != nil {
-		return errs.New(errs.ErrDeleteCourseStream, "cannot delete stream course id %s", id)
+		return errs.New(errs.ErrUpdateCourseStream, "cannot update stream course id %s", id)
 	}
 
 	return nil

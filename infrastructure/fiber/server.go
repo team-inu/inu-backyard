@@ -212,8 +212,9 @@ func (f *fiberServer) initController() error {
 	course.Get("/:courseId/clos/students", coursePortfolioController.GetCloPassingStudentsByCourseId)
 	course.Get("/:courseId/students/outcomes", coursePortfolioController.GetStudentOutcomeStatusByCourseId)
 	course.Get("/:courseId/enrollments", enrollmentController.GetByCourseId)
-	course.Get("/:courseId/assignments", assignmentController.GetByCourseId)
 	course.Get("/:courseId/portfolio", coursePortfolioController.Generate)
+	course.Get("/:courseId/assignments", assignmentController.GetByCourseId)
+	course.Get("/:courseId/assignment-groups", assignmentController.GetGroupByCourseId)
 
 	// course learning outcome route
 	clo := api.Group("/clos", authMiddleware)
@@ -301,12 +302,18 @@ func (f *fiberServer) initController() error {
 	// assignment route
 	assignment := api.Group("/assignments", authMiddleware)
 
-	assignment.Get("/", assignmentController.GetAssignments)
 	assignment.Post("/", assignmentController.Create)
 	assignment.Get("/:assignmentId", assignmentController.GetById)
 	assignment.Patch("/:assignmentId", assignmentController.Update)
 	assignment.Delete("/:assignmentId", assignmentController.Delete)
 	assignment.Get("/:assignmentId/scores", scoreController.GetByAssignmentId)
+
+	assignmentGroup := api.Group("/assignment-groups", authMiddleware)
+	assignmentGroup.Post("/", assignmentController.CreateGroup)
+	assignmentGroup.Patch("/:assignmentGroupId", assignmentController.UpdateGroup)
+	assignmentGroup.Delete("/:assignmentGroupId", assignmentController.DeleteGroup)
+
+	assignmentGroup.Get("/:assignmentGroupID/assignments", assignmentController.GetByGroupId)
 
 	// clo by assignment route
 	cloByAssignment := assignment.Group("/:assignmentId/clos/", authMiddleware)
