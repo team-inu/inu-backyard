@@ -9,7 +9,7 @@ import (
 func (c assignmentController) GetGroupByCourseId(ctx *fiber.Ctx) error {
 	courseId := ctx.Params("courseId")
 
-	assignmentGroups, err := c.AssignmentUseCase.GetGroupByCourseId(courseId)
+	assignmentGroups, err := c.AssignmentUseCase.GetGroupByCourseId(courseId, false)
 	if err != nil {
 		return err
 	}

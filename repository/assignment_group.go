@@ -7,10 +7,16 @@ import (
 	"gorm.io/gorm"
 )
 
-func (r assignmentRepositoryGorm) GetGroupByQuery(query entity.AssignmentGroup) ([]entity.AssignmentGroup, error) {
+func (r assignmentRepositoryGorm) GetGroupByQuery(query entity.AssignmentGroup, withAssignment bool) ([]entity.AssignmentGroup, error) {
 	var assignmentGroup []entity.AssignmentGroup
+	var err error
 
-	err := r.gorm.Where(query).Find(&assignmentGroup).Error
+	if withAssignment {
+		err = r.gorm.Preload("Assignments").Where(query).Find(&assignmentGroup).Error
+	} else {
+		err = r.gorm.Where(query).Find(&assignmentGroup).Error
+	}
+
 	if err == gorm.ErrRecordNotFound {
 		return nil, nil
 	} else if err != nil {

@@ -56,7 +56,7 @@ type AssignmentRepository interface {
 	CreateLinkCourseLearningOutcome(assignmentId string, courseLearningOutcomeId []string) error
 	DeleteLinkCourseLearningOutcome(assignmentId string, courseLearningOutcomeId string) error
 
-	GetGroupByQuery(query AssignmentGroup) ([]AssignmentGroup, error)
+	GetGroupByQuery(query AssignmentGroup, withAssignment bool) ([]AssignmentGroup, error)
 	GetGroupByGroupId(assignmentGroupId string) (*AssignmentGroup, error)
 	CreateGroup(assignmentGroup *AssignmentGroup) error
 	UpdateGroup(assignmentGroupId string, assignmentGroup *AssignmentGroup) error
@@ -76,7 +76,7 @@ type AssignmentUseCase interface {
 	DeleteLinkCourseLearningOutcome(assignmentId string, courseLearningOutcomeId string) error
 
 	GetGroupByGroupId(assignmentGroupId string) (*AssignmentGroup, error)
-	GetGroupByCourseId(courseId string) ([]AssignmentGroup, error)
+	GetGroupByCourseId(courseId string, withAssignment bool) ([]AssignmentGroup, error)
 	CreateGroup(name string, courseId string, weight int) error
 	UpdateGroup(assignmentGroupId string, name string, weight int) error
 	DeleteGroup(assignmentGroupId string) error
