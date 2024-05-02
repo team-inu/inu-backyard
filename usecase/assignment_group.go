@@ -62,7 +62,7 @@ func (u assignmentUseCase) UpdateGroup(assignmentGroupId string, name string, we
 		return errs.New(errs.ErrAssignmentNotFound, "assignment group id %s to update not found", assignmentGroupId)
 	}
 
-	err = u.assignmentRepo.UpdateGroup(assignmentGroupId, &entity.AssignmentGroup{Name: name})
+	err = u.assignmentRepo.UpdateGroup(assignmentGroupId, &entity.AssignmentGroup{Name: name, Weight: weight})
 	if err != nil {
 		return errs.New(errs.ErrUpdateAssignment, "cannot update assignment group id %s", assignmentGroupId)
 	}
