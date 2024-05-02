@@ -234,6 +234,7 @@ func (f *fiberServer) initController() error {
 	plo := api.Group("/plos", authMiddleware)
 
 	plo.Get("/", programLearningOutcomeController.GetAll)
+	plo.Get("/courses", coursePortfolioController.GetAllProgramLearningOutcomeCourses)
 	plo.Post("/", programLearningOutcomeController.Create)
 	plo.Get("/:ploId", programLearningOutcomeController.GetById)
 	plo.Patch("/:ploId", programLearningOutcomeController.Update)
@@ -252,6 +253,7 @@ func (f *fiberServer) initController() error {
 	pos := api.Group("/pos", authMiddleware)
 
 	pos.Get("/", programOutcomeController.GetAll)
+	pos.Get("/courses", coursePortfolioController.GetAllProgramOutcomeCourses)
 	pos.Post("/", programOutcomeController.Create)
 	pos.Get("/:poId", programOutcomeController.GetById)
 	pos.Patch("/:poId", programOutcomeController.Update)

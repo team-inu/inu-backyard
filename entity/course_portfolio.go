@@ -162,6 +162,45 @@ type StudentOutcomeStatus struct {
 	ProgramOutcomes         []PoData  `json:"programOutcomes"`
 }
 
+type CourseData struct {
+	Id                string  `json:"id"`
+	Code              string  `json:"code"`
+	Name              string  `json:"name"`
+	PassingPercentage float64 `json:"passingPercentage"`
+	Year              int     `json:"year"`
+	SemesterSequence  string  `json:"semesterSequence"`
+}
+
+type PloCourses struct {
+	ProgramLearningOutcomeId string       `json:"programLearningOutcomeId"`
+	Courses                  []CourseData `json:"courses"`
+}
+
+type PloCoursesGorm struct {
+	PassingPercentage        float64
+	ProgramLearningOutcomeId string `gorm:"column:plo_id"`
+	CourseId                 string
+	Name                     string
+	Code                     string
+	Year                     int
+	SemesterSequence         string
+}
+
+type PoCourses struct {
+	ProgramOutcomeId string       `json:"programLearningOutcomeId"`
+	Courses          []CourseData `json:"courses"`
+}
+
+type PoCoursesGorm struct {
+	PassingPercentage float64
+	ProgramOutcomeId  string `gorm:"column:p_id"`
+	CourseId          string
+	Name              string
+	Code              string
+	Year              int
+	SemesterSequence  string
+}
+
 type CoursePortfolioRepository interface {
 	EvaluatePassingAssignmentPercentage(courseId string) ([]AssignmentPercentage, error)
 	EvaluatePassingPoPercentage(courseId string) ([]PoPercentage, error)
@@ -169,6 +208,8 @@ type CoursePortfolioRepository interface {
 	EvaluatePassingCloStudents(courseId string) ([]CloPassingStudentGorm, error)
 	EvaluatePassingPloStudents(courseId string) ([]PloPassingStudentGorm, error)
 	EvaluatePassingPoStudents(courseId string) ([]PoPassingStudentGorm, error)
+	EvaluateAllPloCourses() ([]PloCoursesGorm, error)
+	EvaluateAllPoCourses() ([]PoCoursesGorm, error)
 }
 
 type CoursePortfolioUseCase interface {
@@ -177,4 +218,6 @@ type CoursePortfolioUseCase interface {
 	EvaluateTabeeOutcomes(courseId string) ([]TabeeOutcome, error)
 	GetCloPassingStudentsByCourseId(courseId string) ([]CloPassingStudent, error)
 	GetStudentOutcomesStatusByCourseId(courseId string) ([]StudentOutcomeStatus, error)
+	GetAllProgramLearningOutcomeCourses() ([]PloCourses, error)
+	GetAllProgramOutcomeCourses() ([]PoCourses, error)
 }

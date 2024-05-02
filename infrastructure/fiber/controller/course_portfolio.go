@@ -48,3 +48,19 @@ func (c coursePortfolioController) GetStudentOutcomeStatusByCourseId(ctx *fiber.
 	}
 	return response.NewSuccessResponse(ctx, fiber.StatusOK, records)
 }
+
+func (c coursePortfolioController) GetAllProgramLearningOutcomeCourses(ctx *fiber.Ctx) error {
+	records, err := c.coursePortfolioUseCase.GetAllProgramLearningOutcomeCourses()
+	if err != nil {
+		return err
+	}
+	return response.NewSuccessResponse(ctx, fiber.StatusOK, records)
+}
+
+func (c coursePortfolioController) GetAllProgramOutcomeCourses(ctx *fiber.Ctx) error {
+	records, err := c.coursePortfolioUseCase.GetAllProgramOutcomeCourses()
+	if err != nil {
+		return err
+	}
+	return response.NewSuccessResponse(ctx, fiber.StatusOK, records)
+}

@@ -440,3 +440,73 @@ func (u coursePortfolioUseCase) GetStudentOutcomesStatusByCourseId(courseId stri
 
 	return students, nil
 }
+
+func (u coursePortfolioUseCase) GetAllProgramLearningOutcomeCourses() ([]entity.PloCourses, error) {
+	records, err := u.CoursePortfolioRepository.EvaluateAllPloCourses()
+	if err != nil {
+		return nil, errs.New(errs.SameCode, "cannot evaluate plo courses %s", err)
+	}
+
+	plosMap := make(map[string][]entity.CourseData)
+
+	for _, record := range records {
+		if record.CourseId == "" {
+			plosMap[record.ProgramLearningOutcomeId] = append(plosMap[record.ProgramLearningOutcomeId], entity.CourseData{})
+		} else {
+			plosMap[record.ProgramLearningOutcomeId] = append(plosMap[record.ProgramLearningOutcomeId], entity.CourseData{
+				Id:                record.CourseId,
+				Code:              record.Code,
+				Name:              record.Name,
+				PassingPercentage: record.PassingPercentage,
+				Year:              record.Year,
+				SemesterSequence:  record.SemesterSequence,
+			})
+		}
+	}
+
+	plos := make([]entity.PloCourses, 0)
+
+	for ploId := range plosMap {
+		plos = append(plos, entity.PloCourses{
+			ProgramLearningOutcomeId: ploId,
+			Courses:                  plosMap[ploId],
+		})
+	}
+
+	return plos, nil
+}
+
+func (u coursePortfolioUseCase) GetAllProgramOutcomeCourses() ([]entity.PoCourses, error) {
+	records, err := u.CoursePortfolioRepository.EvaluateAllPoCourses()
+	if err != nil {
+		return nil, errs.New(errs.SameCode, "cannot evaluate po courses %s", err)
+	}
+
+	posMap := make(map[string][]entity.CourseData)
+
+	for _, record := range records {
+		if record.CourseId == "" {
+			posMap[record.ProgramOutcomeId] = append(posMap[record.ProgramOutcomeId], entity.CourseData{})
+		} else {
+			posMap[record.ProgramOutcomeId] = append(posMap[record.ProgramOutcomeId], entity.CourseData{
+				Id:                record.CourseId,
+				Code:              record.Code,
+				Name:              record.Name,
+				PassingPercentage: record.PassingPercentage,
+				Year:              record.Year,
+				SemesterSequence:  record.SemesterSequence,
+			})
+		}
+	}
+
+	pos := make([]entity.PoCourses, 0)
+
+	for poId := range posMap {
+		pos = append(pos, entity.PoCourses{
+			ProgramOutcomeId: poId,
+			Courses:          posMap[poId],
+		})
+	}
+
+	return pos, nil
+}
