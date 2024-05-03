@@ -34,22 +34,22 @@ func (r assignmentRepositoryGorm) GetById(id string) (*entity.Assignment, error)
 	return assignment, nil
 }
 
-func (r assignmentRepositoryGorm) GetByParams(params *entity.Assignment, limit int, offset int) ([]entity.Assignment, error) {
-	var assignments []entity.Assignment
-
-	err := r.gorm.Raw("SELECT a.*, clo.course_id FROM clo_assignment AS clo_a INNER JOIN course_learning_outcome AS clo ON clo_a.course_learning_outcome_id = clo.id INNER JOIN assignment AS a ON a.id = clo_a.assignment_id").Scan(&assignments).Error
-	if err == gorm.ErrRecordNotFound {
-		return nil, nil
-	} else if err != nil {
-		return nil, fmt.Errorf("cannot query to get assignment by params: %w", err)
-	}
-
-	return assignments, nil
-}
-
 func (r assignmentRepositoryGorm) GetByCourseId(courseId string) ([]entity.Assignment, error) {
 	var clos []entity.Assignment
 	err := r.gorm.Raw("SELECT DISTINCT a.*, clo.course_id FROM clo_assignment AS clo_a INNER JOIN course_learning_outcome AS clo ON clo_a.course_learning_outcome_id = clo.id INNER JOIN assignment AS a ON a.id = clo_a.assignment_id WHERE clo.course_id = ?", courseId).Scan(&clos).Error
+
+	if err == gorm.ErrRecordNotFound {
+		return nil, nil
+	} else if err != nil {
+		return nil, fmt.Errorf("cannot query to get assignment by course id: %w", err)
+	}
+
+	return clos, nil
+}
+
+func (r assignmentRepositoryGorm) GetByGroupId(groupId string) ([]entity.Assignment, error) {
+	var clos []entity.Assignment
+	err := r.gorm.Raw("SELECT * FROM assignment WHERE assignment_group_id = ?", groupId).Scan(&clos).Error
 
 	if err == gorm.ErrRecordNotFound {
 		return nil, nil

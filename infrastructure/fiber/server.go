@@ -209,9 +209,12 @@ func (f *fiberServer) initController() error {
 	course.Delete("/:courseId", courseController.Delete)
 
 	course.Get("/:courseId/clos", courseLearningOutcomeController.GetByCourseId)
+	course.Get("/:courseId/clos/students", coursePortfolioController.GetCloPassingStudentsByCourseId)
+	course.Get("/:courseId/students/outcomes", coursePortfolioController.GetStudentOutcomeStatusByCourseId)
 	course.Get("/:courseId/enrollments", enrollmentController.GetByCourseId)
-	course.Get("/:courseId/assignments", assignmentController.GetByCourseId)
 	course.Get("/:courseId/portfolio", coursePortfolioController.Generate)
+	course.Get("/:courseId/assignments", assignmentController.GetByCourseId)
+	course.Get("/:courseId/assignment-groups", assignmentController.GetGroupByCourseId)
 
 	// course learning outcome route
 	clo := api.Group("/clos", authMiddleware)
@@ -232,6 +235,7 @@ func (f *fiberServer) initController() error {
 	plo := api.Group("/plos", authMiddleware)
 
 	plo.Get("/", programLearningOutcomeController.GetAll)
+	plo.Get("/courses", coursePortfolioController.GetAllProgramLearningOutcomeCourses)
 	plo.Post("/", programLearningOutcomeController.Create)
 	plo.Get("/:ploId", programLearningOutcomeController.GetById)
 	plo.Patch("/:ploId", programLearningOutcomeController.Update)
@@ -250,6 +254,7 @@ func (f *fiberServer) initController() error {
 	pos := api.Group("/pos", authMiddleware)
 
 	pos.Get("/", programOutcomeController.GetAll)
+	pos.Get("/courses", coursePortfolioController.GetAllProgramOutcomeCourses)
 	pos.Post("/", programOutcomeController.Create)
 	pos.Get("/:poId", programOutcomeController.GetById)
 	pos.Patch("/:poId", programOutcomeController.Update)
@@ -292,15 +297,23 @@ func (f *fiberServer) initController() error {
 	user.Delete("/:userId", userController.Delete)
 	user.Post("/bulk", userController.CreateMany)
 
+	user.Get("/:userId/course", courseController.GetByUserId)
+
 	// assignment route
 	assignment := api.Group("/assignments", authMiddleware)
 
-	assignment.Get("/", assignmentController.GetAssignments)
 	assignment.Post("/", assignmentController.Create)
 	assignment.Get("/:assignmentId", assignmentController.GetById)
 	assignment.Patch("/:assignmentId", assignmentController.Update)
 	assignment.Delete("/:assignmentId", assignmentController.Delete)
 	assignment.Get("/:assignmentId/scores", scoreController.GetByAssignmentId)
+
+	assignmentGroup := api.Group("/assignment-groups", authMiddleware)
+	assignmentGroup.Post("/", assignmentController.CreateGroup)
+	assignmentGroup.Patch("/:assignmentGroupId", assignmentController.UpdateGroup)
+	assignmentGroup.Delete("/:assignmentGroupId", assignmentController.DeleteGroup)
+
+	assignmentGroup.Get("/:assignmentGroupID/assignments", assignmentController.GetByGroupId)
 
 	// clo by assignment route
 	cloByAssignment := assignment.Group("/:assignmentId/clos/", authMiddleware)

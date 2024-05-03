@@ -4,11 +4,11 @@ type CreateAssignmentPayload struct {
 	Name                             string   `json:"name" validate:"required"`
 	Description                      string   `json:"description"`
 	MaxScore                         *int     `json:"maxScore" validate:"required"`
-	Weight                           *int     `json:"weight" validate:"required"`
 	ExpectedScorePercentage          *float64 `json:"expectedScorePercentage" validate:"required"`
 	ExpectedPassingStudentPercentage *float64 `json:"expectedPassingStudentPercentage" validate:"required"`
 	CourseLearningOutcomeIds         []string `json:"courseLearningOutcomeIds" validate:"required"`
 	IsIncludedInClo                  *bool    `json:"isIncludedInClo" validate:"required"`
+	AssignmentGroupId                string   `json:"assignmentGroupId" validate:"required"`
 }
 
 type GetAssignmentsByParamsPayload struct {
@@ -26,7 +26,6 @@ type CreateBulkAssignmentsPayload struct {
 type UpdateAssignmentRequestPayload struct {
 	Name                             string   `json:"name"`
 	Description                      string   `json:"description"`
-	Weight                           *int     `json:"weight"`
 	MaxScore                         *int     `json:"maxScore"`
 	ExpectedPassingStudentPercentage *float64 `json:"expectedPassingStudentPercentage"`
 	ExpectedScorePercentage          *float64 `json:"expectedScorePercentage"`

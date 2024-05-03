@@ -124,8 +124,9 @@ const (
 	ErrUpdatePrediction   = 21702
 	ErrQueryPrediction    = 21703
 
-	ErrCreateCourseStream = 21800
-	ErrDeleteCourseStream = 21801
-	ErrQueryCourseStream  = 21802
-	ErrUpdateCourseStream = 21803
+	ErrCreateCourseStream   = 21800
+	ErrDeleteCourseStream   = 21801
+	ErrQueryCourseStream    = 21802
+	ErrUpdateCourseStream   = 21803
+	ErrCourseStreamNotFound = 21804
 )

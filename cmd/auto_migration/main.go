@@ -21,8 +21,10 @@ func main() {
 	}
 
 	err = gormDB.AutoMigrate(
+		&entity.AssignmentGroup{},
 		&entity.Assignment{},
 		&entity.CourseLearningOutcome{},
+		&entity.CourseStream{},
 		&entity.Course{},
 		&entity.Department{},
 		&entity.Enrollment{},
@@ -30,6 +32,7 @@ func main() {
 		&entity.Grade{},
 		&entity.GraduatedStudent{},
 		&entity.User{},
+		&entity.Prediction{},
 		&entity.ProgramLearningOutcome{},
 		&entity.ProgramOutcome{},
 		&entity.Programme{},

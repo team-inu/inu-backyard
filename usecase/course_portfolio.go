@@ -8,6 +8,7 @@ import (
 	errs "github.com/team-inu/inu-backyard/entity/error"
 )
 
+// TODO: refactor (real)
 type coursePortfolioUseCase struct {
 	CoursePortfolioRepository    entity.CoursePortfolioRepository
 	CourseUseCase                entity.CourseUseCase
@@ -129,12 +130,6 @@ func (u coursePortfolioUseCase) Generate(courseId string) (*entity.CoursePortfol
 }
 
 func (u coursePortfolioUseCase) CalculateGradeDistribution(courseId string) (*entity.GradeDistribution, error) {
-	type studentScore struct {
-		studentId string
-		score     float64
-		weight    int
-	}
-
 	course, err := u.CourseUseCase.GetById(courseId)
 	if err != nil {
 		return nil, errs.New(errs.SameCode, "cannot get course by id %s while calculate grade distribution", courseId, err)
@@ -142,54 +137,48 @@ func (u coursePortfolioUseCase) CalculateGradeDistribution(courseId string) (*en
 		return nil, errs.New(errs.ErrCourseNotFound, "course id %s not found while calculate grade distribution", courseId)
 	}
 
-	assignments, err := u.AssignmentUseCase.GetByCourseId(courseId)
+	assignmentGroups, err := u.AssignmentUseCase.GetGroupByCourseId(courseId, true)
 	if err != nil {
-		return nil, errs.New(errs.SameCode, "cannot get assignments by course id %s while calculate grade distribution", courseId, err)
+		return nil, errs.New(errs.SameCode, "cannot get assignment group while calculate grade distribution")
 	}
 
-	cumulativeWeight := 0
-	for _, assignment := range assignments {
-		cumulativeWeight += assignment.Weight
-	}
+	// calculate student score
+	weightByGroupId := make(map[string]int, 0)
+	sumGroupScoreByGroupId := make(map[string]int, 0)
+	sumStudentScoreByStudentIdByGroupId := make(map[string]map[string]float64, 0)
 
-	cumulativeWeightedMaxScore := 0
-	for _, assignment := range assignments {
-		cumulativeWeightedMaxScore += assignment.MaxScore * assignment.Weight / cumulativeWeight
-	}
+	for _, assignmentGroup := range assignmentGroups {
+		weightByGroupId[assignmentGroup.Id] = assignmentGroup.Weight
 
-	studentScoresByAssignmentId := make(map[string][]studentScore, 0)
-	for _, assignment := range assignments {
-		scores, err := u.ScoreUseCase.GetByAssignmentId(assignment.Id)
-		if err != nil {
-			return nil, errs.New(errs.SameCode, "cannot get scores by assignment id %s while calculate grade distribution", assignment.Id, err)
-		}
+		for _, assignment := range assignmentGroup.Assignments {
+			sumGroupScoreByGroupId[assignmentGroup.Id] += assignment.MaxScore
 
-		for _, score := range scores.Scores {
-			studentScoresByAssignmentId[assignment.Id] = append(studentScoresByAssignmentId[assignment.Id], studentScore{
-				studentId: score.StudentId,
-				score:     score.Score,
-				weight:    assignment.Weight,
-			})
-		}
-	}
+			assignmentScore, _ := u.ScoreUseCase.GetByAssignmentId(assignment.Id)
 
-	studentScoreByStudentId := make(map[string]float64)
+			for _, score := range assignmentScore.Scores {
+				_, ok := sumStudentScoreByStudentIdByGroupId[assignmentGroup.Id]
+				if !ok {
+					sumStudentScoreByStudentIdByGroupId[assignmentGroup.Id] = make(map[string]float64)
+				}
 
-	//calculate student scores
-	for _, assignmentScores := range studentScoresByAssignmentId {
-		for _, score := range assignmentScores {
-			studentScoreByStudentId[score.studentId] += (score.score * float64(score.weight) / float64(cumulativeWeight))
+				sumStudentScoreByStudentIdByGroupId[assignmentGroup.Id][score.StudentId] += score.Score
+			}
+
 		}
 	}
 
-	for studentId, studentScore := range studentScoreByStudentId {
-		studentScoreByStudentId[studentId] = studentScore * 100 / float64(cumulativeWeightedMaxScore)
+	sumScoreByStudentId := make(map[string]float64, 0)
+	for groupId, sumStudentScore := range sumStudentScoreByStudentIdByGroupId {
+		for studentId, score := range sumStudentScore {
+			studentScore := score / float64(sumGroupScoreByGroupId[groupId]) * float64(weightByGroupId[groupId])
+			sumScoreByStudentId[studentId] += studentScore
+		}
 	}
 
-	frequencyByScore := make(map[int]int)
-	for _, score := range studentScoreByStudentId {
-		roundedScore := int(math.Round(score))
-		frequencyByScore[roundedScore]++
+	// score frequency
+	frequencyByScore := make(map[int]int, 0)
+	for _, score := range sumScoreByStudentId {
+		frequencyByScore[int(math.Round(score))] += 1
 	}
 
 	scoreFrequencies := make([]entity.ScoreFrequency, 0, len(frequencyByScore))
@@ -200,24 +189,23 @@ func (u coursePortfolioUseCase) CalculateGradeDistribution(courseId string) (*en
 		})
 	}
 
-	weightedCriteriaGrade := course.CriteriaGrade.CalculateCriteriaWeight(float64(cumulativeWeightedMaxScore))
-
+	// grade frequency
 	frequenciesByGrade := make(map[string]int)
-	for _, studentScore := range studentScoreByStudentId {
+	for _, studentScore := range sumScoreByStudentId {
 		switch {
-		case studentScore >= weightedCriteriaGrade.A:
+		case studentScore >= course.A:
 			frequenciesByGrade["A"] += 1
-		case studentScore >= weightedCriteriaGrade.BP:
+		case studentScore >= course.BP:
 			frequenciesByGrade["BP"] += 1
-		case studentScore >= weightedCriteriaGrade.B:
+		case studentScore >= course.B:
 			frequenciesByGrade["B"] += 1
-		case studentScore >= weightedCriteriaGrade.CP:
+		case studentScore >= course.CP:
 			frequenciesByGrade["CP"] += 1
-		case studentScore >= weightedCriteriaGrade.C:
+		case studentScore >= course.C:
 			frequenciesByGrade["C"] += 1
-		case studentScore >= weightedCriteriaGrade.DP:
+		case studentScore >= course.DP:
 			frequenciesByGrade["DP"] += 1
-		case studentScore >= weightedCriteriaGrade.D:
+		case studentScore >= course.D:
 			frequenciesByGrade["D"] += 1
 		default:
 			frequenciesByGrade["F"] += 1
@@ -227,47 +215,48 @@ func (u coursePortfolioUseCase) CalculateGradeDistribution(courseId string) (*en
 	gradeFrequencies := []entity.GradeFrequency{
 		{
 			Name:       "A",
-			GradeScore: weightedCriteriaGrade.A,
+			GradeScore: course.A,
 			Frequency:  frequenciesByGrade["A"],
 		},
 		{
 			Name:       "BP",
-			GradeScore: weightedCriteriaGrade.BP,
+			GradeScore: course.BP,
 			Frequency:  frequenciesByGrade["BP"],
 		},
 		{
 			Name:       "B",
-			GradeScore: weightedCriteriaGrade.B,
+			GradeScore: course.B,
 			Frequency:  frequenciesByGrade["B"],
 		},
 		{
 			Name:       "CP",
-			GradeScore: weightedCriteriaGrade.CP,
+			GradeScore: course.CP,
 			Frequency:  frequenciesByGrade["CP"],
 		},
 		{
 			Name:       "C",
-			GradeScore: weightedCriteriaGrade.C,
+			GradeScore: course.C,
 			Frequency:  frequenciesByGrade["C"],
 		},
 		{
 			Name:       "DP",
-			GradeScore: weightedCriteriaGrade.DP,
+			GradeScore: course.DP,
 			Frequency:  frequenciesByGrade["DP"],
 		},
 		{
 			Name:       "D",
-			GradeScore: weightedCriteriaGrade.D,
+			GradeScore: course.D,
 			Frequency:  frequenciesByGrade["D"],
 		},
 		{
 			Name:       "F",
-			GradeScore: weightedCriteriaGrade.F,
+			GradeScore: course.F,
 			Frequency:  frequenciesByGrade["F"],
 		},
 	}
 
-	studentAmount := len(studentScoreByStudentId)
+	// gpa
+	studentAmount := len(sumScoreByStudentId)
 
 	totalStudentGPA := 0.0
 	for grade, frequency := range frequenciesByGrade {
@@ -279,12 +268,14 @@ func (u coursePortfolioUseCase) CalculateGradeDistribution(courseId string) (*en
 		gpa = totalStudentGPA / float64(studentAmount)
 	}
 
-	return &entity.GradeDistribution{
-		GradeFrequencies: gradeFrequencies,
+	x := &entity.GradeDistribution{
 		StudentAmount:    studentAmount,
-		GPA:              gpa,
 		ScoreFrequencies: scoreFrequencies,
-	}, nil
+		GradeFrequencies: gradeFrequencies,
+		GPA:              gpa,
+	}
+
+	return x, nil
 }
 
 func (u coursePortfolioUseCase) EvaluateTabeeOutcomes(courseId string) ([]entity.TabeeOutcome, error) {
@@ -343,4 +334,170 @@ func (u coursePortfolioUseCase) EvaluateTabeeOutcomes(courseId string) ([]entity
 	}
 
 	return tabeeOutcomes, nil
+}
+
+func (u coursePortfolioUseCase) GetCloPassingStudentsByCourseId(courseId string) ([]entity.CloPassingStudent, error) {
+	course, err := u.CourseUseCase.GetById(courseId)
+	if err != nil {
+		return nil, errs.New(errs.SameCode, "cannot get course id %s while getting clo passing students", course, err)
+	} else if course == nil {
+		return nil, errs.New(errs.ErrCourseNotFound, "course id %s not found while getting clo passing students", courseId, err)
+	}
+
+	records, err := u.CoursePortfolioRepository.EvaluatePassingCloStudents(courseId)
+	if err != nil {
+		return nil, errs.New(errs.SameCode, "cannot evaluate passing clo student by course id %s", courseId, err)
+	}
+
+	closMap := make(map[string][]entity.StudentData)
+
+	for _, record := range records {
+		closMap[record.CourseLearningOutcomeId] = append(closMap[record.CourseLearningOutcomeId], entity.StudentData{
+			FirstName: record.FirstName,
+			LastName:  record.LastName,
+			StudentId: record.StudentId,
+			Pass:      record.Pass,
+		})
+	}
+
+	clos := make([]entity.CloPassingStudent, 0)
+
+	for cloId := range closMap {
+		clos = append(clos, entity.CloPassingStudent{
+			CourseLearningOutcomeId: cloId,
+			Students:                closMap[cloId],
+		})
+	}
+
+	return clos, nil
+}
+
+func (u coursePortfolioUseCase) GetStudentOutcomesStatusByCourseId(courseId string) ([]entity.StudentOutcomeStatus, error) {
+	course, err := u.CourseUseCase.GetById(courseId)
+	if err != nil {
+		return nil, errs.New(errs.SameCode, "cannot get course id %s while getting clo passing students", course, err)
+	} else if course == nil {
+		return nil, errs.New(errs.ErrCourseNotFound, "course id %s not found while getting clo passing students", courseId, err)
+	}
+
+	ploRecords, err := u.CoursePortfolioRepository.EvaluatePassingPloStudents(courseId)
+	if err != nil {
+		return nil, errs.New(errs.SameCode, "cannot evaluate passing plo student by course id %s", courseId, err)
+	}
+
+	poRecords, err := u.CoursePortfolioRepository.EvaluatePassingPoStudents(courseId)
+	if err != nil {
+		return nil, errs.New(errs.SameCode, "cannot evaluate passing po student by course id %s", courseId, err)
+	}
+
+	studentPloMap := make(map[string][]entity.PloData)
+	studentPoMap := make(map[string][]entity.PoData)
+
+	for _, record := range ploRecords {
+		studentPloMap[record.StudentId] = append(studentPloMap[record.StudentId], entity.PloData{
+			Id:              record.ProgramLearningOutcomeId,
+			Code:            record.Code,
+			DescriptionThai: record.DescriptionThai,
+			ProgramYear:     record.ProgramYear,
+			Pass:            record.Pass,
+		})
+	}
+
+	for _, record := range poRecords {
+		studentPoMap[record.StudentId] = append(studentPoMap[record.StudentId], entity.PoData{
+			Id:   record.ProgramOutcomeId,
+			Code: record.Code,
+			Name: record.Name,
+			Pass: record.Pass,
+		})
+	}
+
+	if len(studentPloMap) != len(studentPoMap) {
+		return nil, errs.New(errs.SameCode, "number of students with plo is different from po by course id %s", courseId, err)
+	}
+
+	students := make([]entity.StudentOutcomeStatus, 0)
+
+	for studentId := range studentPloMap {
+		students = append(students, entity.StudentOutcomeStatus{
+			StudentId:               studentId,
+			ProgramLearningOutcomes: studentPloMap[studentId],
+		})
+	}
+
+	for i := range students {
+		students[i].ProgramOutcomes = studentPoMap[students[i].StudentId]
+	}
+
+	return students, nil
+}
+
+func (u coursePortfolioUseCase) GetAllProgramLearningOutcomeCourses() ([]entity.PloCourses, error) {
+	records, err := u.CoursePortfolioRepository.EvaluateAllPloCourses()
+	if err != nil {
+		return nil, errs.New(errs.SameCode, "cannot evaluate plo courses %s", err)
+	}
+
+	plosMap := make(map[string][]entity.CourseData)
+
+	for _, record := range records {
+		if record.CourseId == "" {
+			plosMap[record.ProgramLearningOutcomeId] = append(plosMap[record.ProgramLearningOutcomeId], entity.CourseData{})
+		} else {
+			plosMap[record.ProgramLearningOutcomeId] = append(plosMap[record.ProgramLearningOutcomeId], entity.CourseData{
+				Id:                record.CourseId,
+				Code:              record.Code,
+				Name:              record.Name,
+				PassingPercentage: record.PassingPercentage,
+				Year:              record.Year,
+				SemesterSequence:  record.SemesterSequence,
+			})
+		}
+	}
+
+	plos := make([]entity.PloCourses, 0)
+
+	for ploId := range plosMap {
+		plos = append(plos, entity.PloCourses{
+			ProgramLearningOutcomeId: ploId,
+			Courses:                  plosMap[ploId],
+		})
+	}
+
+	return plos, nil
+}
+
+func (u coursePortfolioUseCase) GetAllProgramOutcomeCourses() ([]entity.PoCourses, error) {
+	records, err := u.CoursePortfolioRepository.EvaluateAllPoCourses()
+	if err != nil {
+		return nil, errs.New(errs.SameCode, "cannot evaluate po courses %s", err)
+	}
+
+	posMap := make(map[string][]entity.CourseData)
+
+	for _, record := range records {
+		if record.CourseId == "" {
+			posMap[record.ProgramOutcomeId] = append(posMap[record.ProgramOutcomeId], entity.CourseData{})
+		} else {
+			posMap[record.ProgramOutcomeId] = append(posMap[record.ProgramOutcomeId], entity.CourseData{
+				Id:                record.CourseId,
+				Code:              record.Code,
+				Name:              record.Name,
+				PassingPercentage: record.PassingPercentage,
+				Year:              record.Year,
+				SemesterSequence:  record.SemesterSequence,
+			})
+		}
+	}
+
+	pos := make([]entity.PoCourses, 0)
+
+	for poId := range posMap {
+		pos = append(pos, entity.PoCourses{
+			ProgramOutcomeId: poId,
+			Courses:          posMap[poId],
+		})
+	}
+
+	return pos, nil
 }

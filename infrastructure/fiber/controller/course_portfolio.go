@@ -28,3 +28,39 @@ func (c coursePortfolioController) Generate(ctx *fiber.Ctx) error {
 	}
 	return response.NewSuccessResponse(ctx, fiber.StatusOK, coursePortfolio)
 }
+
+func (c coursePortfolioController) GetCloPassingStudentsByCourseId(ctx *fiber.Ctx) error {
+	courseId := ctx.Params("courseId")
+
+	records, err := c.coursePortfolioUseCase.GetCloPassingStudentsByCourseId(courseId)
+	if err != nil {
+		return err
+	}
+	return response.NewSuccessResponse(ctx, fiber.StatusOK, records)
+}
+
+func (c coursePortfolioController) GetStudentOutcomeStatusByCourseId(ctx *fiber.Ctx) error {
+	courseId := ctx.Params("courseId")
+
+	records, err := c.coursePortfolioUseCase.GetStudentOutcomesStatusByCourseId(courseId)
+	if err != nil {
+		return err
+	}
+	return response.NewSuccessResponse(ctx, fiber.StatusOK, records)
+}
+
+func (c coursePortfolioController) GetAllProgramLearningOutcomeCourses(ctx *fiber.Ctx) error {
+	records, err := c.coursePortfolioUseCase.GetAllProgramLearningOutcomeCourses()
+	if err != nil {
+		return err
+	}
+	return response.NewSuccessResponse(ctx, fiber.StatusOK, records)
+}
+
+func (c coursePortfolioController) GetAllProgramOutcomeCourses(ctx *fiber.Ctx) error {
+	records, err := c.coursePortfolioUseCase.GetAllProgramOutcomeCourses()
+	if err != nil {
+		return err
+	}
+	return response.NewSuccessResponse(ctx, fiber.StatusOK, records)
+}

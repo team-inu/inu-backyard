@@ -34,16 +34,6 @@ func (u assignmentUseCase) GetById(id string) (*entity.Assignment, error) {
 	return assignment, nil
 }
 
-func (u assignmentUseCase) GetByParams(params *entity.Assignment, limit int, offset int) ([]entity.Assignment, error) {
-	assignments, err := u.assignmentRepo.GetByParams(params, limit, offset)
-
-	if err != nil {
-		return nil, errs.New(errs.ErrQueryAssignment, "cannot get assignment by params", err)
-	}
-
-	return assignments, nil
-}
-
 func (u assignmentUseCase) GetByCourseId(courseId string) ([]entity.Assignment, error) {
 	course, err := u.courseUseCase.GetById(courseId)
 	if err != nil {
@@ -60,6 +50,22 @@ func (u assignmentUseCase) GetByCourseId(courseId string) ([]entity.Assignment, 
 	return assignment, nil
 }
 
+func (u assignmentUseCase) GetByGroupId(assignmentGroupId string) ([]entity.Assignment, error) {
+	assignmentGroup, err := u.GetGroupByGroupId(assignmentGroupId)
+	if err != nil {
+		return nil, errs.New(errs.SameCode, "cannot validate assignment group id %s while get assignments by group", assignmentGroupId, err)
+	} else if assignmentGroup == nil {
+		return nil, errs.New(errs.ErrAssignmentNotFound, "assignment group id %s not found while get assignments by group", assignmentGroupId)
+	}
+
+	assignments, err := u.assignmentRepo.GetByGroupId(assignmentGroupId)
+	if err != nil {
+		return nil, errs.New(errs.SameCode, "cannot get assignment by group id", nil)
+	}
+
+	return assignments, nil
+}
+
 func (u assignmentUseCase) GetPassingStudentPercentage(assignmentId string) (float64, error) {
 	passingStudentPercentage, err := u.assignmentRepo.GetPassingStudentPercentage(assignmentId)
 	if err != nil {
@@ -69,7 +75,14 @@ func (u assignmentUseCase) GetPassingStudentPercentage(assignmentId string) (flo
 	return passingStudentPercentage, nil
 }
 
-func (u assignmentUseCase) Create(name string, description string, maxScore int, weight int, expectedScorePercentage float64, expectedPassingStudentPercentage float64, courseLearningOutcomeIds []string, isIncludedInClo bool) error {
+func (u assignmentUseCase) Create(assignmentGroupId string, name string, description string, maxScore int, expectedScorePercentage float64, expectedPassingStudentPercentage float64, courseLearningOutcomeIds []string, isIncludedInClo bool) error {
+	assignmentGroup, err := u.GetGroupByGroupId(assignmentGroupId)
+	if err != nil {
+		return errs.New(errs.SameCode, "cannot validate group id %s while creating assignment", assignmentGroupId, err)
+	} else if assignmentGroup == nil {
+		return errs.New(errs.ErrAssignmentNotFound, "assignment group id %s not found while creating assignment", assignmentGroupId)
+	}
+
 	if len(courseLearningOutcomeIds) == 0 {
 		return errs.New(errs.ErrCreateAssignment, "assignment must have at least one clo")
 	}
@@ -98,11 +111,11 @@ func (u assignmentUseCase) Create(name string, description string, maxScore int,
 		Name:                             name,
 		Description:                      description,
 		MaxScore:                         maxScore,
-		Weight:                           weight,
 		ExpectedScorePercentage:          expectedScorePercentage,
 		ExpectedPassingStudentPercentage: expectedPassingStudentPercentage,
 		CourseLearningOutcomes:           courseLeaningOutcomes,
 		IsIncludedInClo:                  &isIncludedInClo,
+		AssignmentGroupId:                assignmentGroupId,
 	}
 
 	err = u.assignmentRepo.Create(&assignment)
@@ -113,7 +126,7 @@ func (u assignmentUseCase) Create(name string, description string, maxScore int,
 	return nil
 }
 
-func (u assignmentUseCase) Update(id string, name string, description string, maxScore int, weight int, expectedScorePercentage float64, expectedPassingStudentPercentage float64, isIncludedInClo bool) error {
+func (u assignmentUseCase) Update(id string, name string, description string, maxScore int, expectedScorePercentage float64, expectedPassingStudentPercentage float64, isIncludedInClo bool) error {
 	existAssignment, err := u.GetById(id)
 	if err != nil {
 		return errs.New(errs.SameCode, "cannot get assignment id %s to update", id, err)
@@ -125,7 +138,6 @@ func (u assignmentUseCase) Update(id string, name string, description string, ma
 		Name:                             name,
 		Description:                      description,
 		MaxScore:                         maxScore,
-		Weight:                           weight,
 		ExpectedScorePercentage:          expectedScorePercentage,
 		ExpectedPassingStudentPercentage: expectedPassingStudentPercentage,
 		IsIncludedInClo:                  &isIncludedInClo,
@@ -183,7 +195,6 @@ func (u assignmentUseCase) CreateLinkCourseLearningOutcome(assignmentId string, 
 	if err != nil {
 		return errs.New(errs.ErrCreateAssignment, "cannot create link CLO and assignment", err)
 	}
-
 	return nil
 }
 
