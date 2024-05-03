@@ -1,5 +1,7 @@
 package entity
 
+import "gorm.io/datatypes"
+
 type CriteriaGrade struct {
 	A  float64 `json:"criteriaGradeA" gorm:"column:criteria_grade_a" validate:"required"`
 	BP float64 `json:"criteriaGradeBP" gorm:"column:criteria_grade_bp" validate:"required"`
@@ -70,6 +72,7 @@ type Course struct {
 	Description                  string  `json:"description"`
 	ExpectedPassingCloPercentage float64 `json:"expectedPassingCloPercentage"`
 	IsPortfolioCompleted         *bool   `json:"isPortfolioCompleted" gorm:"default:false"`
+	PortfolioData                datatypes.JSON
 
 	SemesterId string `json:"semesterId"`
 	UserId     string `json:"userId"`

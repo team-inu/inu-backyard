@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/team-inu/inu-backyard/entity"
+	"gorm.io/datatypes"
 	"gorm.io/gorm"
 )
 
@@ -713,6 +714,18 @@ func (r coursePortfolioRepositoryGorm) evaluateOutcomesAllCourses(selector Tabee
 	err := r.gorm.Raw(query).Scan(x).Error
 	if err != nil {
 		return fmt.Errorf("cannot query to evaluate outcomes: %w", err)
+	}
+
+	return nil
+}
+
+func (r coursePortfolioRepositoryGorm) UpdateCoursePortfolio(courseId string, data datatypes.JSON) error {
+
+	err := r.gorm.Model(&entity.Course{}).Where("id = ?", courseId).Updates(&entity.Course{
+		PortfolioData: data,
+	}).Error
+	if err != nil {
+		return fmt.Errorf("cannot update course: %w", err)
 	}
 
 	return nil

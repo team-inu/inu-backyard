@@ -1,6 +1,7 @@
 package usecase
 
 import (
+	"encoding/json"
 	"fmt"
 	"math"
 
@@ -104,19 +105,29 @@ func (u coursePortfolioUseCase) Generate(courseId string) (*entity.CoursePortfol
 		}
 	}
 
+	portfolioData := entity.PortfolioData{}
+
+	err = json.Unmarshal(course.PortfolioData, &portfolioData)
+	if err != nil {
+		return nil, errs.New(0, "cannot unmarshal data from db")
+	}
+
 	courseDevelopment := entity.CourseDevelopment{
-		Plans:       make([]string, 0),
-		DoAndChecks: make([]string, 0),
-		Acts:        make([]string, 0),
+		Plans:       portfolioData.Development.Plans,
+		DoAndChecks: portfolioData.Development.DoAndChecks,
+		Acts:        portfolioData.Development.Acts,
 		SubjectComments: entity.SubjectComments{
 			UpstreamSubjects:   upstreamSubject,
 			DownstreamSubjects: downStreamSubject,
+			Other:              portfolioData.Development.SubjectComments.Other,
 		},
+		OtherComment: portfolioData.Development.OtherComment,
 	}
 
 	courseSummary := entity.CourseSummary{
-		TeachingMethods: make([]string, 0),
-		Objectives:      make([]string, 0),
+		TeachingMethods: portfolioData.Summary.TeachingMethods,
+		Objectives:      portfolioData.Summary.Objectives,
+		OnlineTools:     portfolioData.Summary.OnlineTools,
 	}
 
 	coursePortfolio := &entity.CoursePortfolio{
@@ -124,6 +135,7 @@ func (u coursePortfolioUseCase) Generate(courseId string) (*entity.CoursePortfol
 		CourseResult:      courseResult,
 		CourseSummary:     courseSummary,
 		CourseDevelopment: courseDevelopment,
+		Raw:               course.PortfolioData,
 	}
 
 	return coursePortfolio, nil
@@ -321,6 +333,34 @@ func (u coursePortfolioUseCase) EvaluateTabeeOutcomes(courseId string) ([]entity
 
 	tabeeOutcomesByPoId := make(map[string][]entity.TabeeOutcome, 0)
 	for _, clo := range clos {
+		checkIsSameOutcomeName := func(foundOutcome []entity.TabeeOutcome, clo entity.CourseLearningOutcomeWithPO) bool {
+			isNameSame := false
+
+			for _, tabeeOutcome := range foundOutcome {
+				if tabeeOutcome.Name == clo.ProgramOutcomeName {
+					isNameSame = true
+					break
+				}
+			}
+
+			return isNameSame
+		}
+
+		foundOutcome, found := tabeeOutcomesByPoId[clo.ProgramOutcomeId]
+		if !found {
+			tabeeOutcomesByPoId[clo.ProgramOutcomeId] = append(tabeeOutcomesByPoId[clo.ProgramOutcomeId], entity.TabeeOutcome{
+				Name:              clo.ProgramOutcomeName,
+				CourseOutcomes:    courseOutcomeByPoId[clo.ProgramOutcomeId],
+				MinimumPercentage: passingPoPercentageByPoId[clo.ProgramOutcomeId],
+			})
+			continue
+		}
+
+		isNameSame := checkIsSameOutcomeName(foundOutcome, clo)
+		if isNameSame {
+			continue
+		}
+
 		tabeeOutcomesByPoId[clo.ProgramOutcomeId] = append(tabeeOutcomesByPoId[clo.ProgramOutcomeId], entity.TabeeOutcome{
 			Name:              clo.ProgramOutcomeName,
 			CourseOutcomes:    courseOutcomeByPoId[clo.ProgramOutcomeId],
@@ -500,4 +540,23 @@ func (u coursePortfolioUseCase) GetAllProgramOutcomeCourses() ([]entity.PoCourse
 	}
 
 	return pos, nil
+}
+
+func (u coursePortfolioUseCase) UpdateCoursePortfolio(courseId string, summary entity.CourseSummary, development entity.CourseDevelopment) error {
+	portfolioData := &entity.PortfolioData{
+		Summary:     summary,
+		Development: development,
+	}
+
+	JsonByte, err := json.Marshal(*portfolioData)
+	if err != nil {
+		return errs.New(errs.SameCode, "cannot marshal course summary %s", err)
+	}
+
+	err = u.CoursePortfolioRepository.UpdateCoursePortfolio(courseId, JsonByte)
+	if err != nil {
+		return errs.New(errs.SameCode, "cannot update course portfolio %s", err)
+	}
+
+	return nil
 }
