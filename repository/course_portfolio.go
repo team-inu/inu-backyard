@@ -720,9 +720,11 @@ func (r coursePortfolioRepositoryGorm) evaluateOutcomesAllCourses(selector Tabee
 }
 
 func (r coursePortfolioRepositoryGorm) UpdateCoursePortfolio(courseId string, data datatypes.JSON) error {
+	completed := true
 
 	err := r.gorm.Model(&entity.Course{}).Where("id = ?", courseId).Updates(&entity.Course{
-		PortfolioData: data,
+		PortfolioData:        data,
+		IsPortfolioCompleted: &completed,
 	}).Error
 	if err != nil {
 		return fmt.Errorf("cannot update course: %w", err)
