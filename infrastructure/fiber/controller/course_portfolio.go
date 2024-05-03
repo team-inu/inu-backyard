@@ -84,3 +84,13 @@ func (c coursePortfolioController) Update(ctx *fiber.Ctx) error {
 
 	return nil
 }
+
+func (c coursePortfolioController) GetOutcomesByStudentId(ctx *fiber.Ctx) error {
+	studentId := ctx.Params("studentId")
+
+	records, err := c.coursePortfolioUseCase.GetOutcomesByStudentId(studentId)
+	if err != nil {
+		return err
+	}
+	return response.NewSuccessResponse(ctx, fiber.StatusOK, records)
+}
