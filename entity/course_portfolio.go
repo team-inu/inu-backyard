@@ -190,7 +190,7 @@ type PloCoursesGorm struct {
 }
 
 type PoCourses struct {
-	ProgramOutcomeId string       `json:"programLearningOutcomeId"`
+	ProgramOutcomeId string       `json:"programOutcomeId"`
 	Courses          []CourseData `json:"courses"`
 }
 
