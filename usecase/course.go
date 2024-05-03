@@ -1,6 +1,8 @@
 package usecase
 
 import (
+	"encoding/json"
+
 	"github.com/oklog/ulid/v2"
 	"github.com/team-inu/inu-backyard/entity"
 	errs "github.com/team-inu/inu-backyard/entity/error"
@@ -73,6 +75,7 @@ func (u courseUseCase) Create(user entity.User, semesterId string, userId string
 		return errs.New(errs.ErrCreateCourse, "invalid criteria grade")
 	}
 
+	emptyJson, _ := json.Marshal(map[string]string{})
 	course := entity.Course{
 		Id:                           ulid.Make().String(),
 		SemesterId:                   semesterId,
@@ -83,6 +86,7 @@ func (u courseUseCase) Create(user entity.User, semesterId string, userId string
 		Description:                  description,
 		ExpectedPassingCloPercentage: expectedPassingCloPercentage,
 		CriteriaGrade:                criteriaGrade,
+		PortfolioData:                emptyJson,
 	}
 
 	err = u.courseRepo.Create(&course)
