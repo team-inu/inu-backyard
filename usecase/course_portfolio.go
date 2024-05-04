@@ -1,6 +1,7 @@
 package usecase
 
 import (
+	"encoding/json"
 	"fmt"
 	"math"
 
@@ -16,6 +17,7 @@ type coursePortfolioUseCase struct {
 	EnrollmentUseCase            entity.EnrollmentUseCase
 	AssignmentUseCase            entity.AssignmentUseCase
 	ScoreUseCase                 entity.ScoreUseCase
+	StudentUseCase               entity.StudentUseCase
 	CourseLearningOutcomeUseCase entity.CourseLearningOutcomeUseCase
 	CourseStreamUseCase          entity.CourseStreamsUseCase
 }
@@ -27,6 +29,7 @@ func NewCoursePortfolioUseCase(
 	enrollmentUseCase entity.EnrollmentUseCase,
 	assignmentUseCase entity.AssignmentUseCase,
 	scoreUseCase entity.ScoreUseCase,
+	studentUscase entity.StudentUseCase,
 	courseLearningOutcomeUseCase entity.CourseLearningOutcomeUseCase,
 	courseStreamUseCase entity.CourseStreamsUseCase,
 ) entity.CoursePortfolioUseCase {
@@ -37,6 +40,7 @@ func NewCoursePortfolioUseCase(
 		EnrollmentUseCase:            enrollmentUseCase,
 		AssignmentUseCase:            assignmentUseCase,
 		ScoreUseCase:                 scoreUseCase,
+		StudentUseCase:               studentUscase,
 		CourseLearningOutcomeUseCase: courseLearningOutcomeUseCase,
 		CourseStreamUseCase:          courseStreamUseCase,
 	}
@@ -104,19 +108,29 @@ func (u coursePortfolioUseCase) Generate(courseId string) (*entity.CoursePortfol
 		}
 	}
 
+	portfolioData := entity.PortfolioData{}
+
+	err = json.Unmarshal(course.PortfolioData, &portfolioData)
+	if err != nil {
+		return nil, errs.New(0, "cannot unmarshal data from db")
+	}
+
 	courseDevelopment := entity.CourseDevelopment{
-		Plans:       make([]string, 0),
-		DoAndChecks: make([]string, 0),
-		Acts:        make([]string, 0),
+		Plans:       portfolioData.Development.Plans,
+		DoAndChecks: portfolioData.Development.DoAndChecks,
+		Acts:        portfolioData.Development.Acts,
 		SubjectComments: entity.SubjectComments{
 			UpstreamSubjects:   upstreamSubject,
 			DownstreamSubjects: downStreamSubject,
+			Other:              portfolioData.Development.SubjectComments.Other,
 		},
+		OtherComment: portfolioData.Development.OtherComment,
 	}
 
 	courseSummary := entity.CourseSummary{
-		TeachingMethods: make([]string, 0),
-		Objectives:      make([]string, 0),
+		TeachingMethods: portfolioData.Summary.TeachingMethods,
+		Objectives:      portfolioData.Summary.Objectives,
+		OnlineTools:     portfolioData.Summary.OnlineTools,
 	}
 
 	coursePortfolio := &entity.CoursePortfolio{
@@ -124,6 +138,7 @@ func (u coursePortfolioUseCase) Generate(courseId string) (*entity.CoursePortfol
 		CourseResult:      courseResult,
 		CourseSummary:     courseSummary,
 		CourseDevelopment: courseDevelopment,
+		Raw:               course.PortfolioData,
 	}
 
 	return coursePortfolio, nil
@@ -321,6 +336,34 @@ func (u coursePortfolioUseCase) EvaluateTabeeOutcomes(courseId string) ([]entity
 
 	tabeeOutcomesByPoId := make(map[string][]entity.TabeeOutcome, 0)
 	for _, clo := range clos {
+		checkIsSameOutcomeName := func(foundOutcome []entity.TabeeOutcome, clo entity.CourseLearningOutcomeWithPO) bool {
+			isNameSame := false
+
+			for _, tabeeOutcome := range foundOutcome {
+				if tabeeOutcome.Name == clo.ProgramOutcomeName {
+					isNameSame = true
+					break
+				}
+			}
+
+			return isNameSame
+		}
+
+		foundOutcome, found := tabeeOutcomesByPoId[clo.ProgramOutcomeId]
+		if !found {
+			tabeeOutcomesByPoId[clo.ProgramOutcomeId] = append(tabeeOutcomesByPoId[clo.ProgramOutcomeId], entity.TabeeOutcome{
+				Name:              clo.ProgramOutcomeName,
+				CourseOutcomes:    courseOutcomeByPoId[clo.ProgramOutcomeId],
+				MinimumPercentage: passingPoPercentageByPoId[clo.ProgramOutcomeId],
+			})
+			continue
+		}
+
+		isNameSame := checkIsSameOutcomeName(foundOutcome, clo)
+		if isNameSame {
+			continue
+		}
+
 		tabeeOutcomesByPoId[clo.ProgramOutcomeId] = append(tabeeOutcomesByPoId[clo.ProgramOutcomeId], entity.TabeeOutcome{
 			Name:              clo.ProgramOutcomeName,
 			CourseOutcomes:    courseOutcomeByPoId[clo.ProgramOutcomeId],
@@ -500,4 +543,184 @@ func (u coursePortfolioUseCase) GetAllProgramOutcomeCourses() ([]entity.PoCourse
 	}
 
 	return pos, nil
+}
+
+func (u coursePortfolioUseCase) UpdateCoursePortfolio(courseId string, summary entity.CourseSummary, development entity.CourseDevelopment) error {
+	portfolioData := &entity.PortfolioData{
+		Summary:     summary,
+		Development: development,
+	}
+
+	JsonByte, err := json.Marshal(*portfolioData)
+	if err != nil {
+		return errs.New(errs.SameCode, "cannot marshal course summary %s", err)
+	}
+
+	err = u.CoursePortfolioRepository.UpdateCoursePortfolio(courseId, JsonByte)
+	if err != nil {
+		return errs.New(errs.SameCode, "cannot update course portfolio %s", err)
+	}
+
+	return nil
+}
+
+func (u coursePortfolioUseCase) GetOutcomesByStudentId(studentId string) ([]entity.StudentOutcomes, error) {
+	student, err := u.StudentUseCase.GetById(studentId)
+	if err != nil {
+		return nil, errs.New(errs.SameCode, "cannot get student id %s while getting student outcomes", student, err)
+	} else if student == nil {
+		return nil, errs.New(errs.ErrStudentNotFound, "student id %s not found while getting student outcomes", studentId, err)
+	}
+
+	ploRecords, err := u.CoursePortfolioRepository.EvaluateProgramLearningOutcomesByStudentId(studentId)
+	if err != nil {
+		return nil, errs.New(errs.SameCode, "cannot evaluate student plos by student id %s", studentId, err)
+	}
+
+	poRecords, err := u.CoursePortfolioRepository.EvaluateProgramOutcomesByStudentId(studentId)
+	if err != nil {
+		return nil, errs.New(errs.SameCode, "cannot evaluate student pos by student id %s", studentId, err)
+	}
+
+	studentPloMap := make(map[string][]entity.StudentPloData)
+	studentPoMap := make(map[string][]entity.StudentPoData)
+
+	PloCourseMap := make(map[string][]entity.StudentCourseData)
+	PoCourseMap := make(map[string][]entity.StudentCourseData)
+
+	for _, record := range ploRecords {
+		studentPloData, ok := studentPloMap[record.StudentId]
+		if !ok {
+
+			studentPloMap[record.StudentId] = append(studentPloMap[record.StudentId], entity.StudentPloData{
+				ProgramLearningOutcomeId: record.ProgramLearningOutcomeId,
+				Code:                     record.ProgramLearningOutcomeCode,
+				DescriptionThai:          record.DescriptionThai,
+			})
+		} else {
+			isExist := false
+			for i := range studentPloData {
+				if studentPloData[i].ProgramLearningOutcomeId == record.ProgramLearningOutcomeId {
+					isExist = true
+					break
+				}
+			}
+			if !isExist {
+				studentPloMap[record.StudentId] = append(studentPloMap[record.StudentId], entity.StudentPloData{
+					ProgramLearningOutcomeId: record.ProgramLearningOutcomeId,
+					Code:                     record.ProgramLearningOutcomeCode,
+					DescriptionThai:          record.DescriptionThai,
+				})
+			}
+		}
+
+		ploData, ok := PloCourseMap[record.ProgramLearningOutcomeId]
+
+		if !ok {
+
+			PloCourseMap[record.ProgramLearningOutcomeId] = append(PloCourseMap[record.ProgramLearningOutcomeId], entity.StudentCourseData{
+				Id:               record.CourseId,
+				Code:             record.CourseCode,
+				Name:             record.CourseName,
+				Pass:             record.Pass,
+				Year:             record.Year,
+				SemesterSequence: record.SemesterSequence,
+			})
+		} else {
+			isExist := false
+			for i := range ploData {
+				if ploData[i].Id == record.CourseId {
+					isExist = true
+					break
+				}
+			}
+			if !isExist {
+				PloCourseMap[record.ProgramLearningOutcomeId] = append(PloCourseMap[record.ProgramLearningOutcomeId], entity.StudentCourseData{
+					Id:               record.CourseId,
+					Code:             record.CourseCode,
+					Name:             record.CourseName,
+					Pass:             record.Pass,
+					Year:             record.Year,
+					SemesterSequence: record.SemesterSequence,
+				})
+			}
+		}
+	}
+
+	for _, record := range poRecords {
+		studentData, found := studentPoMap[record.StudentId]
+		if !found {
+			studentPoMap[record.StudentId] = append(studentPoMap[record.StudentId], entity.StudentPoData{
+				ProgramOutcomeId: record.ProgramOutcomeId,
+				Code:             record.ProgramOutcomeCode,
+				Name:             record.ProgramOutcomeName,
+			})
+
+		} else {
+			isExist := false
+			for i := range studentData {
+				if studentData[i].ProgramOutcomeId == record.ProgramOutcomeId {
+					isExist = true
+					break
+				}
+			}
+			if !isExist {
+				studentPoMap[record.StudentId] = append(studentPoMap[record.StudentId], entity.StudentPoData{
+					ProgramOutcomeId: record.ProgramOutcomeId,
+					Code:             record.ProgramOutcomeCode,
+					Name:             record.ProgramOutcomeName,
+				})
+			}
+		}
+
+		poData, found := PoCourseMap[record.ProgramOutcomeId]
+
+		if !found {
+			PoCourseMap[record.ProgramOutcomeId] = append(PoCourseMap[record.ProgramOutcomeId], entity.StudentCourseData{
+				Id:               record.CourseId,
+				Code:             record.CourseCode,
+				Name:             record.CourseName,
+				Pass:             record.Pass,
+				Year:             record.Year,
+				SemesterSequence: record.SemesterSequence,
+			})
+		} else {
+			isExist := false
+			for i := range poData {
+				if poData[i].Id == record.CourseId {
+					isExist = true
+					break
+				}
+			}
+			if !isExist {
+				PoCourseMap[record.ProgramOutcomeId] = append(PoCourseMap[record.ProgramOutcomeId], entity.StudentCourseData{
+					Id:               record.CourseId,
+					Code:             record.CourseCode,
+					Name:             record.CourseName,
+					Pass:             record.Pass,
+					Year:             record.Year,
+					SemesterSequence: record.SemesterSequence,
+				})
+			}
+		}
+	}
+
+	students := make([]entity.StudentOutcomes, 0)
+
+	for studentId := range studentPloMap {
+		for ploIndex := range studentPloMap[studentId] {
+			studentPloMap[studentId][ploIndex].Courses = PloCourseMap[studentPloMap[studentId][ploIndex].ProgramLearningOutcomeId]
+		}
+		for poIndex := range studentPoMap[studentId] {
+			studentPoMap[studentId][poIndex].Courses = PoCourseMap[studentPoMap[studentId][poIndex].ProgramOutcomeId]
+		}
+
+		students = append(students, entity.StudentOutcomes{
+			StudentId:               studentId,
+			ProgramLearningOutcomes: studentPloMap[studentId],
+			ProgramOutcomes:         studentPoMap[studentId],
+		})
+	}
+
+	return students, nil
 }

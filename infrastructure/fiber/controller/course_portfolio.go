@@ -1,8 +1,11 @@
 package controller
 
 import (
+	"fmt"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/team-inu/inu-backyard/entity"
+	"github.com/team-inu/inu-backyard/infrastructure/fiber/request"
 	"github.com/team-inu/inu-backyard/infrastructure/fiber/response"
 	"github.com/team-inu/inu-backyard/internal/validator"
 )
@@ -59,6 +62,33 @@ func (c coursePortfolioController) GetAllProgramLearningOutcomeCourses(ctx *fibe
 
 func (c coursePortfolioController) GetAllProgramOutcomeCourses(ctx *fiber.Ctx) error {
 	records, err := c.coursePortfolioUseCase.GetAllProgramOutcomeCourses()
+	if err != nil {
+		return err
+	}
+	return response.NewSuccessResponse(ctx, fiber.StatusOK, records)
+}
+
+func (c coursePortfolioController) Update(ctx *fiber.Ctx) error {
+	var payload request.SaveCoursePortfolioPayload
+	if ok, err := c.Validator.Validate(&payload, ctx); !ok {
+		return err
+	}
+
+	courseId := ctx.Params("courseId")
+
+	fmt.Println(payload)
+	err := c.coursePortfolioUseCase.UpdateCoursePortfolio(courseId, payload.CourseSummary, payload.CourseDevelopment)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (c coursePortfolioController) GetOutcomesByStudentId(ctx *fiber.Ctx) error {
+	studentId := ctx.Params("studentId")
+
+	records, err := c.coursePortfolioUseCase.GetOutcomesByStudentId(studentId)
 	if err != nil {
 		return err
 	}

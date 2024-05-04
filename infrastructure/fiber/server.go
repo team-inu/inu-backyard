@@ -127,7 +127,7 @@ func (f *fiberServer) initUseCase() {
 	assignmentUseCase := usecase.NewAssignmentUseCase(f.assignmentRepository, courseLearningOutcomeUseCase, courseUseCase)
 	scoreUseCase := usecase.NewScoreUseCase(f.scoreRepository, enrollmentUseCase, assignmentUseCase, courseUseCase, userUseCase, studentUseCase)
 	courseStreamUseCase := usecase.NewCourseStreamUseCase(f.courseStreamRepository, courseUseCase)
-	coursePortfolioUseCase := usecase.NewCoursePortfolioUseCase(f.coursePortfolioRepository, courseUseCase, userUseCase, enrollmentUseCase, assignmentUseCase, scoreUseCase, courseLearningOutcomeUseCase, courseStreamUseCase)
+	coursePortfolioUseCase := usecase.NewCoursePortfolioUseCase(f.coursePortfolioRepository, courseUseCase, userUseCase, enrollmentUseCase, assignmentUseCase, scoreUseCase, studentUseCase, courseLearningOutcomeUseCase, courseStreamUseCase)
 	predictionUseCase := usecase.NewPredictionUseCase(f.predictionRepository, f.config)
 
 	f.assignmentUseCase = assignmentUseCase
@@ -196,6 +196,7 @@ func (f *fiberServer) initController() error {
 	student.Post("/", studentController.Create)
 	student.Post("/bulk", studentController.CreateMany)
 	student.Get("/:studentId", studentController.GetById)
+	student.Get("/:studentId/outcomes", coursePortfolioController.GetOutcomesByStudentId)
 	student.Patch("/:studentId", studentController.Update)
 	student.Delete("/:studentId", studentController.Delete)
 
@@ -213,6 +214,7 @@ func (f *fiberServer) initController() error {
 	course.Get("/:courseId/students/outcomes", coursePortfolioController.GetStudentOutcomeStatusByCourseId)
 	course.Get("/:courseId/enrollments", enrollmentController.GetByCourseId)
 	course.Get("/:courseId/portfolio", coursePortfolioController.Generate)
+	course.Patch("/:courseId/portfolio", coursePortfolioController.Update)
 	course.Get("/:courseId/assignments", assignmentController.GetByCourseId)
 	course.Get("/:courseId/assignment-groups", assignmentController.GetGroupByCourseId)
 
