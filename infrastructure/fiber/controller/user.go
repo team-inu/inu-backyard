@@ -3,6 +3,7 @@ package controller
 import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/team-inu/inu-backyard/entity"
+	"github.com/team-inu/inu-backyard/infrastructure/fiber/middleware"
 	"github.com/team-inu/inu-backyard/infrastructure/fiber/request"
 	"github.com/team-inu/inu-backyard/infrastructure/fiber/response"
 	"github.com/team-inu/inu-backyard/internal/validator"
@@ -47,13 +48,16 @@ func (c userController) GetById(ctx *fiber.Ctx) error {
 
 func (c userController) Create(ctx *fiber.Ctx) error {
 	var payload request.CreateUserPayload
-
 	if ok, err := c.Validator.Validate(&payload, ctx); !ok {
 		return err
 	}
 
-	err := c.userUseCase.Create(payload.FirstName, payload.LastName, payload.Email, payload.Password)
+	user := middleware.GetUserFromCtx(ctx)
+	if !user.IsRoles([]entity.UserRole{entity.UserRoleHeadOfCurriculum}) {
+		return response.NewErrorResponse(ctx, fiber.StatusUnauthorized, nil)
+	}
 
+	err := c.userUseCase.Create(payload.FirstName, payload.LastName, payload.Email, payload.Password, payload.Role)
 	if err != nil {
 		return err
 	}

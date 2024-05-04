@@ -65,7 +65,7 @@ func (u userUseCase) GetByParams(params *entity.User, limit int, offset int) ([]
 	return users, nil
 }
 
-func (u userUseCase) Create(firstName string, lastName string, email string, password string) error {
+func (u userUseCase) Create(firstName string, lastName string, email string, password string, role entity.UserRole) error {
 	bcryptPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
 		return errs.New(errs.ErrCreateUser, "cannot create user", err)
@@ -79,6 +79,7 @@ func (u userUseCase) Create(firstName string, lastName string, email string, pas
 		LastName:  lastName,
 		Email:     email,
 		Password:  hasPassword,
+		Role:      role,
 	}
 
 	err = u.userRepo.Create(user)

@@ -45,7 +45,7 @@ type UserUseCase interface {
 	GetById(id string) (*User, error)
 	GetByParams(params *User, limit int, offset int) ([]User, error)
 	GetByEmail(email string) (*User, error)
-	Create(name string, firstName string, lastName string, password string) error
+	Create(name string, firstName string, lastName string, password string, role UserRole) error
 	CreateMany(users []User) error
 	Update(id string, user *User) error
 	Delete(id string) error
