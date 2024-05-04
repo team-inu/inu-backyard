@@ -217,6 +217,7 @@ type StudentPloData struct {
 	ProgramLearningOutcomeId string              `json:"programLearningOutcomeId"`
 	Code                     string              `json:"code"`
 	DescriptionThai          string              `json:"descriptionThai"`
+	ProgramYear              int                 `json:"programYear"`
 	Courses                  []StudentCourseData `json:"courses"`
 }
 
@@ -238,6 +239,7 @@ type StudentPlosGorm struct {
 	ProgramLearningOutcomeId   string `gorm:"column:plo_id"`
 	ProgramLearningOutcomeCode string `gorm:"column:plo_code"`
 	DescriptionThai            string
+	ProgramYear                int
 	CourseId                   string
 	CourseCode                 string
 	CourseName                 string

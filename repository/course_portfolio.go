@@ -105,6 +105,7 @@ func (r coursePortfolioRepositoryGorm) evaluateTabeeOutcomes(courseId string, se
 			),
 			clos AS (
 				SELECT
+					target_course.id AS course_id,
 					course_learning_outcome.id,
 					expected_passing_assignment_percentage,
 					program_outcome_id
@@ -119,16 +120,19 @@ func (r coursePortfolioRepositoryGorm) evaluateTabeeOutcomes(courseId string, se
 					assignment.expected_score_percentage,
 					clos.expected_passing_assignment_percentage,
 					clos.id AS c_id,
-					assignment.id AS a_id
+					assignment.id AS a_id,
+					course_id
 				FROM clos
 				JOIN clo_assignment AS ca ON ca.course_learning_outcome_id = clos.id
 				JOIN assignment ON ca.assignment_id = assignment.id
 				WHERE assignment.is_included_in_clo IS True
 			),
 			scores AS (
-				SELECT *
+				SELECT assignments.*, score.*
 				FROM assignments
 				JOIN score ON score.assignment_id = a_id
+                JOIN enrollment ON enrollment.course_id = assignments.course_id AND enrollment.student_id = score.student_id
+        		WHERE status != 'WITHDRAW'
 			),
 			student_passing_assignment AS (
 				SELECT
@@ -433,9 +437,11 @@ func (r coursePortfolioRepositoryGorm) evaluateOutcomesAllCourses(selector Tabee
 				WHERE assignment.is_included_in_clo IS True
 			),
 			scores AS (
-				SELECT *
+				SELECT assignments.*, score.*
 				FROM assignments
 				JOIN score ON score.assignment_id = a_id
+                JOIN enrollment ON enrollment.course_id = assignments.course_id AND enrollment.student_id = score.student_id
+        		WHERE status != 'WITHDRAW'
 			),
 			student_passing_assignment AS (
 				SELECT
@@ -787,10 +793,11 @@ func (r coursePortfolioRepositoryGorm) evaluateOutcomesByStudentId(studentId str
 				WHERE assignment.is_included_in_clo IS True
 			),
 			scores AS (
-				SELECT *
+				SELECT assignments.*, score.*
 				FROM assignments
 				JOIN score ON score.assignment_id = a_id
-				WHERE student_id = ?
+                JOIN enrollment ON enrollment.course_id = assignments.course_id AND enrollment.student_id = score.student_id
+        		WHERE status != 'WITHDRAW' AND score.student_id = ?
 			),
 			student_passing_assignment AS (
 				SELECT
