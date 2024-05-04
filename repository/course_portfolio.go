@@ -797,7 +797,7 @@ func (r coursePortfolioRepositoryGorm) evaluateOutcomesByStudentId(studentId str
 				FROM assignments
 				JOIN score ON score.assignment_id = a_id
                 JOIN enrollment ON enrollment.course_id = assignments.course_id AND enrollment.student_id = score.student_id
-        		WHERE status != 'WITHDRAW'
+        		WHERE status != 'WITHDRAW' AND score.student_id = ?
 			),
 			student_passing_assignment AS (
 				SELECT
