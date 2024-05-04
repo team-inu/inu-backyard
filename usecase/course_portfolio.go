@@ -596,6 +596,7 @@ func (u coursePortfolioUseCase) GetOutcomesByStudentId(studentId string) ([]enti
 				ProgramLearningOutcomeId: record.ProgramLearningOutcomeId,
 				Code:                     record.ProgramLearningOutcomeCode,
 				DescriptionThai:          record.DescriptionThai,
+				ProgramYear:              record.ProgramYear,
 			})
 		} else {
 			isExist := false
@@ -610,6 +611,7 @@ func (u coursePortfolioUseCase) GetOutcomesByStudentId(studentId string) ([]enti
 					ProgramLearningOutcomeId: record.ProgramLearningOutcomeId,
 					Code:                     record.ProgramLearningOutcomeCode,
 					DescriptionThai:          record.DescriptionThai,
+					ProgramYear:              record.ProgramYear,
 				})
 			}
 		}
