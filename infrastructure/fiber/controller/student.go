@@ -179,3 +179,24 @@ func (c studentController) Delete(ctx *fiber.Ctx) error {
 
 	return response.NewSuccessResponse(ctx, fiber.StatusOK, nil)
 }
+
+func (c studentController) GetAllSchools(ctx *fiber.Ctx) error {
+	schools, err := c.studentUseCase.GetAllSchools()
+	if err != nil {
+		return err
+	}
+
+	return response.NewSuccessResponse(ctx, fiber.StatusOK, map[string]interface{}{
+		"schools": schools,
+	})
+}
+func (c studentController) GetAllAdmissions(ctx *fiber.Ctx) error {
+	admissions, err := c.studentUseCase.GetAllAdmissions()
+	if err != nil {
+		return err
+	}
+
+	return response.NewSuccessResponse(ctx, fiber.StatusOK, map[string]interface{}{
+		"admissions": admissions,
+	})
+}

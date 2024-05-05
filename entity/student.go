@@ -30,6 +30,9 @@ type StudentRepository interface {
 	Update(id string, student *Student) error
 	Delete(id string) error
 	FilterExisted(studentIds []string) ([]string, error)
+
+	GetAllSchools() ([]string, error)
+	GetAllAdmissions() ([]string, error)
 }
 
 type StudentUseCase interface {
@@ -41,4 +44,7 @@ type StudentUseCase interface {
 	Delete(id string) error
 	FilterExisted(studentIds []string) ([]string, error)
 	FilterNonExisted(studentIds []string) ([]string, error)
+
+	GetAllSchools() ([]string, error)
+	GetAllAdmissions() ([]string, error)
 }

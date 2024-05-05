@@ -1,6 +1,7 @@
 package usecase
 
 import (
+	"fmt"
 	"os/exec"
 	"strconv"
 	"strings"
@@ -37,6 +38,7 @@ func (u predictionUseCase) CreatePrediction(requirement entity.PredictionRequire
 		requirement.School,
 		requirement.Admission,
 	)
+	fmt.Println(cmd.String())
 	output, err := cmd.CombinedOutput()
 	if err != nil {
 		return nil, errs.New(errs.ErrUpdatePrediction, "found unexpected error when running python script", err)

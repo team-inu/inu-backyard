@@ -187,6 +187,9 @@ func (f *fiberServer) initController() error {
 
 	api := app.Group("/")
 
+	api.Get("/schools", studentController.GetAllSchools)
+	api.Get("/admissions", studentController.GetAllAdmissions)
+
 	// student route
 	student := api.Group("/students", authMiddleware)
 
