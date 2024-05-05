@@ -6,10 +6,10 @@ type Prediction struct {
 
 type PredictionRequirements struct {
 	ProgrammeName string
-	OldGPAX       float64
-	MathGPA       float64
-	EngGPA        float64
-	SciGPA        float64
+	OldGPAX       *float64
+	MathGPA       *float64
+	EngGPA        *float64
+	SciGPA        *float64
 	School        string
 	Admission     string
 }
