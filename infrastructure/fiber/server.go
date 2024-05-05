@@ -36,7 +36,6 @@ type fiberServer struct {
 	gradeRepository                  entity.GradeRepository
 	sessionRepository                entity.SessionRepository
 	coursePortfolioRepository        entity.CoursePortfolioRepository
-	predictionRepository             entity.PredictionRepository
 	courseStreamRepository           entity.CourseStreamRepository
 
 	studentUseCase                entity.StudentUseCase
@@ -103,7 +102,6 @@ func (f *fiberServer) initRepository() (err error) {
 	f.gradeRepository = repository.NewGradeRepositoryGorm(f.gorm)
 	f.sessionRepository = repository.NewSessionRepository(f.gorm)
 	f.coursePortfolioRepository = repository.NewCoursePortfolioRepositoryGorm(f.gorm)
-	f.predictionRepository = repository.NewPredictionRepositoryGorm(f.gorm)
 	f.courseStreamRepository = repository.NewCourseStreamRepository(f.gorm)
 
 	return nil
@@ -128,7 +126,7 @@ func (f *fiberServer) initUseCase() {
 	scoreUseCase := usecase.NewScoreUseCase(f.scoreRepository, enrollmentUseCase, assignmentUseCase, courseUseCase, userUseCase, studentUseCase)
 	courseStreamUseCase := usecase.NewCourseStreamUseCase(f.courseStreamRepository, courseUseCase)
 	coursePortfolioUseCase := usecase.NewCoursePortfolioUseCase(f.coursePortfolioRepository, courseUseCase, userUseCase, enrollmentUseCase, assignmentUseCase, scoreUseCase, studentUseCase, courseLearningOutcomeUseCase, courseStreamUseCase)
-	predictionUseCase := usecase.NewPredictionUseCase(f.predictionRepository, f.config)
+	predictionUseCase := usecase.NewPredictionUseCase(f.config)
 
 	f.assignmentUseCase = assignmentUseCase
 	f.authUseCase = authUseCase

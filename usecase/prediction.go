@@ -3,6 +3,7 @@ package usecase
 import (
 	"os/exec"
 	"strconv"
+	"strings"
 
 	"github.com/team-inu/inu-backyard/entity"
 	errs "github.com/team-inu/inu-backyard/entity/error"
@@ -41,8 +42,7 @@ func (u predictionUseCase) CreatePrediction(requirement entity.PredictionRequire
 		return nil, errs.New(errs.ErrUpdatePrediction, "found unexpected error when running python script", err)
 	}
 
-	outputValue, err := strconv.ParseFloat(string(output[:]), 64)
-
+	outputValue, err := strconv.ParseFloat(strings.TrimSpace(string(output[:])), 64)
 	if err != nil {
 		return nil, errs.New(errs.ErrUpdatePrediction, "Output from python is in unexpected type", err)
 	}

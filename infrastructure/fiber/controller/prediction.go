@@ -28,7 +28,7 @@ func (c predictionController) Predict(ctx *fiber.Ctx) error {
 
 	prediction, err := c.predictionUseCase.CreatePrediction(entity.PredictionRequirements{
 		ProgrammeName: payload.ProgrammeName,
-		OldGPAX:       payload.OldGPAX,
+		OldGPAX:       payload.GPAX,
 		MathGPA:       payload.MathGPA,
 		EngGPA:        payload.EngGPA,
 		SciGPA:        payload.SciGPA,
