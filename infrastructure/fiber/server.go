@@ -367,7 +367,7 @@ func (f *fiberServer) initController() error {
 	// prediction
 	prediction := api.Group("/prediction")
 
-	prediction.Get("/Train", predictionController.Train)
+	prediction.Post("/predict", predictionController.Predict)
 
 	// authentication route
 	auth := app.Group("/auth")
