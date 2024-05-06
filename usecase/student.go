@@ -150,3 +150,20 @@ func (u studentUseCase) FilterNonExisted(studentIds []string) ([]string, error) 
 
 	return nonExistedIds, nil
 }
+
+func (u studentUseCase) GetAllSchools() ([]string, error) {
+	schools, err := u.studentRepo.GetAllSchools()
+	if err != nil {
+		return nil, errs.New(errs.ErrQueryStudent, "cannot query schools student", err)
+	}
+
+	return schools, nil
+}
+func (u studentUseCase) GetAllAdmissions() ([]string, error) {
+	admissions, err := u.studentRepo.GetAllAdmissions()
+	if err != nil {
+		return nil, errs.New(errs.ErrQueryStudent, "cannot query admissions student", err)
+	}
+
+	return admissions, nil
+}

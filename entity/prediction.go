@@ -1,31 +1,19 @@
 package entity
 
-type PredictionStatus string
-
-const (
-	PredictionStatusPending PredictionStatus = "PENDING"
-	PredictionStatusFailed  PredictionStatus = "FAILED"
-	PredictionStatusDone    PredictionStatus = "DONE"
-)
-
 type Prediction struct {
-	Id     string           `json:"id" gorm:"primaryKey;type:char(255)"`
-	Status PredictionStatus `json:"status"`
-	Result string           `json:"result"`
+	PredictedGPAX float64 `json:"predictedGPAX"`
 }
 
-type PredictionRepository interface {
-	GetById(id string) (*Prediction, error)
-	GetAll() ([]Prediction, error)
-	GetLatest() (*Prediction, error)
-	CreatePrediction(prediction *Prediction) error
-	Update(id string, prediction *Prediction) error
+type PredictionRequirements struct {
+	ProgrammeName string
+	OldGPAX       *float64
+	MathGPA       *float64
+	EngGPA        *float64
+	SciGPA        *float64
+	School        string
+	Admission     string
 }
 
 type PredictionUseCase interface {
-	GetById(id string) (*Prediction, error)
-	GetAll() ([]Prediction, error)
-	GetLatest() (*Prediction, error)
-	CreatePrediction() (*string, error)
-	Update(id string, status PredictionStatus, result string) error
+	CreatePrediction(requirements PredictionRequirements) (*Prediction, error)
 }

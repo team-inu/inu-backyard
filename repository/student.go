@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"database/sql"
 	"fmt"
 
 	"github.com/team-inu/inu-backyard/entity"
@@ -117,4 +118,39 @@ func (r studentRepositoryGorm) FilterExisted(studentIds []string) ([]string, err
 	}
 
 	return existedIds, nil
+}
+
+func (r studentRepositoryGorm) GetAllSchools() ([]string, error) {
+	var schools []sql.NullString
+
+	err := r.gorm.Raw("SELECT DISTINCT school FROM student").Scan(&schools).Error
+	if err != nil {
+		return nil, fmt.Errorf("cannot query student: %w", err)
+	}
+
+	nonNullSchool := make([]string, 0)
+	for _, school := range schools {
+		if school.Valid {
+			nonNullSchool = append(nonNullSchool, school.String)
+		}
+	}
+
+	return nonNullSchool, nil
+}
+func (r studentRepositoryGorm) GetAllAdmissions() ([]string, error) {
+	var admissions []sql.NullString
+
+	err := r.gorm.Raw("SELECT DISTINCT admission FROM student").Scan(&admissions).Error
+	if err != nil {
+		return nil, fmt.Errorf("cannot query student: %w", err)
+	}
+
+	nonNullAdmission := make([]string, 0)
+	for _, admission := range admissions {
+		if admission.Valid {
+			nonNullAdmission = append(nonNullAdmission, admission.String)
+		}
+	}
+
+	return nonNullAdmission, nil
 }

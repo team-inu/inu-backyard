@@ -6,22 +6,13 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from sklearn.preprocessing import OneHotEncoder
 from sklearn.model_selection import train_test_split
-from sklearn.neighbors import KNeighborsRegressor
-from sklearn.neighbors import KNeighborsClassifier
-from sklearn.multioutput import MultiOutputRegressor
 from sklearn.compose import ColumnTransformer
 from sklearn.preprocessing import StandardScaler
-from sklearn.impute import SimpleImputer
 from sklearn.metrics import r2_score
-from sklearn.neural_network import MLPRegressor
 from sklearn.linear_model import LinearRegression
-from sklearn.svm import SVR
-from sklearn.linear_model import Ridge
-from sklearn.ensemble import RandomForestRegressor
 from sklearn.decomposition import PCA
-from sklearn.feature_selection import r_regression
-# python3 predict.py <user> <password> <host> <port> <database> <prediction_id>
-# python3 predict.py root root mysql 3306 inu_backyard 01HW8F6EAJ1JM46DH98QTMKN15
+# python3 predict.py <user> <password> <host> <port> <database> <programme_name> <old_gpax> <math_gpa> <eng_gpa> <sci_gpa> <school> <admission>
+# python3 predict.py root root mysql 3306 inu_backyard
 
 # TODO: add visibility
 
@@ -64,17 +55,11 @@ if __name__ == '__main__':
   pca = PCA()
   y_gpax = np.array(data[:,[8]], dtype=float)
   Xt_gpax = ctx.fit_transform(X)
-  # print(r_regression(admission, y_gpax.reshape(-1, 1)))
+
   X_gpax_train, X_gpax_test, y_gpax_train, y_gpax_test = train_test_split(Xt_gpax, y_gpax, test_size=0.25, random_state=0)
   X_gpax_pca = pca.fit_transform(X_gpax_train)
-  # print(y_gpax[0][0])
-  # print(type(y_gpax[0][0]))
-  # print(y_gpax[:,0])
-  # print(X_gpax_train[0])
-  # print(y_gpax_train[0])
-  # print (pca.explained_variance_ratio_.cumsum())
-  yscaler = StandardScaler().fit(y_gpax_train[:,-1].reshape(-1, 1))
 
+  yscaler = StandardScaler().fit(y_gpax_train[:,-1].reshape(-1, 1))
   y_gpax_train = yscaler.transform(y_gpax_train[:,-1].reshape(-1, 1))
 
   # plt.figure(figsize=(4,4))
@@ -83,34 +68,21 @@ if __name__ == '__main__':
   # plt.ylabel("gpax")
   # plt.show()
 
-  # modelregr = MLPRegressor(hidden_layer_sizes=(5,15,5), max_iter=5000)
-  # modelregr = RandomForestRegressor(criterion="squared_error", max_depth=5, n_estimators=1000)
-  # modelregr = SVR()
   modelregr = LinearRegression()
-  # modelregr = KNeighborsRegressor(n_neighbors=30)
 
   modelregr.fit(X_gpax_pca[:,:42], y_gpax_train)
   y_gpax_predict = modelregr.predict(pca.transform(X_gpax_test)[:,:42]).reshape(-1, 1)
   y_gpax_predict_iscaled = yscaler.inverse_transform(y_gpax_predict.reshape(-1, 1))
 
+  target = pd.DataFrame([[sys.argv[6], sys.argv[7], sys.argv[8], sys.argv[9], sys.argv[10], sys.argv[11], sys.argv[12]]]).to_numpy()
+  target = ctx.transform(target)
+  target = pca.transform(target)
+  prediction = modelregr.predict(target[:,:42])
+  print(round(yscaler.inverse_transform(prediction.reshape(-1, 1))[0,0], 2))
 
-  # test = pd.DataFrame([['regular', 3.99, 4,3.96, 4, 'โรงเรียนจำลอง', 'เรียนดี']]).to_numpy()
-  # test = pd.DataFrame([['regular', 1, 1,1, 1, 'หมีน้อย', 'เรียนดี']]).to_numpy()
-  test = pd.DataFrame([['regular', 1, 1,1, 1, 'เตรียมอุดมศึกษาน้อมเกล้า', 'เรียนดี']]).to_numpy()
-  test = pd.DataFrame([['regular', 4, 4, 4, 4, 'เตรียมอุดมศึกษาน้อมเกล้า', 'เรียนดี']]).to_numpy()
-  # test = pd.DataFrame([['regular', 3.99, 4,3.96, 4, 'อิสลามวิทยาลัยแห่งประเทศไทย', 'เรียนดี']]).to_numpy()
-  # test = pd.DataFrame([['regular', 1, 1,1, 1, 'อิสลามวิทยาลัยแห่งประเทศไทย', 'เรียนดี']]).to_numpy()
-  # test = pd.DataFrame([['regular', 4, 4, 4, 4, 'อิสลามวิทยาลัยแห่งประเทศไทย', 'เรียนดี']]).to_numpy()
-  # test = pd.DataFrame([['regular', 3.8, 3.45,4, 3.7, 'มหิดลวิทยานุสรณ์', 'เรียนดี']]).to_numpy()
-  # test = pd.DataFrame([['regular', 1, 1,1, 1, 'มหิดลวิทยานุสรณ์', 'เรียนดี']]).to_numpy()
-  # test = pd.DataFrame([['regular', 4, 4, 4, 4, 'มหิดลวิทยานุสรณ์', 'เรียนดี']]).to_numpy()
-  test = ctx.transform(test)
-  test = pca.transform(test)
-  prediction = modelregr.predict(test[:,:42])
-  print(yscaler.inverse_transform(prediction.reshape(-1, 1)))
+  sys.exit(0)
 
   # print(r2_score(yscaler.transform(y_gpax_test[:,-1].reshape(-1, 1)), y_gpax_predict))
-
 
   ## Predict remark from admission and current GPAX
 
@@ -150,11 +122,3 @@ if __name__ == '__main__':
   # print(yt[0])
   # print(cty.get_feature_names_out())
   # print(y_train[:, -1])
-
-
-
-
-
-
-
-  sys.exit(0)

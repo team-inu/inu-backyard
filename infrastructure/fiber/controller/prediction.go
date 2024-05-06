@@ -3,6 +3,7 @@ package controller
 import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/team-inu/inu-backyard/entity"
+	"github.com/team-inu/inu-backyard/infrastructure/fiber/request"
 	"github.com/team-inu/inu-backyard/infrastructure/fiber/response"
 	"github.com/team-inu/inu-backyard/internal/validator"
 )
@@ -19,11 +20,24 @@ func NewPredictionController(validator validator.PayloadValidator, predictionUse
 	}
 }
 
-func (c predictionController) Train(ctx *fiber.Ctx) error {
-	id, err := c.predictionUseCase.CreatePrediction()
+func (c predictionController) Predict(ctx *fiber.Ctx) error {
+	var payload request.PredictPayload
+	if ok, err := c.Validator.Validate(&payload, ctx); !ok {
+		return err
+	}
+
+	prediction, err := c.predictionUseCase.CreatePrediction(entity.PredictionRequirements{
+		ProgrammeName: payload.ProgrammeName,
+		OldGPAX:       payload.GPAX,
+		MathGPA:       payload.MathGPA,
+		EngGPA:        payload.EngGPA,
+		SciGPA:        payload.SciGPA,
+		School:        payload.School,
+		Admission:     payload.Admission,
+	})
 	if err != nil {
 		return err
 	}
 
-	return response.NewSuccessResponse(ctx, fiber.StatusOK, id)
+	return response.NewSuccessResponse(ctx, fiber.StatusOK, prediction)
 }
