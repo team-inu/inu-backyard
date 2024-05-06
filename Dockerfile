@@ -21,17 +21,21 @@ COPY . .
 RUN go mod download
 
 RUN GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build \
-      -ldflags="-w -s" \
-      -o ./inu-backyard ./cmd/http_server/main.go
-
-RUN pip3 install -r requirements.txt
+    -ldflags="-w -s" \
+    -o ./inu-backyard ./cmd/http_server/main.go
 
 # Runner stage
-FROM scratch AS runner
+FROM alpine:3.19 AS runner
 WORKDIR /app
 
-COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
+RUN apk add python3 py3-pip
+RUN apk add py3-scipy py3-scikit-learn
+
+COPY --from=builder /app/requirements.txt .
+RUN pip3 install $(grep -vE "scikit-learn|scipy" /app/requirements.txt) --break-system-packages
+
 COPY --from=builder /app/inu-backyard /
+COPY --from=builder /app/predict.py /app
 
 EXPOSE 3001
 CMD ["/inu-backyard"]
