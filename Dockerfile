@@ -35,6 +35,7 @@ COPY --from=builder /app/requirements.txt .
 RUN pip3 install $(grep -vE "scikit-learn|scipy" /app/requirements.txt) --break-system-packages
 
 COPY --from=builder /app/inu-backyard /
+COPY --from=builder /app/predict.py /app
 
 EXPOSE 3001
 CMD ["/inu-backyard"]
