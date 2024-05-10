@@ -18,7 +18,13 @@ type CourseLearningOutcome struct {
 
 type CourseLearningOutcomeWithPO struct {
 	CourseLearningOutcome
-	ProgramOutcomeName string `json:"programOutcomeName"`
+	ProgramOutcomeCode            string  `json:"programOutcomeCode"`
+	ProgramOutcomeName            string  `json:"programOutcomeName"`
+	ProgramLearningOutcomeCode    string  `json:"programLearningOutcomeCode"`
+	ExpectedPassingCloPercentage  float64 `json:"expectedPassingCloPercentage"`
+	ProgramLearningOutcomeName    string  `json:"programLearningOutcomeName"`
+	SubProgramLearningOutcomeCode string  `json:"subProgramLearningOutcomeCode"`
+	SubProgramLearningOutcomeName string  `json:"subProgramLearningOutcomeName"`
 }
 
 type CreateCourseLearningOutcomeDto struct {

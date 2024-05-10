@@ -24,14 +24,16 @@ type Assessment struct {
 }
 
 type CourseOutcome struct {
-	Name        string       `json:"name"`
-	Assessments []Assessment `json:"assessments"`
+	Name                                string       `json:"name"`
+	ExpectedPassingAssignmentPercentage float64      `json:"expectedPassingAssignmentPercentage"`
+	Assessments                         []Assessment `json:"assessments"`
 }
 
 type TabeeOutcome struct {
-	Name              string          `json:"name"`
-	CourseOutcomes    []CourseOutcome `json:"courseOutcomes"`
-	MinimumPercentage float64         `json:"minimumPercentage"`
+	Name                  string          `json:"name"`
+	CourseOutcomes        []CourseOutcome `json:"courseOutcomes"`
+	MinimumPercentage     float64         `json:"minimumPercentage"`
+	ExpectedCloPercentage float64         `json:"expectedCloPercentage"`
 }
 
 // [3.2] Grade Distribution
@@ -53,8 +55,23 @@ type GradeDistribution struct {
 	ScoreFrequencies []ScoreFrequency `json:"scoreFrequencies"`
 }
 
+type Outcome struct {
+	Code string `json:"code"`
+	Name string `json:"name"`
+}
+
+type NestedOutcome struct {
+	Code   string    `json:"code"`
+	Name   string    `json:"name"`
+	Nested []Outcome `json:"nested,omitempty"`
+}
+
 // [3] Result
 type CourseResult struct {
+	Plos []NestedOutcome `json:"plos"`
+	Clos []Outcome       `json:"clos"`
+	Pos  []Outcome       `json:"pos"`
+
 	TabeeOutcomes     []TabeeOutcome    `json:"tabeeOutcomes"`
 	GradeDistribution GradeDistribution `json:"gradeDistribution"`
 }
