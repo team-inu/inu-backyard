@@ -77,7 +77,84 @@ func (u coursePortfolioUseCase) Generate(courseId string) (*entity.CoursePortfol
 		return nil, errs.New(errs.SameCode, "cannot evaluate tabee outcomes while generate course portfolio", err)
 	}
 
+	closWithPos, err := u.CourseLearningOutcomeUseCase.GetByCourseId(courseId)
+	if err != nil {
+		return nil, errs.New(errs.SameCode, "cannot get clo while evaluate tabee outcome", err)
+	}
+
+	generateOutcome := func(cloWithPos []entity.CourseLearningOutcomeWithPO) ([]entity.NestedOutcome, []entity.Outcome, []entity.Outcome) {
+		addedSubPlo := make(map[string]bool, 0)
+
+		plosByPloId := make(map[string]entity.NestedOutcome, 0)
+		closByCloId := make(map[string]entity.Outcome, 0)
+		posByPoId := make(map[string]entity.Outcome, 0)
+
+		plos := make([]entity.NestedOutcome, 0)
+		clos := make([]entity.Outcome, 0)
+		pos := make([]entity.Outcome, 0)
+
+		for _, c := range cloWithPos {
+			plosFromMap, found := plosByPloId[c.ProgramLearningOutcomeCode]
+
+			if !found {
+				addedSubPlo[c.SubProgramLearningOutcomeCode] = true
+
+				plosByPloId[c.ProgramLearningOutcomeCode] = entity.NestedOutcome{
+					Code: c.ProgramLearningOutcomeCode,
+					Name: c.ProgramLearningOutcomeName,
+					Nested: []entity.Outcome{
+						{
+							Code: c.SubProgramLearningOutcomeCode,
+							Name: c.SubProgramLearningOutcomeName,
+						},
+					},
+				}
+			} else {
+				if _, isSubPloAdded := addedSubPlo[c.SubProgramLearningOutcomeCode]; !isSubPloAdded {
+					addedSubPlo[c.SubProgramLearningOutcomeCode] = true
+
+					plosFromMap.Nested = append(
+						plosByPloId[c.ProgramLearningOutcomeCode].Nested,
+						entity.Outcome{
+							Code: c.SubProgramLearningOutcomeCode,
+							Name: c.SubProgramLearningOutcomeName,
+						},
+					)
+
+					plosByPloId[c.ProgramLearningOutcomeCode] = plosFromMap
+				}
+			}
+
+			closByCloId[c.Code] = entity.Outcome{
+				Code: c.Code,
+				Name: c.Description,
+			}
+
+			posByPoId[c.ProgramOutcomeName] = entity.Outcome{
+				Code: c.ProgramOutcomeCode,
+				Name: c.ProgramOutcomeName,
+			}
+
+		}
+		for _, plo := range plosByPloId {
+			plos = append(plos, plo)
+		}
+		for _, clo := range closByCloId {
+			clos = append(clos, clo)
+		}
+		for _, po := range posByPoId {
+			pos = append(pos, po)
+		}
+
+		return plos, clos, pos
+	}
+
+	plos, clos, pos := generateOutcome(closWithPos)
+
 	courseResult := entity.CourseResult{
+		Plos:              plos,
+		Clos:              clos,
+		Pos:               pos,
 		GradeDistribution: *gradeDistribution,
 		TabeeOutcomes:     tabeeOutcomes,
 	}
@@ -317,11 +394,14 @@ func (u coursePortfolioUseCase) EvaluateTabeeOutcomes(courseId string) ([]entity
 	}
 
 	courseOutcomeByPoId := make(map[string][]entity.CourseOutcome, 0)
+	expectedPassingCloByPoId := make(map[string]float64, 0)
 	for _, clo := range clos {
 		courseOutcomeByPoId[clo.ProgramOutcomeId] = append(courseOutcomeByPoId[clo.ProgramOutcomeId], entity.CourseOutcome{
-			Name:        clo.Description,
-			Assessments: assessmentsByCloId[clo.Id],
+			Name:                                clo.Description,
+			ExpectedPassingAssignmentPercentage: clo.ExpectedPassingAssignmentPercentage,
+			Assessments:                         assessmentsByCloId[clo.Id],
 		})
+		expectedPassingCloByPoId[clo.ProgramOutcomeId] = clo.ExpectedPassingCloPercentage
 	}
 
 	passingPoPercentages, err := u.CoursePortfolioRepository.EvaluatePassingPoPercentage(courseId)
@@ -352,9 +432,10 @@ func (u coursePortfolioUseCase) EvaluateTabeeOutcomes(courseId string) ([]entity
 		foundOutcome, found := tabeeOutcomesByPoId[clo.ProgramOutcomeId]
 		if !found {
 			tabeeOutcomesByPoId[clo.ProgramOutcomeId] = append(tabeeOutcomesByPoId[clo.ProgramOutcomeId], entity.TabeeOutcome{
-				Name:              clo.ProgramOutcomeName,
-				CourseOutcomes:    courseOutcomeByPoId[clo.ProgramOutcomeId],
-				MinimumPercentage: passingPoPercentageByPoId[clo.ProgramOutcomeId],
+				Name:                  clo.ProgramOutcomeName,
+				CourseOutcomes:        courseOutcomeByPoId[clo.ProgramOutcomeId],
+				MinimumPercentage:     passingPoPercentageByPoId[clo.ProgramOutcomeId],
+				ExpectedCloPercentage: expectedPassingCloByPoId[clo.ProgramOutcomeId],
 			})
 			continue
 		}
@@ -365,9 +446,10 @@ func (u coursePortfolioUseCase) EvaluateTabeeOutcomes(courseId string) ([]entity
 		}
 
 		tabeeOutcomesByPoId[clo.ProgramOutcomeId] = append(tabeeOutcomesByPoId[clo.ProgramOutcomeId], entity.TabeeOutcome{
-			Name:              clo.ProgramOutcomeName,
-			CourseOutcomes:    courseOutcomeByPoId[clo.ProgramOutcomeId],
-			MinimumPercentage: passingPoPercentageByPoId[clo.ProgramOutcomeId],
+			Name:                  clo.ProgramOutcomeName,
+			CourseOutcomes:        courseOutcomeByPoId[clo.ProgramOutcomeId],
+			MinimumPercentage:     passingPoPercentageByPoId[clo.ProgramOutcomeId],
+			ExpectedCloPercentage: expectedPassingCloByPoId[clo.ProgramOutcomeId],
 		})
 	}
 

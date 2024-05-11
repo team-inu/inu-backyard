@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: inu-backyard-deployment
+  labels:
+    app: inu
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: inu
+  template:
+    metadata:
+      labels:
+        app: inu
+        type: backend
+    spec:
+      containers:
+      - name: inu-backyard
+        image: <IMAGE>
+        ports:
+        - containerPort: 3001
+        volumeMounts:
+        - name: config
+          mountPath: /app/config.yml
+          subPath: config.yml
+      volumes:
+        - name: config
+          configMap:
+            name: inu-backyard-config-map
+
