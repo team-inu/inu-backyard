@@ -25,15 +25,19 @@ type Assessment struct {
 
 type CourseOutcome struct {
 	Name                                string       `json:"name"`
+	Code                                string       `json:"code"`
 	ExpectedPassingAssignmentPercentage float64      `json:"expectedPassingAssignmentPercentage"`
+	PassingCloPercentage                float64      `json:"passingCloPercentage"`
 	Assessments                         []Assessment `json:"assessments"`
 }
 
 type TabeeOutcome struct {
 	Name                  string          `json:"name"`
+	Code                  string          `json:"code"`
 	CourseOutcomes        []CourseOutcome `json:"courseOutcomes"`
 	MinimumPercentage     float64         `json:"minimumPercentage"`
 	ExpectedCloPercentage float64         `json:"expectedCloPercentage"`
+	Plos                  []NestedOutcome `json:"plos"`
 }
 
 // [3.2] Grade Distribution
@@ -121,7 +125,7 @@ type PoPercentage struct {
 
 type CloPercentage struct {
 	PassingPercentage       float64
-	CourseLearningOutcomeId string `gorm:"column:c_id"`
+	CourseLearningOutcomeId string `gorm:"column:clo_id"`
 }
 
 type StudentData struct {

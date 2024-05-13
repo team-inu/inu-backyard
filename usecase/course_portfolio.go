@@ -393,15 +393,56 @@ func (u coursePortfolioUseCase) EvaluateTabeeOutcomes(courseId string) ([]entity
 		return nil, errs.New(errs.SameCode, "cannot get clo while evaluate tabee outcome", err)
 	}
 
+	cloPassingPercentage, err := u.CoursePortfolioRepository.EvaluatePassingCloPercentage(courseId)
+	if err != nil {
+		return nil, errs.New(errs.SameCode, "cannot evaluate passing clo percentage", err)
+	}
+
+	passingCloPercentage := make(map[string]float64, 0)
+	for _, clo := range cloPassingPercentage {
+		passingCloPercentage[clo.CourseLearningOutcomeId] = clo.PassingPercentage
+	}
+
 	courseOutcomeByPoId := make(map[string][]entity.CourseOutcome, 0)
 	expectedPassingCloByPoId := make(map[string]float64, 0)
+
+	sploDuplicates := make(map[[3]string]entity.Outcome, 0)
+	splosByBothId := make(map[[2]string][]entity.Outcome, 0)
+	plosByBothId := make(map[[2]string]entity.NestedOutcome, 0)
 	for _, clo := range clos {
 		courseOutcomeByPoId[clo.ProgramOutcomeId] = append(courseOutcomeByPoId[clo.ProgramOutcomeId], entity.CourseOutcome{
 			Name:                                clo.Description,
+			Code:                                clo.Code,
 			ExpectedPassingAssignmentPercentage: clo.ExpectedPassingAssignmentPercentage,
+			PassingCloPercentage:                passingCloPercentage[clo.Id],
 			Assessments:                         assessmentsByCloId[clo.Id],
 		})
 		expectedPassingCloByPoId[clo.ProgramOutcomeId] = clo.ExpectedPassingCloPercentage
+
+		key := [2]string{clo.ProgramOutcomeId, clo.ProgramLearningOutcomeCode}
+
+		_, found := sploDuplicates[[3]string{clo.ProgramOutcomeId, clo.ProgramLearningOutcomeCode, clo.SubProgramLearningOutcomeCode}]
+
+		if !found {
+			splo := entity.Outcome{
+				Name: clo.SubProgramLearningOutcomeName,
+				Code: clo.SubProgramLearningOutcomeCode,
+			}
+			sploDuplicates[[3]string{clo.ProgramOutcomeId, clo.ProgramLearningOutcomeCode, clo.SubProgramLearningOutcomeCode}] = splo
+			splosByBothId[key] = append(splosByBothId[key], splo)
+			plosByBothId[key] = entity.NestedOutcome{
+				Name: clo.ProgramLearningOutcomeName,
+				Code: clo.ProgramLearningOutcomeCode,
+			}
+		}
+	}
+
+	plosByPoId := make(map[string][]entity.NestedOutcome, 0)
+	for key := range plosByBothId {
+		plo := plosByBothId[key]
+		plo.Nested = splosByBothId[key]
+		plosByBothId[key] = plo
+		plosByPoId[key[0]] = append(plosByPoId[key[0]], plosByBothId[key])
 	}
 
 	passingPoPercentages, err := u.CoursePortfolioRepository.EvaluatePassingPoPercentage(courseId)
@@ -433,9 +474,11 @@ func (u coursePortfolioUseCase) EvaluateTabeeOutcomes(courseId string) ([]entity
 		if !found {
 			tabeeOutcomesByPoId[clo.ProgramOutcomeId] = append(tabeeOutcomesByPoId[clo.ProgramOutcomeId], entity.TabeeOutcome{
 				Name:                  clo.ProgramOutcomeName,
+				Code:                  clo.ProgramLearningOutcomeCode,
 				CourseOutcomes:        courseOutcomeByPoId[clo.ProgramOutcomeId],
 				MinimumPercentage:     passingPoPercentageByPoId[clo.ProgramOutcomeId],
 				ExpectedCloPercentage: expectedPassingCloByPoId[clo.ProgramOutcomeId],
+				Plos:                  plosByPoId[clo.ProgramOutcomeId],
 			})
 			continue
 		}
@@ -447,9 +490,11 @@ func (u coursePortfolioUseCase) EvaluateTabeeOutcomes(courseId string) ([]entity
 
 		tabeeOutcomesByPoId[clo.ProgramOutcomeId] = append(tabeeOutcomesByPoId[clo.ProgramOutcomeId], entity.TabeeOutcome{
 			Name:                  clo.ProgramOutcomeName,
+			Code:                  clo.ProgramLearningOutcomeCode,
 			CourseOutcomes:        courseOutcomeByPoId[clo.ProgramOutcomeId],
 			MinimumPercentage:     passingPoPercentageByPoId[clo.ProgramOutcomeId],
 			ExpectedCloPercentage: expectedPassingCloByPoId[clo.ProgramOutcomeId],
+			Plos:                  plosByPoId[clo.ProgramOutcomeId],
 		})
 	}
 
