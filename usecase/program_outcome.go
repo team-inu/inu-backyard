@@ -1,6 +1,8 @@
 package usecase
 
 import (
+	"fmt"
+
 	"github.com/oklog/ulid/v2"
 	"github.com/team-inu/inu-backyard/entity"
 	errs "github.com/team-inu/inu-backyard/entity/error"
@@ -31,6 +33,16 @@ func (u programOutcomeUseCase) GetById(id string) (*entity.ProgramOutcome, error
 	po, err := u.programOutcomeRepo.GetById(id)
 	if err != nil {
 		return nil, errs.New(errs.ErrQueryPO, "cannot get PO by id %s", id, err)
+	}
+
+	return po, nil
+}
+
+func (u programOutcomeUseCase) GetByCode(code string) (*entity.ProgramOutcome, error) {
+	po, err := u.programOutcomeRepo.GetByCode(code)
+	fmt.Println(po)
+	if err != nil {
+		return nil, errs.New(errs.ErrQueryPO, "cannot get PO by code %s", code, err)
 	}
 
 	return po, nil

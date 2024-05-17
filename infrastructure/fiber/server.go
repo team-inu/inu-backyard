@@ -37,6 +37,7 @@ type fiberServer struct {
 	sessionRepository                entity.SessionRepository
 	coursePortfolioRepository        entity.CoursePortfolioRepository
 	courseStreamRepository           entity.CourseStreamRepository
+	importerRepository               repository.ImporterRepositoryGorm
 
 	studentUseCase                entity.StudentUseCase
 	courseUseCase                 entity.CourseUseCase
@@ -57,6 +58,7 @@ type fiberServer struct {
 	coursePortfolioUseCase        entity.CoursePortfolioUseCase
 	predictionUseCase             entity.PredictionUseCase
 	courseStreamUseCase           entity.CourseStreamsUseCase
+	importerUseCase               usecase.ImporterUseCase
 }
 
 func NewFiberServer(
@@ -103,6 +105,7 @@ func (f *fiberServer) initRepository() (err error) {
 	f.sessionRepository = repository.NewSessionRepository(f.gorm)
 	f.coursePortfolioRepository = repository.NewCoursePortfolioRepositoryGorm(f.gorm)
 	f.courseStreamRepository = repository.NewCourseStreamRepository(f.gorm)
+	f.importerRepository = repository.NewImporterRepositoryGorm(f.gorm)
 
 	return nil
 }
@@ -126,6 +129,7 @@ func (f *fiberServer) initUseCase() {
 	scoreUseCase := usecase.NewScoreUseCase(f.scoreRepository, enrollmentUseCase, assignmentUseCase, courseUseCase, userUseCase, studentUseCase)
 	courseStreamUseCase := usecase.NewCourseStreamUseCase(f.courseStreamRepository, courseUseCase)
 	coursePortfolioUseCase := usecase.NewCoursePortfolioUseCase(f.coursePortfolioRepository, courseUseCase, userUseCase, enrollmentUseCase, assignmentUseCase, scoreUseCase, studentUseCase, courseLearningOutcomeUseCase, courseStreamUseCase)
+	importerUseCase := usecase.NewImporterUseCase(f.importerRepository, courseUseCase, enrollmentUseCase, assignmentUseCase, programOutcomeUseCase, programLearningOutcomeUseCase, courseLearningOutcomeUseCase)
 	predictionUseCase := usecase.NewPredictionUseCase(f.config)
 
 	f.assignmentUseCase = assignmentUseCase
@@ -147,6 +151,7 @@ func (f *fiberServer) initUseCase() {
 	f.coursePortfolioUseCase = coursePortfolioUseCase
 	f.predictionUseCase = predictionUseCase
 	f.courseStreamUseCase = courseStreamUseCase
+	f.importerUseCase = importerUseCase
 }
 
 func (f *fiberServer) initController() error {
@@ -183,9 +188,12 @@ func (f *fiberServer) initController() error {
 	predictionController := controller.NewPredictionController(validator, f.predictionUseCase)
 	coursePortfolioController := controller.NewCoursePortfolioController(validator, f.coursePortfolioUseCase)
 	courseStreamController := controller.NewCourseStreamController(validator, f.courseStreamUseCase)
+	importerController := controller.NewImporterController(validator, f.importerUseCase)
 	authController := controller.NewAuthController(validator, f.config.Client.Auth, f.authUseCase, f.userUseCase)
 
 	api := app.Group("/")
+
+	api.Post("/importer", authMiddleware, importerController.Import)
 
 	api.Get("/schools", studentController.GetAllSchools)
 	api.Get("/admissions", studentController.GetAllAdmissions)

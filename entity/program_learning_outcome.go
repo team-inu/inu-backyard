@@ -47,6 +47,7 @@ type ProgramLearningOutcomeRepository interface {
 
 	GetSubPLO(subPloId string) (*SubProgramLearningOutcome, error)
 	GetSubPloByPloId(ploId string) ([]SubProgramLearningOutcome, error)
+	GetSubPloByCode(code string, programme string, year string) (*SubProgramLearningOutcome, error)
 	GetAllSubPlo() ([]SubProgramLearningOutcome, error)
 	CreateSubPLO(programLearningOutcome []SubProgramLearningOutcome) error
 	UpdateSubPLO(id string, programLearningOutcome *SubProgramLearningOutcome) error
@@ -64,6 +65,7 @@ type ProgramLearningOutcomeUseCase interface {
 
 	GetSubPLO(subPloId string) (*SubProgramLearningOutcome, error)
 	GetSubPloByPloId(ploId string) ([]SubProgramLearningOutcome, error)
+	GetSubPloByCode(code string, programme string, year string) (*SubProgramLearningOutcome, error)
 	GetAllSubPlo() ([]SubProgramLearningOutcome, error)
 	CreateSubPLO(dto []CreateSubProgramLearningOutcomeDto) error
 	UpdateSubPLO(id string, programLearningOutcome *SubProgramLearningOutcome) error
