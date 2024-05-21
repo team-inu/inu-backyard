@@ -144,7 +144,7 @@ func (u ImporterUseCase) UpdateOrCreate(
 				return errs.New(errs.ErrSubPLONotFound, "cannot get sub plo id %s while import course", clo.ProgramOutcomeCode, subPloCode)
 
 			} else if subPlo == nil {
-				return errs.New(errs.ErrSubPLONotFound, "sub program learning outcome code %s curriculum: %s year: %s not found while import course", clo.ProgramOutcomeCode, course.Curriculum, programYear)
+				return errs.New(errs.ErrSubPLONotFound, "sub program learning outcome code %s curriculum: %s year: %s not found while import course", subPloCode, course.Curriculum, programYear)
 			}
 
 			subPlos = append(subPlos, &entity.SubProgramLearningOutcome{
