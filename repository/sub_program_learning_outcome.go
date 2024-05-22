@@ -33,7 +33,7 @@ func (r programLearningOutcomeRepositoryGorm) GetSubPloByPloId(ploId string) ([]
 	return splos, err
 }
 
-func (r programLearningOutcomeRepositoryGorm) GetSubPloByCode(code string, programme string, year string) (*entity.SubProgramLearningOutcome, error) {
+func (r programLearningOutcomeRepositoryGorm) GetSubPloByCode(code string, programme string, year int) (*entity.SubProgramLearningOutcome, error) {
 	var splo entity.SubProgramLearningOutcome
 	err := r.gorm.Model(&splo).
 		Select("sub_program_learning_outcome.*").

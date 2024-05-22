@@ -10,6 +10,9 @@ type CreateCourseRequestPayload struct {
 	Curriculum                   string  `json:"curriculum" validate:"required"`
 	Description                  string  `json:"description" validate:"required"`
 	ExpectedPassingCloPercentage float64 `json:"expectedPassingCloPercentage" validate:"required"`
+	AcademicYear                 int     `json:"academicYear" validate:"required"`
+	GraduateYear                 int     `json:"graduateYear" validate:"required"`
+	ProgramYear                  int     `json:"programYear" validate:"required"`
 	entity.CriteriaGrade
 }
 
@@ -19,6 +22,9 @@ type UpdateCourseRequestPayload struct {
 	Curriculum                   string  `json:"curriculum" validate:"required"`
 	Description                  string  `json:"description" validate:"required"`
 	ExpectedPassingCloPercentage float64 `json:"expectedPassingCloPercentage" validate:"required"`
+	AcademicYear                 int     `json:"academicYear" validate:"required"`
+	GraduateYear                 int     `json:"graduateYear" validate:"required"`
+	ProgramYear                  int     `json:"programYear" validate:"required"`
 	IsPortfolioCompleted         *bool   `json:"isPortfolioCompleted" validate:"required"`
 	entity.CriteriaGrade
 }

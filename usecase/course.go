@@ -52,7 +52,7 @@ func (u courseUseCase) GetByUserId(userId string) ([]entity.Course, error) {
 	return course, nil
 }
 
-func (u courseUseCase) Create(user entity.User, semesterId string, userId string, name string, code string, curriculum string, description string, expectedPassingCloPercentage float64, criteriaGrade entity.CriteriaGrade) error {
+func (u courseUseCase) Create(user entity.User, semesterId string, userId string, name string, code string, curriculum string, description string, expectedPassingCloPercentage float64, academicYear int, graduateYear int, programYear int, criteriaGrade entity.CriteriaGrade) error {
 	if !user.IsRoles([]entity.UserRole{entity.UserRoleHeadOfCurriculum}) {
 		return errs.New(errs.ErrCreateCourse, "no permission to create course")
 	}
@@ -85,6 +85,9 @@ func (u courseUseCase) Create(user entity.User, semesterId string, userId string
 		Curriculum:                   curriculum,
 		Description:                  description,
 		ExpectedPassingCloPercentage: expectedPassingCloPercentage,
+		AcademicYear:                 academicYear,
+		GraduateYear:                 graduateYear,
+		ProgramYear:                  programYear,
 		CriteriaGrade:                criteriaGrade,
 		PortfolioData:                emptyJson,
 	}
@@ -97,7 +100,7 @@ func (u courseUseCase) Create(user entity.User, semesterId string, userId string
 	return nil
 }
 
-func (u courseUseCase) Update(user entity.User, id string, name string, code string, curriculum string, description string, expectedPassingCloPercentage float64, criteriaGrade entity.CriteriaGrade, isPortfolioCompleted bool) error {
+func (u courseUseCase) Update(user entity.User, id string, name string, code string, curriculum string, description string, expectedPassingCloPercentage float64, academicYear int, graduateYear int, programYear int, criteriaGrade entity.CriteriaGrade, isPortfolioCompleted bool) error {
 	existCourse, err := u.GetById(id)
 	if err != nil {
 		return errs.New(errs.SameCode, "cannot get course id %s to update", id, err)
@@ -120,6 +123,9 @@ func (u courseUseCase) Update(user entity.User, id string, name string, code str
 		Description:                  description,
 		CriteriaGrade:                criteriaGrade,
 		ExpectedPassingCloPercentage: expectedPassingCloPercentage,
+		AcademicYear:                 academicYear,
+		GraduateYear:                 graduateYear,
+		ProgramYear:                  programYear,
 		IsPortfolioCompleted:         &isPortfolioCompleted,
 	})
 	if err != nil {

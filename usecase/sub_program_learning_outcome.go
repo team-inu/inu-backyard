@@ -25,7 +25,7 @@ func (u programLearningOutcomeUseCase) GetSubPloByPloId(ploId string) ([]entity.
 	return splos, nil
 }
 
-func (u programLearningOutcomeUseCase) GetSubPloByCode(code string, programme string, year string) (*entity.SubProgramLearningOutcome, error) {
+func (u programLearningOutcomeUseCase) GetSubPloByCode(code string, programme string, year int) (*entity.SubProgramLearningOutcome, error) {
 	splos, err := u.programLearningOutcomeRepo.GetSubPloByCode(code, programme, year)
 	if err != nil {
 		return nil, errs.New(errs.ErrQuerySubPLO, "cannot get sub plos by plo code", err)

@@ -84,6 +84,9 @@ func (c courseController) Create(ctx *fiber.Ctx) error {
 		payload.Curriculum,
 		payload.Description,
 		payload.ExpectedPassingCloPercentage,
+		payload.AcademicYear,
+		payload.GraduateYear,
+		payload.ProgramYear,
 		payload.CriteriaGrade,
 	)
 	if err != nil {
@@ -112,6 +115,9 @@ func (c courseController) Update(ctx *fiber.Ctx) error {
 		payload.Curriculum,
 		payload.Description,
 		payload.ExpectedPassingCloPercentage,
+		payload.AcademicYear,
+		payload.GraduateYear,
+		payload.ProgramYear,
 		payload.CriteriaGrade,
 		*payload.IsPortfolioCompleted,
 	)
