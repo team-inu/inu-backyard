@@ -31,7 +31,6 @@ func (c importerController) Import(ctx *fiber.Ctx) error {
 
 	err := c.importerUseCase.UpdateOrCreate(
 		payload.CourseId,
-		payload.ProgramYear,
 		user.Id,
 		payload.StudentIds,
 		payload.CourseLearningOutcomes,

@@ -75,7 +75,6 @@ type ImportCourseLearningOutcome struct {
 
 func (u ImporterUseCase) UpdateOrCreate(
 	courseId string,
-	programYear string,
 	lecturerId string,
 	studentIds []string,
 	clos []ImportCourseLearningOutcome,
@@ -139,12 +138,12 @@ func (u ImporterUseCase) UpdateOrCreate(
 		subPlos := []*entity.SubProgramLearningOutcome{}
 		fmt.Println(clo.SubProgramLearningOutcomeCodes)
 		for _, subPloCode := range clo.SubProgramLearningOutcomeCodes {
-			subPlo, err := u.programLearningOutcomeUseCase.GetSubPloByCode(subPloCode, course.Curriculum, programYear)
+			subPlo, err := u.programLearningOutcomeUseCase.GetSubPloByCode(subPloCode, course.Curriculum, course.ProgramYear)
 			if err != nil {
 				return errs.New(errs.ErrSubPLONotFound, "cannot get sub plo id %s while import course", clo.ProgramOutcomeCode, subPloCode)
 
 			} else if subPlo == nil {
-				return errs.New(errs.ErrSubPLONotFound, "sub program learning outcome code %s curriculum: %s year: %s not found while import course", subPloCode, course.Curriculum, programYear)
+				return errs.New(errs.ErrSubPLONotFound, "sub program learning outcome code %s curriculum: %s year: %d not found while import course", subPloCode, course.Curriculum, course.ProgramYear)
 			}
 
 			subPlos = append(subPlos, &entity.SubProgramLearningOutcome{
