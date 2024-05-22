@@ -146,6 +146,15 @@ type CloPassingStudentGorm struct {
 	StudentId               string
 	Pass                    bool
 	CourseLearningOutcomeId string `gorm:"column:clo_id"`
+	Code                    string
+	Description             string
+}
+
+type CloData struct {
+	Pass                    bool   `json:"pass"`
+	CourseLearningOutcomeId string `json:"courseLearningOutcomeId"`
+	Code                    string `json:"code"`
+	Description             string `json:"description"`
 }
 
 type PloData struct {
@@ -184,6 +193,7 @@ type StudentOutcomeStatus struct {
 	StudentId               string    `json:"studentId"`
 	ProgramLearningOutcomes []PloData `json:"programLearningOutcomes"`
 	ProgramOutcomes         []PoData  `json:"programOutcomes"`
+	CourseLearningOutcomes  []CloData `json:"courseLearningOutcomes"`
 }
 
 type CourseData struct {

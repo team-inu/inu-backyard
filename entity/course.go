@@ -63,7 +63,6 @@ func (c CriteriaGrade) GradeToGPA(grade string) float64 {
 	}
 }
 
-// TODO: Add academic year and graduated year
 type Course struct {
 	Id                           string  `json:"id" gorm:"primaryKey;type:char(255)"`
 	Name                         string  `json:"name"`
@@ -73,6 +72,9 @@ type Course struct {
 	ExpectedPassingCloPercentage float64 `json:"expectedPassingCloPercentage"`
 	IsPortfolioCompleted         *bool   `json:"isPortfolioCompleted" gorm:"default:false"`
 	PortfolioData                datatypes.JSON
+	AcademicYear                 int `json:"academicYear"`
+	GraduateYear                 int `json:"graduateYear"`
+	ProgramYear                  int `json:"programYear"`
 
 	SemesterId string `json:"semesterId"`
 	UserId     string `json:"userId"`
@@ -94,7 +96,7 @@ type CourseUseCase interface {
 	GetAll() ([]Course, error)
 	GetById(id string) (*Course, error)
 	GetByUserId(userId string) ([]Course, error)
-	Create(user User, semesterId string, userId string, name string, code string, curriculum string, description string, expectedPassingCloPercentage float64, criteriaGrade CriteriaGrade) error
-	Update(user User, id string, name string, code string, curriculum string, description string, expectedPassingCloPercentage float64, criteriaGrade CriteriaGrade, isPortfolioCompleted bool) error
+	Create(user User, semesterId string, userId string, name string, code string, curriculum string, description string, expectedPassingCloPercentage float64, academicYear int, graduateYear int, programYear int, criteriaGrade CriteriaGrade) error
+	Update(user User, id string, name string, code string, curriculum string, description string, expectedPassingCloPercentage float64, academicYear int, graduateYear int, programYear int, criteriaGrade CriteriaGrade, isPortfolioCompleted bool) error
 	Delete(user User, id string) error
 }

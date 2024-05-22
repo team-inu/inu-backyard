@@ -560,8 +560,11 @@ func (u coursePortfolioUseCase) GetStudentOutcomesStatusByCourseId(courseId stri
 		return nil, errs.New(errs.SameCode, "cannot evaluate passing po student by course id %s", courseId, err)
 	}
 
+	cloRecords, err := u.CoursePortfolioRepository.EvaluatePassingCloStudents(courseId)
+
 	studentPloMap := make(map[string][]entity.PloData)
 	studentPoMap := make(map[string][]entity.PoData)
+	studentCloMap := make(map[string][]entity.CloData)
 
 	for _, record := range ploRecords {
 		studentPloMap[record.StudentId] = append(studentPloMap[record.StudentId], entity.PloData{
@@ -582,6 +585,15 @@ func (u coursePortfolioUseCase) GetStudentOutcomesStatusByCourseId(courseId stri
 		})
 	}
 
+	for _, record := range cloRecords {
+		studentCloMap[record.StudentId] = append(studentCloMap[record.StudentId], entity.CloData{
+			Pass:                    record.Pass,
+			CourseLearningOutcomeId: record.CourseLearningOutcomeId,
+			Code:                    record.Code,
+			Description:             record.Description,
+		})
+	}
+
 	if len(studentPloMap) != len(studentPoMap) {
 		return nil, errs.New(errs.SameCode, "number of students with plo is different from po by course id %s", courseId, err)
 	}
@@ -597,6 +609,7 @@ func (u coursePortfolioUseCase) GetStudentOutcomesStatusByCourseId(courseId stri
 
 	for i := range students {
 		students[i].ProgramOutcomes = studentPoMap[students[i].StudentId]
+		students[i].CourseLearningOutcomes = studentCloMap[students[i].StudentId]
 	}
 
 	return students, nil

@@ -33,6 +33,24 @@ func (r programLearningOutcomeRepositoryGorm) GetSubPloByPloId(ploId string) ([]
 	return splos, err
 }
 
+func (r programLearningOutcomeRepositoryGorm) GetSubPloByCode(code string, programme string, year int) (*entity.SubProgramLearningOutcome, error) {
+	var splo entity.SubProgramLearningOutcome
+	err := r.gorm.Model(&splo).
+		Select("sub_program_learning_outcome.*").
+		Joins("LEFT JOIN program_learning_outcome on sub_program_learning_outcome.program_learning_outcome_id = program_learning_outcome.id").
+		Where("sub_program_learning_outcome.code = ? AND program_learning_outcome.program_year = ? AND program_learning_outcome.programme_name = ?", code, year, programme).
+		First(&splo).
+		Error
+
+	if err == gorm.ErrRecordNotFound {
+		return nil, nil
+	} else if err != nil {
+		return nil, fmt.Errorf("cannot query to get subPLOs with plo id: %w", err)
+	}
+
+	return &splo, err
+}
+
 func (r programLearningOutcomeRepositoryGorm) GetSubPLO(id string) (*entity.SubProgramLearningOutcome, error) {
 	var splo entity.SubProgramLearningOutcome
 	err := r.gorm.Where("id = ?", id).First(&splo).Error

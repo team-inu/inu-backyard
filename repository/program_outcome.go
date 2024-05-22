@@ -41,6 +41,19 @@ func (r programOutcomeRepositoryGorm) GetById(id string) (*entity.ProgramOutcome
 	return &po, nil
 }
 
+func (r programOutcomeRepositoryGorm) GetByCode(code string) (*entity.ProgramOutcome, error) {
+	var po entity.ProgramOutcome
+	err := r.gorm.Where("code = ?", code).First(&po).Error
+
+	if err == gorm.ErrRecordNotFound {
+		return nil, nil
+	} else if err != nil {
+		return nil, fmt.Errorf("cannot query to get PO by id: %w", err)
+	}
+
+	return &po, nil
+}
+
 func (r programOutcomeRepositoryGorm) Create(programOutcome *entity.ProgramOutcome) error {
 	err := r.gorm.Create(&programOutcome).Error
 	if err != nil {

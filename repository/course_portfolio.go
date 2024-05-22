@@ -355,9 +355,10 @@ func (r coursePortfolioRepositoryGorm) evaluateTabeeOutcomes(courseId string, se
                 JOIN student_passing_assignment_percentage ON assignments.a_id = student_passing_assignment_percentage.a_id AND assignments.c_id = student_passing_assignment_percentage.c_id
             ),
 			student_passing_clo_with_information AS (
-				SELECT student.first_name, student.last_name, student_passing_clo.student_id, student_passing_clo.pass, student_passing_clo.clo_id
+				SELECT student.first_name, student.last_name, student_passing_clo.student_id, student_passing_clo.pass, student_passing_clo.clo_id, course_learning_outcome.code, course_learning_outcome.description
 				FROM student_passing_clo
 				JOIN student ON student_passing_clo.student_id = student.id
+				JOIN course_learning_outcome ON course_learning_outcome.id = student_passing_clo.clo_id
 			),
 			student_passing_plo_with_information AS (
 				SELECT program_learning_outcome.code, program_learning_outcome.description_thai, program_learning_outcome.program_year, student_passing_plo.pass, student_passing_plo.plo_id, student_passing_plo.student_id

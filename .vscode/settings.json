@@ -6,6 +6,7 @@
     "foreignkey",
     "gofiber",
     "Gorm",
+    "Plos",
     "sqlx",
     "TABEE",
     "usecase",
