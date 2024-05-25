@@ -85,10 +85,14 @@ func (r enrollmentRepositoryGorm) GetByStudentId(studentId string) ([]entity.Enr
 }
 
 func (r enrollmentRepositoryGorm) CreateMany(enrollments []entity.Enrollment) error {
+	go cacheOutcomes(r.gorm, TabeeSelectorAllPloCourses)
+	go cacheOutcomes(r.gorm, TabeeSelectorAllPoCourses)
 	return r.gorm.Create(&enrollments).Error
 }
 
 func (r enrollmentRepositoryGorm) Create(enrollment *entity.Enrollment) error {
+	go cacheOutcomes(r.gorm, TabeeSelectorAllPloCourses)
+	go cacheOutcomes(r.gorm, TabeeSelectorAllPoCourses)
 	return r.gorm.Create(&enrollment).Error
 }
 
@@ -105,6 +109,8 @@ func (r enrollmentRepositoryGorm) Update(id string, enrollment *entity.Enrollmen
 	if err != nil {
 		return fmt.Errorf("cannot update enrollment by id: %w", err)
 	}
+	go cacheOutcomes(r.gorm, TabeeSelectorAllPloCourses)
+	go cacheOutcomes(r.gorm, TabeeSelectorAllPoCourses)
 
 	return nil
 }
@@ -114,6 +120,8 @@ func (r enrollmentRepositoryGorm) Delete(id string) error {
 	if err != nil {
 		return fmt.Errorf("cannot delete enrollment by id: %w", err)
 	}
+	go cacheOutcomes(r.gorm, TabeeSelectorAllPloCourses)
+	go cacheOutcomes(r.gorm, TabeeSelectorAllPoCourses)
 
 	return nil
 }

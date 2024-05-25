@@ -69,6 +69,8 @@ func (r programLearningOutcomeRepositoryGorm) CreateSubPLO(subProgramLearningOut
 	if err != nil {
 		return fmt.Errorf("cannot create subProgramLearningOutcome: %w", err)
 	}
+	go cacheOutcomes(r.gorm, TabeeSelectorAllPloCourses)
+	go cacheOutcomes(r.gorm, TabeeSelectorAllPoCourses)
 
 	return nil
 }
@@ -83,6 +85,8 @@ func (r programLearningOutcomeRepositoryGorm) UpdateSubPLO(id string, subProgram
 	if err != nil {
 		return fmt.Errorf("cannot update subProgramLearningOutcome: %w", err)
 	}
+	go cacheOutcomes(r.gorm, TabeeSelectorAllPloCourses)
+	go cacheOutcomes(r.gorm, TabeeSelectorAllPoCourses)
 
 	return nil
 }
@@ -93,6 +97,8 @@ func (r programLearningOutcomeRepositoryGorm) DeleteSubPLO(id string) error {
 	if err != nil {
 		return fmt.Errorf("cannot delete subProgramLearningOutcome: %w", err)
 	}
+	go cacheOutcomes(r.gorm, TabeeSelectorAllPloCourses)
+	go cacheOutcomes(r.gorm, TabeeSelectorAllPoCourses)
 
 	return nil
 }

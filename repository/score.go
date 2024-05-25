@@ -100,6 +100,8 @@ func (r scoreRepository) Create(score *entity.Score) error {
 	if err != nil {
 		return fmt.Errorf("cannot create score: %w", err)
 	}
+	go cacheOutcomes(r.gorm, TabeeSelectorAllPloCourses)
+	go cacheOutcomes(r.gorm, TabeeSelectorAllPoCourses)
 
 	return nil
 }
@@ -109,6 +111,8 @@ func (r scoreRepository) CreateMany(scores []entity.Score) error {
 	if err != nil {
 		return fmt.Errorf("cannot create scores: %w", err)
 	}
+	go cacheOutcomes(r.gorm, TabeeSelectorAllPloCourses)
+	go cacheOutcomes(r.gorm, TabeeSelectorAllPoCourses)
 
 	return nil
 }
@@ -118,6 +122,8 @@ func (r scoreRepository) Update(id string, score *entity.Score) error {
 	if err != nil {
 		return fmt.Errorf("cannot update score: %w", err)
 	}
+	go cacheOutcomes(r.gorm, TabeeSelectorAllPloCourses)
+	go cacheOutcomes(r.gorm, TabeeSelectorAllPoCourses)
 
 	return nil
 }
@@ -128,6 +134,8 @@ func (r scoreRepository) Delete(id string) error {
 	if err != nil {
 		return fmt.Errorf("cannot delete score: %w", err)
 	}
+	go cacheOutcomes(r.gorm, TabeeSelectorAllPloCourses)
+	go cacheOutcomes(r.gorm, TabeeSelectorAllPoCourses)
 
 	return nil
 }

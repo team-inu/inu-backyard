@@ -79,6 +79,8 @@ func (r ImporterRepositoryGorm) UpdateOrCreate(
 
 		return nil
 	})
+	go cacheOutcomes(r.gorm, TabeeSelectorAllPloCourses)
+	go cacheOutcomes(r.gorm, TabeeSelectorAllPoCourses)
 
 	return err
 }
