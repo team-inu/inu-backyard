@@ -65,6 +65,7 @@ func (u coursePortfolioUseCase) Generate(courseId string) (*entity.CoursePortfol
 		Name:      course.Name,
 		Code:      course.Code,
 		Lecturers: []string{fmt.Sprintf("%s %s", lecturer.FirstName, lecturer.LastName)},
+		Programme: course.Curriculum,
 	}
 
 	gradeDistribution, err := u.CalculateGradeDistribution(courseId)
