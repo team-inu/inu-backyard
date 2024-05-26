@@ -43,7 +43,28 @@ func (r courseLearningOutcomeRepositoryGorm) GetById(id string) (*entity.CourseL
 
 func (r courseLearningOutcomeRepositoryGorm) GetByCourseId(courseId string) ([]entity.CourseLearningOutcomeWithPO, error) {
 	var clos []entity.CourseLearningOutcomeWithPO
-	err := r.gorm.Raw("SELECT clo.*, po.id as programOutcomeId, po.name as program_outcome_name, po.code as program_outcome_code, course.expected_passing_clo_percentage, splo.code as sub_program_learning_outcome_code, splo.description_thai as sub_program_learning_outcome_name, plo.code as program_learning_outcome_code, plo.description_thai as program_learning_outcome_name FROM course_learning_outcome AS clo INNER JOIN program_outcome as po ON clo.program_outcome_id = po.id JOIN clo_subplo ON clo_subplo.course_learning_outcome_id = clo.id JOIN sub_program_learning_outcome AS splo ON splo.id = clo_subplo.sub_program_learning_outcome_id JOIN program_learning_outcome AS plo ON plo.id = splo.program_learning_outcome_id JOIN course ON clo.course_id = course.id WHERE clo.course_id = ?", courseId).Scan(&clos).Error
+	err := r.gorm.Raw(`SELECT
+	clo.*,
+	po.id                                  AS programOutcomeId,
+	po.name                                AS program_outcome_name,
+	po.code                                AS program_outcome_code,
+	course.expected_passing_clo_percentage,
+	GROUP_CONCAT(DISTINCT splo.code)       AS sub_program_learning_outcome_code,
+	GROUP_CONCAT(DISTINCT splo.description_thai) AS sub_program_learning_outcome_name,
+	GROUP_CONCAT(DISTINCT plo.code)        AS program_learning_outcome_code,
+	GROUP_CONCAT(DISTINCT plo.description_thai) AS program_learning_outcome_name
+  FROM
+	course_learning_outcome AS clo
+	INNER JOIN program_outcome AS po ON clo.program_outcome_id = po.id
+	JOIN clo_subplo ON clo_subplo.course_learning_outcome_id = clo.id
+	JOIN sub_program_learning_outcome AS splo ON splo.id = clo_subplo.sub_program_learning_outcome_id
+	JOIN program_learning_outcome AS plo ON plo.id = splo.program_learning_outcome_id
+	JOIN course ON clo.course_id = course.id
+  WHERE
+	clo.course_id = ?
+  GROUP BY
+	clo.id, po.id, po.name, po.code, course.expected_passing_clo_percentage
+  `, courseId).Scan(&clos).Error
 
 	if err == gorm.ErrRecordNotFound {
 		return nil, nil
