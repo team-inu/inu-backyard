@@ -59,6 +59,8 @@ func (r courseRepositoryGorm) Create(course *entity.Course) error {
 	if err != nil {
 		return fmt.Errorf("cannot create course: %w", err)
 	}
+	go cacheOutcomes(r.gorm, TabeeSelectorAllPloCourses)
+	go cacheOutcomes(r.gorm, TabeeSelectorAllPoCourses)
 
 	return nil
 }
@@ -68,6 +70,8 @@ func (r courseRepositoryGorm) Update(id string, course *entity.Course) error {
 	if err != nil {
 		return fmt.Errorf("cannot update course: %w", err)
 	}
+	go cacheOutcomes(r.gorm, TabeeSelectorAllPloCourses)
+	go cacheOutcomes(r.gorm, TabeeSelectorAllPoCourses)
 
 	return nil
 }
@@ -78,6 +82,8 @@ func (r courseRepositoryGorm) Delete(id string) error {
 	if err != nil {
 		return fmt.Errorf("cannot delete course: %w", err)
 	}
+	go cacheOutcomes(r.gorm, TabeeSelectorAllPloCourses)
+	go cacheOutcomes(r.gorm, TabeeSelectorAllPoCourses)
 
 	return nil
 }

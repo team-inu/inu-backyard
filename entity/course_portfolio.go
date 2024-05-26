@@ -7,6 +7,7 @@ type CourseInfo struct {
 	Name      string   `json:"courseName"`
 	Code      string   `json:"courseCode"`
 	Lecturers []string `json:"lecturers"`
+	Programme string   `json:"programme"`
 }
 
 // [2] Summary

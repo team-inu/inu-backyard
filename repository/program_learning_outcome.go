@@ -46,6 +46,8 @@ func (r programLearningOutcomeRepositoryGorm) Create(programLearningOutcome *ent
 	if err != nil {
 		return fmt.Errorf("cannot create programLearningOutcome: %w", err)
 	}
+	go cacheOutcomes(r.gorm, TabeeSelectorAllPloCourses)
+	go cacheOutcomes(r.gorm, TabeeSelectorAllPoCourses)
 
 	return nil
 }
@@ -55,6 +57,8 @@ func (r programLearningOutcomeRepositoryGorm) CreateMany(programLearningOutcome 
 	if err != nil {
 		return fmt.Errorf("cannot create programLearningOutcome: %w", err)
 	}
+	go cacheOutcomes(r.gorm, TabeeSelectorAllPloCourses)
+	go cacheOutcomes(r.gorm, TabeeSelectorAllPoCourses)
 
 	return nil
 }
@@ -70,6 +74,8 @@ func (r programLearningOutcomeRepositoryGorm) Update(id string, programLearningO
 	if err != nil {
 		return fmt.Errorf("cannot update programLearningOutcome: %w", err)
 	}
+	go cacheOutcomes(r.gorm, TabeeSelectorAllPloCourses)
+	go cacheOutcomes(r.gorm, TabeeSelectorAllPoCourses)
 
 	return nil
 }
@@ -80,6 +86,8 @@ func (r programLearningOutcomeRepositoryGorm) Delete(id string) error {
 	if err != nil {
 		return fmt.Errorf("cannot delete programLearningOutcome: %w", err)
 	}
+	go cacheOutcomes(r.gorm, TabeeSelectorAllPloCourses)
+	go cacheOutcomes(r.gorm, TabeeSelectorAllPoCourses)
 
 	return nil
 }

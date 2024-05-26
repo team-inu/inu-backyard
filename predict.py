@@ -11,6 +11,9 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import r2_score
 from sklearn.linear_model import LinearRegression
 from sklearn.decomposition import PCA
+from sklearn.feature_selection import r_regression
+from scipy.stats import pearsonr
+import statsmodels.api as sm
 # python3 predict.py <user> <password> <host> <port> <database> <programme_name> <old_gpax> <math_gpa> <eng_gpa> <sci_gpa> <school> <admission>
 # python3 predict.py root root mysql 3306 inu_backyard
 
@@ -50,34 +53,58 @@ if __name__ == '__main__':
   X = data[:,:7]
   ctx = ColumnTransformer([('school', OneHotEncoder(sparse_output=False,handle_unknown='ignore'), [5]), ('admission', OneHotEncoder(sparse_output=False,handle_unknown='ignore'), [6]), ('programme', OneHotEncoder(handle_unknown='ignore'), [0])], remainder=StandardScaler(), sparse_threshold=0)
 
+
   ## Predict GPAX from admission information
 
   pca = PCA()
   y_gpax = np.array(data[:,[8]], dtype=float)
   Xt_gpax = ctx.fit_transform(X)
 
-  X_gpax_train, X_gpax_test, y_gpax_train, y_gpax_test = train_test_split(Xt_gpax, y_gpax, test_size=0.25, random_state=0)
+  included_list = []
+  for i in range(Xt_gpax.shape[1]):
+    corr, p_value = pearsonr(Xt_gpax[:,i],y_gpax[:,0])
+
+    # change this value to adjust the significance accepted
+    if p_value < 0.95:
+      included_list.append(True)
+      # print(ctx.get_feature_names_out()[i], corr, p_value)
+    else:
+      included_list.append(False)
+
+  sig_array = np.asarray(included_list)
+
+  X_gpax_train, X_gpax_test, y_gpax_train, y_gpax_test = train_test_split(Xt_gpax[:, sig_array], y_gpax, test_size=0.25, random_state=0)
   X_gpax_pca = pca.fit_transform(X_gpax_train)
+
+  cumsum = pca.explained_variance_ratio_.cumsum() > 0.9
+  pca_index = 0
+  for i in range(len(cumsum)):
+    if cumsum[i]:
+      pca_index = i
+      break
 
   yscaler = StandardScaler().fit(y_gpax_train[:,-1].reshape(-1, 1))
   y_gpax_train = yscaler.transform(y_gpax_train[:,-1].reshape(-1, 1))
 
-  # plt.figure(figsize=(4,4))
-  # plt.scatter(X_gpax_train[:,-1], y_gpax_train[:,0])
-  # plt.xlabel("old_gpax")
-  # plt.ylabel("gpax")
-  # plt.show()
+  # # plt.figure(figsize=(4,4))
+  # # plt.scatter(X_gpax_train[:,-1], y_gpax_train[:,0])
+  # # plt.xlabel("old_gpax")
+  # # plt.ylabel("gpax")
+  # # plt.show()
 
   modelregr = LinearRegression()
 
-  modelregr.fit(X_gpax_pca[:,:42], y_gpax_train)
-  y_gpax_predict = modelregr.predict(pca.transform(X_gpax_test)[:,:42]).reshape(-1, 1)
+  modelregr.fit(X_gpax_pca[:,:pca_index], y_gpax_train)
+  # print(modelregr.score(pca.transform(X_gpax_test)[:,:pca_index], yscaler.transform(y_gpax_test)))
+  y_gpax_predict = modelregr.predict(pca.transform(X_gpax_test)[:,:pca_index]).reshape(-1, 1)
   y_gpax_predict_iscaled = yscaler.inverse_transform(y_gpax_predict.reshape(-1, 1))
 
   target = pd.DataFrame([[sys.argv[6], sys.argv[7], sys.argv[8], sys.argv[9], sys.argv[10], sys.argv[11], sys.argv[12]]]).to_numpy()
   target = ctx.transform(target)
+  target = target[:, sig_array]
+  # print(target)
   target = pca.transform(target)
-  prediction = modelregr.predict(target[:,:42])
+  prediction = modelregr.predict(target[:,:pca_index])
   print(round(yscaler.inverse_transform(prediction.reshape(-1, 1))[0,0], 2))
 
   sys.exit(0)
