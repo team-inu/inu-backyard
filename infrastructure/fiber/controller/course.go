@@ -7,17 +7,20 @@ import (
 	"github.com/team-inu/inu-backyard/infrastructure/fiber/request"
 	"github.com/team-inu/inu-backyard/infrastructure/fiber/response"
 	"github.com/team-inu/inu-backyard/internal/validator"
+	"github.com/team-inu/inu-backyard/usecase"
 )
 
 type courseController struct {
-	courseUseCase entity.CourseUseCase
-	Validator     validator.PayloadValidator
+	courseUseCase   entity.CourseUseCase
+	importerUseCase usecase.ImporterUseCase
+	Validator       validator.PayloadValidator
 }
 
-func NewCourseController(validator validator.PayloadValidator, courseUseCase entity.CourseUseCase) *courseController {
+func NewCourseController(validator validator.PayloadValidator, courseUseCase entity.CourseUseCase, importerUseCase usecase.ImporterUseCase) *courseController {
 	return &courseController{
-		courseUseCase: courseUseCase,
-		Validator:     validator,
+		courseUseCase:   courseUseCase,
+		importerUseCase: importerUseCase,
+		Validator:       validator,
 	}
 }
 
@@ -129,11 +132,18 @@ func (c courseController) Update(ctx *fiber.Ctx) error {
 }
 
 func (c courseController) Delete(ctx *fiber.Ctx) error {
-	id := ctx.Params("courseId")
+	courseId := ctx.Params("courseId")
 
 	user := middleware.GetUserFromCtx(ctx)
 
-	err := c.courseUseCase.Delete(*user, id)
+	err := c.importerUseCase.UpdateOrCreate(
+		courseId,
+		user.Id,
+		make([]string, 0),
+		make([]usecase.ImportCourseLearningOutcome, 0),
+		make([]usecase.ImportAssignmentGroup, 0),
+		true,
+	)
 
 	if err != nil {
 		return err

@@ -35,6 +35,7 @@ func (c importerController) Import(ctx *fiber.Ctx) error {
 		payload.StudentIds,
 		payload.CourseLearningOutcomes,
 		payload.AssignmentGroups,
+		false,
 	)
 
 	if err != nil {

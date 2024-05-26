@@ -17,6 +17,7 @@ type ImporterUseCase struct {
 	programOutcomeUseCase         entity.ProgramOutcomeUseCase
 	programLearningOutcomeUseCase entity.ProgramLearningOutcomeUseCase
 	courseLearningOutcomeUseCase  entity.CourseLearningOutcomeUseCase
+	userUseCase                   entity.UserUseCase
 }
 
 func NewImporterUseCase(
@@ -27,6 +28,7 @@ func NewImporterUseCase(
 	programOutcomeUseCase entity.ProgramOutcomeUseCase,
 	programLearningOutcomeUseCase entity.ProgramLearningOutcomeUseCase,
 	courseLearningOutcomeUseCase entity.CourseLearningOutcomeUseCase,
+	userUseCase entity.UserUseCase,
 ) ImporterUseCase {
 	return ImporterUseCase{
 		importerRepository:            importerRepository,
@@ -36,6 +38,7 @@ func NewImporterUseCase(
 		programOutcomeUseCase:         programOutcomeUseCase,
 		programLearningOutcomeUseCase: programLearningOutcomeUseCase,
 		courseLearningOutcomeUseCase:  courseLearningOutcomeUseCase,
+		userUseCase:                   userUseCase,
 	}
 }
 
@@ -79,12 +82,27 @@ func (u ImporterUseCase) UpdateOrCreate(
 	studentIds []string,
 	clos []ImportCourseLearningOutcome,
 	assignmentGroups []ImportAssignmentGroup,
+	isDelete bool,
 ) error {
 	course, err := u.courseUseCase.GetById(courseId)
 	if err != nil {
 		return errs.New(errs.SameCode, "cannot get course id while import course", err)
 	} else if course == nil {
-		return errs.New(errs.SameCode, "course id %s not found while importing", err, courseId)
+		return errs.New(errs.ErrCourseNotFound, "course id %s not found while importing", err, courseId)
+	}
+
+	fmt.Println("uxxxxxxxxxxxxxser")
+	user, err := u.userUseCase.GetById(lecturerId)
+	if err != nil {
+		return errs.New(errs.SameCode, "cannot get user id while import course", err)
+	} else if user == nil {
+		return errs.New(errs.ErrUserNotFound, "user id %s not found while importing", err, courseId)
+	}
+	fmt.Println(user)
+	fmt.Println("::::::: ", user.IsRoles([]entity.UserRole{entity.UserRoleHeadOfCurriculum}))
+
+	if course.UserId != user.Id && !user.IsRoles([]entity.UserRole{entity.UserRoleHeadOfCurriculum}) {
+		return errs.New(errs.ErrCreateCourse, "no permission to do this action")
 	}
 
 	// prepare old data to delete
@@ -116,6 +134,26 @@ func (u ImporterUseCase) UpdateOrCreate(
 	oldCloIds := make([]string, 0)
 	for _, clo := range oldClos {
 		oldCloIds = append(oldCloIds, clo.Id)
+	}
+
+	if isDelete {
+		err = u.importerRepository.UpdateOrCreate(
+			courseId,
+
+			oldAssignmentGroupIds,
+			OldAssignmentIds,
+			oldCloIds,
+
+			make([]entity.CourseLearningOutcome, 0),
+			make([]entity.AssignmentGroup, 0),
+			make([]entity.Assignment, 0),
+			make([]entity.Enrollment, 0),
+			make([]entity.Score, 0),
+
+			isDelete,
+		)
+
+		return err
 	}
 
 	// beginning to prepare
@@ -235,7 +273,13 @@ func (u ImporterUseCase) UpdateOrCreate(
 		assignmentsToCreate,
 		enrollmentsToCreate,
 		scoresToCreate,
+
+		isDelete,
 	)
 
 	return err
+}
+
+func (u ImporterUseCase) Delete() {
+
 }

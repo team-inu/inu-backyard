@@ -129,7 +129,7 @@ func (f *fiberServer) initUseCase() {
 	scoreUseCase := usecase.NewScoreUseCase(f.scoreRepository, enrollmentUseCase, assignmentUseCase, courseUseCase, userUseCase, studentUseCase)
 	courseStreamUseCase := usecase.NewCourseStreamUseCase(f.courseStreamRepository, courseUseCase)
 	coursePortfolioUseCase := usecase.NewCoursePortfolioUseCase(f.coursePortfolioRepository, courseUseCase, userUseCase, enrollmentUseCase, assignmentUseCase, scoreUseCase, studentUseCase, courseLearningOutcomeUseCase, courseStreamUseCase)
-	importerUseCase := usecase.NewImporterUseCase(f.importerRepository, courseUseCase, enrollmentUseCase, assignmentUseCase, programOutcomeUseCase, programLearningOutcomeUseCase, courseLearningOutcomeUseCase)
+	importerUseCase := usecase.NewImporterUseCase(f.importerRepository, courseUseCase, enrollmentUseCase, assignmentUseCase, programOutcomeUseCase, programLearningOutcomeUseCase, courseLearningOutcomeUseCase, userUseCase)
 	predictionUseCase := usecase.NewPredictionUseCase(f.config)
 
 	f.assignmentUseCase = assignmentUseCase
@@ -171,7 +171,7 @@ func (f *fiberServer) initController() error {
 	authMiddleware := middleware.NewAuthMiddleware(validator, f.authUseCase)
 
 	studentController := controller.NewStudentController(validator, f.studentUseCase)
-	courseController := controller.NewCourseController(validator, f.courseUseCase)
+	courseController := controller.NewCourseController(validator, f.courseUseCase, f.importerUseCase)
 	courseLearningOutcomeController := controller.NewCourseLearningOutcomeController(validator, f.courseLearningOutcomeUseCase)
 	programLearningOutcomeController := controller.NewProgramLearningOutcomeController(validator, f.programLearningOutcomeUseCase)
 	subProgramLearningOutcomeController := controller.NewSubProgramLearningOutcomeController(validator, f.programLearningOutcomeUseCase)
