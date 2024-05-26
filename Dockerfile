@@ -32,7 +32,7 @@ RUN apk add python3 py3-pip
 RUN apk add py3-scipy py3-scikit-learn
 
 COPY --from=builder /app/requirements.txt .
-RUN pip3 install $(grep -vE "scikit-learn|scipy" /app/requirements.txt) --break-system-packages
+RUN pip3 install $(grep -vE "scikit_learn|scipy" /app/requirements.txt) --break-system-packages
 
 COPY --from=builder /app/inu-backyard /
 COPY --from=builder /app/predict.py /app
