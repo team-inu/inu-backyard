@@ -5,6 +5,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/monitor"
 	"github.com/team-inu/inu-backyard/entity"
+	"github.com/team-inu/inu-backyard/infrastructure/captcha"
 	"github.com/team-inu/inu-backyard/infrastructure/fiber/controller"
 	"github.com/team-inu/inu-backyard/infrastructure/fiber/middleware"
 	"github.com/team-inu/inu-backyard/internal/config"
@@ -16,9 +17,10 @@ import (
 )
 
 type fiberServer struct {
-	config config.FiberServerConfig
-	gorm   *gorm.DB
-	logger *zap.Logger
+	config    config.FiberServerConfig
+	gorm      *gorm.DB
+	turnstile *captcha.Turnstile
+	logger    *zap.Logger
 
 	studentRepository                entity.StudentRepository
 	courseRepository                 entity.CourseRepository
@@ -64,12 +66,14 @@ type fiberServer struct {
 func NewFiberServer(
 	config config.FiberServerConfig,
 	gorm *gorm.DB,
+	turnstile *captcha.Turnstile,
 	logger *zap.Logger,
 ) *fiberServer {
 	return &fiberServer{
-		config: config,
-		gorm:   gorm,
-		logger: logger,
+		config:    config,
+		gorm:      gorm,
+		turnstile: turnstile,
+		logger:    logger,
 	}
 }
 
@@ -189,7 +193,7 @@ func (f *fiberServer) initController() error {
 	coursePortfolioController := controller.NewCoursePortfolioController(validator, f.coursePortfolioUseCase)
 	courseStreamController := controller.NewCourseStreamController(validator, f.courseStreamUseCase)
 	importerController := controller.NewImporterController(validator, f.importerUseCase)
-	authController := controller.NewAuthController(validator, f.config.Client.Auth, f.authUseCase, f.userUseCase)
+	authController := controller.NewAuthController(validator, f.config.Client.Auth, *f.turnstile, f.authUseCase, f.userUseCase)
 
 	api := app.Group("/")
 

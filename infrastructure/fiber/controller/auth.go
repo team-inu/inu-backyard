@@ -5,6 +5,8 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/team-inu/inu-backyard/entity"
+	errs "github.com/team-inu/inu-backyard/entity/error"
+	"github.com/team-inu/inu-backyard/infrastructure/captcha"
 	"github.com/team-inu/inu-backyard/infrastructure/fiber/middleware"
 	"github.com/team-inu/inu-backyard/infrastructure/fiber/request"
 	"github.com/team-inu/inu-backyard/infrastructure/fiber/response"
@@ -15,6 +17,7 @@ import (
 type AuthController struct {
 	config      config.AuthConfig
 	validator   validator.PayloadValidator
+	turnstile   captcha.Turnstile
 	authUseCase entity.AuthUseCase
 	userUseCase entity.UserUseCase
 }
@@ -22,12 +25,14 @@ type AuthController struct {
 func NewAuthController(
 	validator validator.PayloadValidator,
 	config config.AuthConfig,
+	turnstile captcha.Turnstile,
 	authUseCase entity.AuthUseCase,
 	userUseCase entity.UserUseCase,
 ) *AuthController {
 	return &AuthController{
 		config:      config,
 		validator:   validator,
+		turnstile:   turnstile,
 		authUseCase: authUseCase,
 		userUseCase: userUseCase,
 	}
@@ -45,6 +50,16 @@ func (c AuthController) SignIn(ctx *fiber.Ctx) error {
 
 	ipAddress := ctx.IP()
 	userAgent := ctx.Context().UserAgent()
+
+	cfToken := string(ctx.Request().Header.Peek("Cf-Token")[:])
+
+	isTokenValid, err := c.turnstile.Validate(cfToken, ipAddress)
+	if err != nil {
+		return response.NewErrorResponse(ctx, fiber.StatusUnauthorized, errs.New(0, "cannot validate challenge token"))
+	} else if !isTokenValid {
+		return response.NewErrorResponse(ctx, fiber.StatusUnauthorized, errs.New(0, "invalid challenge token"))
+
+	}
 
 	cookie, err := c.authUseCase.SignIn(payload.Email, payload.Password, ipAddress, string(userAgent))
 	if err != nil {
