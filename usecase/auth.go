@@ -41,11 +41,11 @@ func (u authUseCase) SignIn(email string, password string, ipAddress string, use
 	if err != nil {
 		return nil, errs.New(errs.SameCode, "cannot get user data to sign in", err)
 	} else if user == nil {
-		return nil, errs.New(errs.ErrUserNotFound, "account with email %s is not registered", email)
+		return nil, errs.New(errs.ErrUserNotFound, "password or email is incorrect")
 	}
 
 	if err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password)); err != nil {
-		return nil, errs.New(errs.ErrUserPassword, "password is incorrect", err)
+		return nil, errs.New(errs.ErrUserPassword, "password or email is incorrect")
 	}
 
 	cookie, err := u.sessionUseCase.Create(user.Id, ipAddress, userAgent)
