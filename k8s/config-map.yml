@@ -17,6 +17,8 @@ data:
           secret: <SECRET>
           maxAge: <MAX_AGE>
           cookieName: <COOKIE_NAME>
+        turnstile:
+          secretKey: <SECRET_KEY>
       cors:
         AllowOrigins:
           - <ORIGIN>

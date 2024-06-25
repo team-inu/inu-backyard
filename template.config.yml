@@ -10,6 +10,8 @@ client:
       prefix: $
       secret: secret
       maxAge: 604800 # 7 days in second unit
+    turnstile:
+      secretKey: 2x0000000000000000000000000000000AA
   cors:
     AllowOrigins:
       - 'http://localhost:3000'

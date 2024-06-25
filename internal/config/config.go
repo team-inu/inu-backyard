@@ -10,11 +10,16 @@ type SessionConfig struct {
 }
 
 type AuthConfig struct {
-	Session SessionConfig
+	Session   SessionConfig
+	Turnstile TurnstileConfig
 }
 
 type CorsConfig struct {
 	AllowOrigins []string
+}
+
+type TurnstileConfig struct {
+	SecretKey string
 }
 
 type ClientConfig struct {
