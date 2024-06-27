@@ -11,12 +11,14 @@ import (
 
 type userController struct {
 	userUseCase entity.UserUseCase
+	authUseCase entity.AuthUseCase
 	Validator   validator.PayloadValidator
 }
 
-func NewUserController(validator validator.PayloadValidator, userUseCase entity.UserUseCase) *userController {
+func NewUserController(validator validator.PayloadValidator, userUseCase entity.UserUseCase, authUseCase entity.AuthUseCase) *userController {
 	return &userController{
 		userUseCase: userUseCase,
+		authUseCase: authUseCase,
 		Validator:   validator,
 	}
 }
@@ -34,7 +36,6 @@ func (c userController) GetById(ctx *fiber.Ctx) error {
 	userId := ctx.Params("userId")
 
 	user, err := c.userUseCase.GetById(userId)
-
 	if err != nil {
 		return err
 	}
@@ -67,7 +68,6 @@ func (c userController) Create(ctx *fiber.Ctx) error {
 
 func (c userController) CreateMany(ctx *fiber.Ctx) error {
 	var payload request.CreateBulkUserPayload
-
 	if ok, err := c.Validator.Validate(&payload, ctx); !ok {
 		return err
 	}
@@ -85,7 +85,6 @@ func (c userController) CreateMany(ctx *fiber.Ctx) error {
 	}
 
 	err := c.userUseCase.CreateMany(newUsers)
-
 	if err != nil {
 		return err
 	}
@@ -95,20 +94,23 @@ func (c userController) CreateMany(ctx *fiber.Ctx) error {
 
 func (c userController) Update(ctx *fiber.Ctx) error {
 	var payload request.UpdateUserPayload
-
 	if ok, err := c.Validator.Validate(&payload, ctx); !ok {
 		return err
 	}
 
-	id := ctx.Params("userId")
+	targetUserId := ctx.Params("userId")
 
-	err := c.userUseCase.Update(id, &entity.User{
+	user := middleware.GetUserFromCtx(ctx)
+	if !user.IsRoles([]entity.UserRole{entity.UserRoleHeadOfCurriculum}) && user.Id != targetUserId {
+		return response.NewErrorResponse(ctx, fiber.StatusUnauthorized, nil)
+	}
+
+	err := c.userUseCase.Update(targetUserId, &entity.User{
 		FirstName: payload.FirstName,
 		LastName:  payload.LastName,
 		Email:     payload.Email,
 		Role:      payload.Role,
 	})
-
 	if err != nil {
 		return err
 	}
@@ -117,10 +119,35 @@ func (c userController) Update(ctx *fiber.Ctx) error {
 }
 
 func (c userController) Delete(ctx *fiber.Ctx) error {
-	id := ctx.Params("userId")
+	targetUserId := ctx.Params("userId")
 
-	err := c.userUseCase.Delete(id)
+	user := middleware.GetUserFromCtx(ctx)
+	if !user.IsRoles([]entity.UserRole{entity.UserRoleHeadOfCurriculum}) && user.Id != targetUserId {
+		return response.NewErrorResponse(ctx, fiber.StatusUnauthorized, nil)
+	}
 
+	err := c.userUseCase.Delete(targetUserId)
+	if err != nil {
+		return err
+	}
+
+	return response.NewSuccessResponse(ctx, fiber.StatusOK, nil)
+}
+
+func (c userController) ChangePassword(ctx *fiber.Ctx) error {
+	var payload request.ChangePasswordPayload
+	if ok, err := c.Validator.Validate(&payload, ctx); !ok {
+		return err
+	}
+
+	targetUserId := ctx.Params("userId")
+
+	user := middleware.GetUserFromCtx(ctx)
+	if !user.IsRoles([]entity.UserRole{entity.UserRoleHeadOfCurriculum}) && user.Id != targetUserId {
+		return response.NewErrorResponse(ctx, fiber.StatusUnauthorized, nil)
+	}
+
+	err := c.authUseCase.ChangePassword(targetUserId, payload.OldPassword, payload.NewPassword)
 	if err != nil {
 		return err
 	}

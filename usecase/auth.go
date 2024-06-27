@@ -67,3 +67,29 @@ func (u authUseCase) SignOut(header string) (*fiber.Cookie, error) {
 	}
 	return cookie, nil
 }
+
+func (u authUseCase) ChangePassword(userId string, oldPassword string, newPassword string) error {
+	user, err := u.userUserCase.GetById(userId)
+	if err != nil {
+		return errs.New(errs.SameCode, "cannot get user data to sign in", err)
+	} else if user == nil {
+		return errs.New(errs.ErrUserNotFound, "cannot find target user")
+	}
+
+	if err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(oldPassword)); err != nil {
+		return errs.New(errs.ErrUserPassword, "old password is incorrect")
+	}
+
+	newBcryptPassword, err := bcrypt.GenerateFromPassword([]byte(newPassword), bcrypt.DefaultCost)
+	if err != nil {
+		return errs.New(errs.ErrCreateUser, "cannot create user", err)
+	}
+
+	newHashedPassword := string(newBcryptPassword)
+
+	u.userUserCase.Update(userId, &entity.User{
+		Password: newHashedPassword,
+	})
+
+	return nil
+}
