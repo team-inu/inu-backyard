@@ -17,6 +17,11 @@ type UpdateUserPayload struct {
 	Role      entity.UserRole `json:"role" validate:"required"`
 }
 
+type ChangePasswordPayload struct {
+	OldPassword string `json:"oldPassword" validate:"required"`
+	NewPassword string `json:"newPassword" validate:"required"`
+}
+
 type CreateBulkUserPayload struct {
 	Users []CreateUserPayload `json:"users" validate:"dive"`
 }

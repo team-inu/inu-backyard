@@ -183,7 +183,7 @@ func (f *fiberServer) initController() error {
 	facultyController := controller.NewFacultyController(validator, f.facultyUseCase)
 	departmentController := controller.NewDepartmentController(validator, f.departmentUseCase)
 	scoreController := controller.NewScoreController(validator, f.scoreUseCase)
-	userController := controller.NewUserController(validator, f.userUseCase)
+	userController := controller.NewUserController(validator, f.userUseCase, f.authUseCase)
 	assignmentController := controller.NewAssignmentController(validator, f.assignmentUseCase)
 	programmeController := controller.NewProgrammeController(validator, f.programmeUseCase)
 	semesterController := controller.NewSemesterController(validator, f.semesterUseCase)
@@ -310,6 +310,7 @@ func (f *fiberServer) initController() error {
 	user.Get("/:userId", userController.GetById)
 	user.Patch("/:userId", userController.Update)
 	user.Delete("/:userId", userController.Delete)
+	user.Post("/:userId/password", userController.ChangePassword)
 	user.Post("/bulk", userController.CreateMany)
 
 	user.Get("/:userId/course", courseController.GetByUserId)
