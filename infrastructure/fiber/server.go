@@ -199,8 +199,8 @@ func (f *fiberServer) initController() error {
 
 	api.Post("/importer", authMiddleware, importerController.Import)
 
-	api.Get("/schools", studentController.GetAllSchools)
-	api.Get("/admissions", studentController.GetAllAdmissions)
+	api.Get("/schools", authMiddleware, studentController.GetAllSchools)
+	api.Get("/admissions", authMiddleware, studentController.GetAllAdmissions)
 
 	// student route
 	student := api.Group("/students", authMiddleware)
@@ -364,7 +364,7 @@ func (f *fiberServer) initController() error {
 	semester.Delete("/:semesterId", semesterController.Delete)
 
 	// grade route
-	grade := api.Group("/grades")
+	grade := api.Group("/grades", authMiddleware)
 
 	grade.Get("/", gradeController.GetAll)
 	grade.Post("/", gradeController.CreateMany)
@@ -373,13 +373,13 @@ func (f *fiberServer) initController() error {
 	grade.Delete("/:gradeId", gradeController.Delete)
 
 	// course stream route
-	courseStream := api.Group("/course-streams")
+	courseStream := api.Group("/course-streams", authMiddleware)
 	courseStream.Get("/", courseStreamController.Get)
 	courseStream.Post("/", courseStreamController.Create)
 	courseStream.Delete("/:courseStreamId", courseStreamController.Delete)
 
 	// prediction
-	prediction := api.Group("/prediction")
+	prediction := api.Group("/prediction", authMiddleware)
 
 	prediction.Post("/predict", predictionController.Predict)
 
