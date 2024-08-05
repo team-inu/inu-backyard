@@ -133,7 +133,7 @@ func (f *fiberServer) initUseCase() {
 	scoreUseCase := usecase.NewScoreUseCase(f.scoreRepository, enrollmentUseCase, assignmentUseCase, courseUseCase, userUseCase, studentUseCase)
 	courseStreamUseCase := usecase.NewCourseStreamUseCase(f.courseStreamRepository, courseUseCase)
 	coursePortfolioUseCase := usecase.NewCoursePortfolioUseCase(f.coursePortfolioRepository, courseUseCase, userUseCase, enrollmentUseCase, assignmentUseCase, scoreUseCase, studentUseCase, courseLearningOutcomeUseCase, courseStreamUseCase)
-	importerUseCase := usecase.NewImporterUseCase(f.importerRepository, courseUseCase, enrollmentUseCase, assignmentUseCase, programOutcomeUseCase, programLearningOutcomeUseCase, courseLearningOutcomeUseCase, userUseCase)
+	importerUseCase := usecase.NewImporterUseCase(f.importerRepository, courseUseCase, enrollmentUseCase, assignmentUseCase, programOutcomeUseCase, programLearningOutcomeUseCase, courseLearningOutcomeUseCase, userUseCase, studentUseCase)
 	predictionUseCase := usecase.NewPredictionUseCase(f.config)
 
 	f.assignmentUseCase = assignmentUseCase

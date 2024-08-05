@@ -18,6 +18,7 @@ type ImporterUseCase struct {
 	programLearningOutcomeUseCase entity.ProgramLearningOutcomeUseCase
 	courseLearningOutcomeUseCase  entity.CourseLearningOutcomeUseCase
 	userUseCase                   entity.UserUseCase
+	studentUseCase                entity.StudentUseCase
 }
 
 func NewImporterUseCase(
@@ -29,6 +30,7 @@ func NewImporterUseCase(
 	programLearningOutcomeUseCase entity.ProgramLearningOutcomeUseCase,
 	courseLearningOutcomeUseCase entity.CourseLearningOutcomeUseCase,
 	userUseCase entity.UserUseCase,
+	studentUseCase entity.StudentUseCase,
 ) ImporterUseCase {
 	return ImporterUseCase{
 		importerRepository:            importerRepository,
@@ -39,6 +41,7 @@ func NewImporterUseCase(
 		programLearningOutcomeUseCase: programLearningOutcomeUseCase,
 		courseLearningOutcomeUseCase:  courseLearningOutcomeUseCase,
 		userUseCase:                   userUseCase,
+		studentUseCase:                studentUseCase,
 	}
 }
 
@@ -250,14 +253,28 @@ func (u ImporterUseCase) UpdateOrCreate(
 
 	}
 
+	isStudentNotFound := false
+	missingStudentList := make([]string, 0)
+
 	// prepare enrollments
 	for _, studentId := range studentIds {
+		student, err := u.studentUseCase.GetById(studentId)
+		if err != nil {
+			return errs.New(errs.ErrStudentNotFound, "cannot get student id %s while import course", studentId)
+		} else if student == nil {
+			isStudentNotFound = true
+			missingStudentList = append(missingStudentList, studentId)
+		}
 		enrollmentsToCreate = append(enrollmentsToCreate, entity.Enrollment{
 			Id:        ulid.Make().String(),
 			CourseId:  courseId,
 			StudentId: studentId,
 			Status:    entity.EnrollmentStatusEnroll,
 		})
+	}
+
+	if isStudentNotFound {
+		return errs.New(errs.ErrStudentNotFound, "student ids: %v not found while import course", missingStudentList)
 	}
 
 	// let's go bro
