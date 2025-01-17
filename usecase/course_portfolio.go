@@ -187,10 +187,22 @@ func (u coursePortfolioUseCase) Generate(courseId string) (*entity.CoursePortfol
 	}
 
 	portfolioData := entity.PortfolioData{}
-
 	err = json.Unmarshal(course.PortfolioData, &portfolioData)
 	if err != nil {
 		return nil, errs.New(0, "cannot unmarshal data from db")
+	}
+
+	for _, stream := range portfolioData.Development.SubjectComments.UpstreamSubjects {
+		upstreamSubject = append(upstreamSubject, entity.Subject{
+			CourseName: stream.CourseName,
+			Comment:    stream.Comment,
+		})
+	}
+	for _, stream := range portfolioData.Development.SubjectComments.DownstreamSubjects {
+		downStreamSubject = append(downStreamSubject, entity.Subject{
+			CourseName: stream.CourseName,
+			Comment:    stream.Comment,
+		})
 	}
 
 	courseDevelopment := entity.CourseDevelopment{
