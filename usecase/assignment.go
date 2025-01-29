@@ -75,7 +75,7 @@ func (u assignmentUseCase) GetPassingStudentPercentage(assignmentId string) (flo
 	return passingStudentPercentage, nil
 }
 
-func (u assignmentUseCase) Create(assignmentGroupId string, name string, description string, maxScore int, expectedScorePercentage float64, expectedPassingStudentPercentage float64, courseLearningOutcomeIds []string, isIncludedInClo bool) error {
+func (u assignmentUseCase) Create(assignmentGroupId string, name string, description string, maxScore float64, expectedScorePercentage float64, expectedPassingStudentPercentage float64, courseLearningOutcomeIds []string, isIncludedInClo bool) error {
 	assignmentGroup, err := u.GetGroupByGroupId(assignmentGroupId)
 	if err != nil {
 		return errs.New(errs.SameCode, "cannot validate group id %s while creating assignment", assignmentGroupId, err)
@@ -126,7 +126,7 @@ func (u assignmentUseCase) Create(assignmentGroupId string, name string, descrip
 	return nil
 }
 
-func (u assignmentUseCase) Update(id string, name string, description string, maxScore int, expectedScorePercentage float64, expectedPassingStudentPercentage float64, isIncludedInClo bool) error {
+func (u assignmentUseCase) Update(id string, name string, description string, maxScore float64, expectedScorePercentage float64, expectedPassingStudentPercentage float64, isIncludedInClo bool) error {
 	existAssignment, err := u.GetById(id)
 	if err != nil {
 		return errs.New(errs.SameCode, "cannot get assignment id %s to update", id, err)

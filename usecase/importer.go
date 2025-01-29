@@ -51,7 +51,7 @@ type score struct {
 type assignment struct {
 	Name                             string   `json:"name" validate:"required"`
 	Description                      string   `json:"description" validate:"required"`
-	MaxScore                         int      `json:"maxScore" validate:"required"`
+	MaxScore                         float64  `json:"maxScore" validate:"required"`
 	ExpectedScorePercentage          float64  `json:"expectedScorePercentage" validate:"required"`
 	ExpectedPassingStudentPercentage float64  `json:"expectedPassingStudentPercentage" validate:"required"`
 	CourseLearningOutcomeCodes       []string `json:"courseLearningOutcomeCodes" validate:"required,dive"`
@@ -61,7 +61,7 @@ type assignment struct {
 
 type ImportAssignmentGroup struct {
 	Name        string       `json:"name" validate:"required"`
-	Weight      int          `json:"weight" validate:"required"`
+	Weight      float64      `json:"weight" validate:"required"`
 	Assignments []assignment `json:"assignments" validate:"dive"`
 }
 

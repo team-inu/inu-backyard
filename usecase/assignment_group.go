@@ -31,7 +31,7 @@ func (u assignmentUseCase) GetGroupByCourseId(courseId string, withAssignment bo
 	return assignmentGroup, nil
 }
 
-func (u assignmentUseCase) CreateGroup(name string, courseId string, weight int) error {
+func (u assignmentUseCase) CreateGroup(name string, courseId string, weight float64) error {
 	course, err := u.courseUseCase.GetById(courseId)
 	if err != nil {
 		return errs.New(errs.SameCode, "cannot validate course id %s while creating assignment group", courseId, err)
@@ -54,7 +54,7 @@ func (u assignmentUseCase) CreateGroup(name string, courseId string, weight int)
 	return nil
 }
 
-func (u assignmentUseCase) UpdateGroup(assignmentGroupId string, name string, weight int) error {
+func (u assignmentUseCase) UpdateGroup(assignmentGroupId string, name string, weight float64) error {
 	assignmentGroup, err := u.GetGroupByGroupId(assignmentGroupId)
 	if err != nil {
 		return errs.New(errs.SameCode, "cannot validate assignment group id %s to update", assignmentGroupId, err)

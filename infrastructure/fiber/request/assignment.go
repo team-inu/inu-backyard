@@ -3,7 +3,7 @@ package request
 type CreateAssignmentPayload struct {
 	Name                             string   `json:"name" validate:"required"`
 	Description                      string   `json:"description"`
-	MaxScore                         *int     `json:"maxScore" validate:"required"`
+	MaxScore                         *float64 `json:"maxScore" validate:"required"`
 	ExpectedScorePercentage          *float64 `json:"expectedScorePercentage" validate:"required"`
 	ExpectedPassingStudentPercentage *float64 `json:"expectedPassingStudentPercentage" validate:"required"`
 	CourseLearningOutcomeIds         []string `json:"courseLearningOutcomeIds" validate:"required"`
@@ -26,7 +26,7 @@ type CreateBulkAssignmentsPayload struct {
 type UpdateAssignmentRequestPayload struct {
 	Name                             string   `json:"name"`
 	Description                      string   `json:"description"`
-	MaxScore                         *int     `json:"maxScore"`
+	MaxScore                         *float64 `json:"maxScore"`
 	ExpectedPassingStudentPercentage *float64 `json:"expectedPassingStudentPercentage"`
 	ExpectedScorePercentage          *float64 `json:"expectedScorePercentage"`
 	IsIncludedInClo                  *bool    `json:"isIncludedInClo"`

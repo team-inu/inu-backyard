@@ -248,8 +248,8 @@ func (u coursePortfolioUseCase) CalculateGradeDistribution(courseId string) (*en
 	}
 
 	// calculate student score
-	weightByGroupId := make(map[string]int, 0)
-	sumGroupScoreByGroupId := make(map[string]int, 0)
+	weightByGroupId := make(map[string]float64, 0)
+	sumGroupScoreByGroupId := make(map[string]float64, 0)
 	sumStudentScoreByStudentIdByGroupId := make(map[string]map[string]float64, 0)
 
 	for _, assignmentGroup := range assignmentGroups {
