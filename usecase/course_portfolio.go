@@ -487,7 +487,7 @@ func (u coursePortfolioUseCase) EvaluateTabeeOutcomes(courseId string) ([]entity
 		if !found {
 			tabeeOutcomesByPoId[clo.ProgramOutcomeId] = append(tabeeOutcomesByPoId[clo.ProgramOutcomeId], entity.TabeeOutcome{
 				Name:                  clo.ProgramOutcomeName,
-				Code:                  clo.ProgramLearningOutcomeCode,
+				Code:                  clo.ProgramOutcomeCode,
 				CourseOutcomes:        courseOutcomeByPoId[clo.ProgramOutcomeId],
 				MinimumPercentage:     passingPoPercentageByPoId[clo.ProgramOutcomeId],
 				ExpectedCloPercentage: expectedPassingCloByPoId[clo.ProgramOutcomeId],
@@ -503,7 +503,7 @@ func (u coursePortfolioUseCase) EvaluateTabeeOutcomes(courseId string) ([]entity
 
 		tabeeOutcomesByPoId[clo.ProgramOutcomeId] = append(tabeeOutcomesByPoId[clo.ProgramOutcomeId], entity.TabeeOutcome{
 			Name:                  clo.ProgramOutcomeName,
-			Code:                  clo.ProgramLearningOutcomeCode,
+			Code:                  clo.ProgramOutcomeCode,
 			CourseOutcomes:        courseOutcomeByPoId[clo.ProgramOutcomeId],
 			MinimumPercentage:     passingPoPercentageByPoId[clo.ProgramOutcomeId],
 			ExpectedCloPercentage: expectedPassingCloByPoId[clo.ProgramOutcomeId],
