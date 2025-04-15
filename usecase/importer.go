@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/oklog/ulid/v2"
 	"github.com/team-inu/inu-backyard/entity"
@@ -18,6 +19,7 @@ type ImporterUseCase struct {
 	programLearningOutcomeUseCase entity.ProgramLearningOutcomeUseCase
 	courseLearningOutcomeUseCase  entity.CourseLearningOutcomeUseCase
 	userUseCase                   entity.UserUseCase
+	studentUseCase                entity.StudentUseCase
 }
 
 func NewImporterUseCase(
@@ -29,6 +31,7 @@ func NewImporterUseCase(
 	programLearningOutcomeUseCase entity.ProgramLearningOutcomeUseCase,
 	courseLearningOutcomeUseCase entity.CourseLearningOutcomeUseCase,
 	userUseCase entity.UserUseCase,
+	studentUseCase entity.StudentUseCase,
 ) ImporterUseCase {
 	return ImporterUseCase{
 		importerRepository:            importerRepository,
@@ -39,6 +42,7 @@ func NewImporterUseCase(
 		programLearningOutcomeUseCase: programLearningOutcomeUseCase,
 		courseLearningOutcomeUseCase:  courseLearningOutcomeUseCase,
 		userUseCase:                   userUseCase,
+		studentUseCase:                studentUseCase,
 	}
 }
 
@@ -248,6 +252,14 @@ func (u ImporterUseCase) UpdateOrCreate(
 			}
 		}
 
+	}
+
+	nonExistedStudents, err := u.studentUseCase.FilterNonExisted(studentIds)
+	if err != nil {
+		return errs.New(errs.SameCode, "cannot find non existed students while import course")
+	}
+	if len(nonExistedStudents) > 0 {
+		return errs.New(errs.ErrStudentNotFound, "student_id does not existed: %s", strings.Join(nonExistedStudents, ","))
 	}
 
 	// prepare enrollments
