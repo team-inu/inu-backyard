@@ -678,6 +678,7 @@ func (u coursePortfolioUseCase) GetAllProgramOutcomeCourses() ([]entity.PoCourse
 			posMap[record.ProgramOutcomeId] = append(posMap[record.ProgramOutcomeId], entity.CourseData{
 				Id:                record.CourseId,
 				Code:              record.Code,
+				Curriculum:				 record.Curriculum,
 				Name:              record.Name,
 				PassingPercentage: record.PassingPercentage,
 				Year:              record.Year,

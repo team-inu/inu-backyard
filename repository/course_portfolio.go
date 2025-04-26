@@ -1083,6 +1083,7 @@ func cacheOutcomes(gorm *gorm.DB, selector TabeeSelector) {
 				course_id,
 				course.name,
 				course.code,
+				course.curriculum,
 				semester.year,
 				semester.semester_sequence
 			FROM

@@ -200,6 +200,7 @@ type StudentOutcomeStatus struct {
 type CourseData struct {
 	Id                string  `json:"id"`
 	Code              string  `json:"code"`
+	Curriculum				string	`json:"curriculum"`
 	Name              string  `json:"name"`
 	PassingPercentage float64 `json:"passingPercentage"`
 	Year              int     `json:"year"`
@@ -232,6 +233,7 @@ type PoCoursesGorm struct {
 	CourseId          string
 	Name              string
 	Code              string
+	Curriculum				string
 	Year              int
 	SemesterSequence  string
 }
